@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import datetime
-import dateutil
+import pytz
 
 
 class Placemark:
@@ -21,15 +21,15 @@ class Placemark:
         if (self.name != None):
             self.index = int(''.join(char for char in self.name if char.isdigit()))
         
-        # Grab timestamp & Parse it into datetime object:
-        timeStrUTC = e[2][0].text
-        if (timeStrUTC != None):
-            time = dateutil.parser.parse(timeStrUTC)
+        # Get new zealand's timezone:
+        utc = pytz.timezone("UTC")
+        nzst = pytz.timezone("Pacific/Auckland")
 
-        # Convert from UTC (which it is currently in) into NZST (difference of 12 hrs)
-        nzst_timeDelta = datetime.timedelta(hours=12)
-        nzst = datetime.timezone(nzst_timeDelta, name="NZST")
-        if (nzst != None):
+        # Grab timestamp (which is in unix epoch time) & Parse it into datetime object:
+        unix_timestamp = float(e[3][0][0].text) / 1000.0
+        # unix_timestamp = 1774378013432 / 1000
+        if (unix_timestamp != None):
+            time = datetime.datetime.fromtimestamp(unix_timestamp)
             self.timeStamp = time.astimezone(nzst)
         
         # Grab coordinates

@@ -1,0 +1,5 @@
+This project requires Python (3.9+) and depends on the following libraries:
+
+dateutil (pip install python-dateutil)
+fillpdf 0.7.3 (pip install fillpdf)
+python time zone (pip install pytz)
