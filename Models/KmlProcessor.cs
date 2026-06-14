@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SharpKml.Dom;
 
@@ -28,6 +29,11 @@ public static class KmlProcessor
         return folders;
     }
 
+    /// <summary>
+    /// Takes a container and retreieves all placemarks that are within this container.
+    /// </summary>
+    /// <param name="container"></param>
+    /// <returns></returns>
     public static Placemark[] GetPlacemarks(Container container)
     {
         List<Placemark> placemarks = new ();
@@ -44,4 +50,32 @@ public static class KmlProcessor
 
         return placemarks.ToArray();
     }
+
+    /// <summary>
+    /// Converts an array of placemarks into animal mark objects
+    /// </summary>
+    /// <param name="placemarks"></param>
+    /// <returns></returns>
+    public static AnimalMark[] ConvertPlacemarksToAnimalMarks(Placemark[] placemarks)
+    {
+        AnimalMark[] animalMarks = new AnimalMark[placemarks.Length];
+
+        for (int placemarkIndex = 0; placemarkIndex < placemarks.Length; placemarkIndex++)
+        {
+            Placemark p = placemarks[placemarkIndex];
+            
+            AnimalMark a = new AnimalMark(p);
+
+            animalMarks[placemarkIndex] = a;
+        }
+
+        return animalMarks;
+    }
+
+    public static DateTime GetDateTimeForPlacemark(Placemark placemark)
+    {
+        // TODO: Implement (and test!!!)
+        return DateTime.Now;
+    }
+
 }

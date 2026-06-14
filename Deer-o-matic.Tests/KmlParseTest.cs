@@ -60,7 +60,18 @@ public class KmlParseTest
         Placemark[] placemarks = KmlProcessor.GetPlacemarks(gluiFolder);
         Assert.AreEqual(placemarks.Count(), 22); // There should be 22 placemarks
 
+        // Convert all to animal marks
+        AnimalMark[] animalMarks = KmlProcessor.ConvertPlacemarksToAnimalMarks(placemarks);
         
+        // Optional test, print all animal marks to console:
+        Console.WriteLine("--- Animal Marks: ---");
+        foreach (AnimalMark a in animalMarks)
+        {
+            Console.WriteLine(a.ToString());
+        }
+        Console.WriteLine("---------");
+
+
 
         Assert.Pass();
     }
