@@ -56,7 +56,11 @@ public class KmlParseTest
         Folder gluiFolder = markerSubFolders["Glui"];
         Assert.NotNull(gluiFolder);
 
+        // Grab all placemarks
+        Placemark[] placemarks = KmlProcessor.GetPlacemarks(gluiFolder);
+        Assert.AreEqual(placemarks.Count(), 22); // There should be 22 placemarks
 
+        
 
         Assert.Pass();
     }

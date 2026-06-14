@@ -28,4 +28,20 @@ public static class KmlProcessor
         return folders;
     }
 
+    public static Placemark[] GetPlacemarks(Container container)
+    {
+        List<Placemark> placemarks = new ();
+
+        foreach (Feature f in container.Features)
+        {
+            if (f is Placemark)
+            {
+                Placemark placemark = (Placemark) f;
+
+                placemarks.Add(placemark);
+            }
+        }
+
+        return placemarks.ToArray();
+    }
 }
