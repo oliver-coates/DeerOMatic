@@ -8,11 +8,16 @@ namespace Deer_o_matic.Models;
 
 public static class PdfPublisher
 {
+    /// <summary>
+    /// Publishes a dummy PDF to the user's desktop. Used for debugging and testing the PDF publisher.
+    /// </summary>
+    /// <param name="formLocation"></param>
     public static void PublishDummyPdf(string formLocation)
     {
         PdfDocument doc = new PdfDocument();
         doc.LoadFromFile(formLocation);
 
+        // Dummy info:
         FormArgument[] arguments = new FormArgument[]
         {
             new FormArgument("text-hunter-name", "Oliver Coates"),
@@ -21,10 +26,14 @@ public static class PdfPublisher
         };
 
         FillForm(doc, arguments);
+        Flatten(doc);
 
         doc.SaveToFile("C:/Users/Oliver/Desktop/dummy.pdf");
     }
 
+    /// <summary>
+    /// Fills out a PDF document object with the provided arguments.
+    /// </summary>
     private static void FillForm(PdfDocument doc, FormArgument[] arguments)
     {
         PdfFormWidget widgets = (PdfFormWidget)doc.Form;
@@ -57,11 +66,14 @@ public static class PdfPublisher
             {
                 continue;
             }
-
-            
         }
     }
 
+    /// <summary>
+    /// Fills a provided pdfField with a provided argument.
+    /// </summary>
+    /// <param name="field"></param>
+    /// <param name="argument"></param>
     private static void FillField(PdfField field, FormArgument argument)
     {
         if (field is PdfTextBoxFieldWidget textField)
@@ -74,6 +86,24 @@ public static class PdfPublisher
         }
     }
 
+    /// <summary>
+    /// Flattens this PDF so that all fields are read-only and cannot be edited.
+    /// </summary>
+    /// <param name="doc">The document to edit</param>
+    public static void Flatten(PdfDocument doc)
+    {
+        PdfFormWidget widgets = (PdfFormWidget) doc.Form; 
+        
+        foreach (PdfField field in widgets.FieldsWidget.List)
+        {
+            field.Flatten = true;
+            field.ReadOnly = true;
+        }
+    }
+
+    /// <summary>
+    /// Helper object to couple a field name with a bit of information for the field.
+    /// </summary>
     private class FormArgument
     {
         public readonly string name;
