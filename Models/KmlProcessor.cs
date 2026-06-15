@@ -72,10 +72,21 @@ public static class KmlProcessor
         return animalMarks;
     }
 
-    public static DateTime GetDateTimeForPlacemark(Placemark placemark)
+    public static DateTime GetDateTimeForPlacemark(TimePrimitive timePrimitive)
     {
-        // TODO: Implement (and test!!!)
-        return DateTime.Now;
+        Timestamp timeStamp = (SharpKml.Dom.Timestamp) timePrimitive;   
+        
+        if (timeStamp.When == null)
+        {
+            throw new NullReferenceException();
+        }
+        
+        DateTime utcTime = (DateTime) timeStamp.When;
+
+        // Convert UTC time to nzst
+        TimeZoneInfo nzst = TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time"); 
+
+        return TimeZoneInfo.ConvertTime(utcTime, nzst);
     }
 
 }
