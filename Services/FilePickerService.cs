@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -7,14 +8,14 @@ namespace Deer_o_matic.Services;
 
 public interface IFilePickerService
 {
-    Task<string[]> OpenFileAsync();
+    Task<FileOutput[]> OpenFilesAsync();
 }
 
-public class FilePickerService : IFilePickerService
+public class KmlPickerService : IFilePickerService
 {
     private readonly TopLevel _topLevel;
 
-    public FilePickerService(TopLevel topLevel)
+    public KmlPickerService(TopLevel topLevel)
     {
         _topLevel = topLevel;
     }
@@ -26,34 +27,75 @@ public class FilePickerService : IFilePickerService
         MimeTypes = null
     };
 
-    public async Task<string[]?> OpenFileAsync()
+    public async Task<FileOutput[]> OpenFilesAsync()
     {
         var files = await _topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
             Title = "Please choose KML file(s)",
-            // FileTypeFilter = new[] { Kml },
-            FileTypeFilter = new[] { FilePickerFileTypes.TextPlain },
+            FileTypeFilter = new[] { Kml },
             AllowMultiple = true
         });       
 
         // If user selects no files
         if (files.Count == 0)
         {
-            return null;
+            return [];
         }
         else
         {
-            string[] output = new string[files.Count];
+            FileOutput[] output = new FileOutput[files.Count];
 
             for (int fileIndex = 0; fileIndex < files.Count; fileIndex++)
             {
-                await using var stream = await files[fileIndex].OpenReadAsync();
-                using var reader = new StreamReader(stream);
-                output[fileIndex] = await reader.ReadToEndAsync();        
+                output[fileIndex] = await FileOutput.CreateAsnyc(files[fileIndex]);
             }
 
             return output;
         }
     }
 
+}
+
+public class FileOutput
+{
+    /// <summary>
+    /// The name and file extension.
+    /// </summary>
+    public string name = String.Empty;
+    /// <summary>
+    /// The file extension, including the '.'
+    /// </summary>
+    public string extension = String.Empty;
+
+    /// <summary>
+    /// The content of the file
+    /// </summary>
+    public string content = String.Empty;
+
+    private FileOutput() { }
+
+    async public static Task<FileOutput> CreateAsnyc(IStorageFile file)
+    {
+        FileOutput output = new FileOutput()
+        {
+            name = file.Name,
+            extension = GetFileExtension(file.Name),
+            content = await ReadContent(file)
+        };
+        
+        return output;
+    }
+
+    private static string GetFileExtension(string name)
+    {
+        // TODO: Fix this: Extensions with multiple '.'s will cause an error
+        return $".{name.Split('.')[1]}";
+    }
+
+    async private static Task<string> ReadContent(IStorageFile file)
+    {
+        await using var stream = await file.OpenReadAsync();
+        using var reader = new StreamReader(stream);
+        return await reader.ReadToEndAsync();
+    }
 }

@@ -37,15 +37,15 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async Task PickKmlAsync()
     {
-        string[] content = await _kmlPicker.OpenFileAsync();
+        FileOutput[] kmlFiles = await _kmlPicker.OpenFilesAsync();
         
-        if (content is not null)
+        if (kmlFiles is not null)
         {
             Console.WriteLine($"Got:");
         
-            foreach (string s in content)
+            foreach (FileOutput file in kmlFiles)
             {
-                Console.WriteLine($">> {s}");
+                Console.WriteLine($">> {file.name} | {file.extension}");
             }
         }
         else
