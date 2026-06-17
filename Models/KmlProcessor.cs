@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Deer_o_matic.Services;
+using SharpKml.Base;
 using SharpKml.Dom;
 
 namespace Deer_o_matic.Models;
@@ -34,7 +36,7 @@ public static class KmlProcessor
     /// </summary>
     /// <param name="container"></param>
     /// <returns></returns>
-    public static Placemark[] GetPlacemarks(Container container)
+    public static Placemark[] GetPlacemarksWithinContainer(Container container)
     {
         List<Placemark> placemarks = new ();
 
@@ -72,6 +74,10 @@ public static class KmlProcessor
         return animalMarks;
     }
 
+    /// <summary>
+    /// Takes in a timePrimitive object and converts it to a datetime in NZST.
+    /// TODO: Test this method rigerously to ensure that it is concerting time & date properly, and check daylight savings time aswell
+    /// </summary>
     public static DateTime GetDateTimeForPlacemark(TimePrimitive timePrimitive)
     {
         Timestamp timeStamp = (SharpKml.Dom.Timestamp) timePrimitive;   
@@ -89,4 +95,74 @@ public static class KmlProcessor
         return TimeZoneInfo.ConvertTime(utcTime, nzst);
     }
 
+    /// <summary>
+    /// Creates a KML object from a provided fileOutput. Accepts .kml and .kmz files.
+    /// </summary>
+    public static Kml ParseKmlFromFile(FileOutput fileOutput)
+    {
+        if (fileOutput.extension == ".kml")
+        {
+            return ParseKmlFromString(fileOutput.content);
+        }
+        else if (fileOutput.extension == ".kmz")
+        {
+            // TODO: Implement unzipping
+            throw new NotImplementedException();
+        }
+        else
+        {
+            throw new NullReferenceException();
+        }
+    }
+
+    /// <summary>
+    /// Creates a KML object from a string
+    /// </summary>
+    public static Kml ParseKmlFromString(string kmlInput)
+    {
+        // Parse the string into a parser object
+        Parser parser = new Parser();
+        parser.ParseString(kmlInput, false);
+
+        return (Kml) parser.Root;
+    }
+
+    /// <summary>
+    /// Pulls a list of placemarks from a provided kml file.
+    /// </summary>
+    public static Placemark[] GetPlacemarksFromKml(Kml kml)
+    {
+        // The 'feature' of the KML can be cast into the document
+        Document doc = (Document) kml.Feature;
+
+        // Pull all the folders from the document out and assemble them into a dictionary by name
+        Dictionary<string, Folder> rootFolders = GetSubFolders(doc);
+
+        // Grab the GLUI folder from within the Markers folder
+        Folder markerFolder = rootFolders["Markers"];
+        Dictionary<string, Folder> markerSubFolders = GetSubFolders(markerFolder);
+
+        Folder gluiFolder = markerSubFolders["Glui"];
+
+        // Grab all placemarks
+        Placemark[] placemarks = GetPlacemarksWithinContainer(gluiFolder);
+
+        return placemarks;
+    }
+
+    /// <summary>
+    /// Creates a flight data object from a provided file output object.
+    /// </summary>
+    public static FlightData CreateFlightDataFromFile(FileOutput file)
+    {
+        Kml kml = ParseKmlFromFile(file);
+
+        Placemark[] placemarks = GetPlacemarksFromKml(kml);
+
+        AnimalMark[] animalMarks = ConvertPlacemarksToAnimalMarks(placemarks);
+
+        FlightData flightData = new (file.name, animalMarks);
+
+        return flightData;
+    }
 }

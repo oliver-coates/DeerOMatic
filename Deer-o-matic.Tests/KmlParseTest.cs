@@ -32,33 +32,12 @@ public class KmlParseTest
         // Read the file as a string
         string kmlInput = File.ReadAllText(path);
         
-        // Parse the string into a parser object
-        Parser parser = new Parser();
-        parser.ParseString(kmlInput, false);
-
-        // Get the parsed string as a kml object from the root of the parser
-        Kml kml = (Kml) parser.Root;
+        Kml kml = KmlProcessor.ParseKmlFromString(kmlInput);
         Assert.IsNotNull(kml);
 
-        // The 'feature' of the KML can be cast into the document
-        Document doc = (Document) kml.Feature;
-        Assert.IsNotNull(doc);
-
-        // Pull all the folders from the document out and assemble them into a dictionary by name
-        Dictionary<string, Folder> rootFolders = KmlProcessor.GetSubFolders(doc);
-        Assert.AreEqual(rootFolders.Count, 4); // There should be 4 folders
-
-        // Grab the GLUI folder from within the Markers folder
-        Folder markerFolder = rootFolders["Markers"];
-        Dictionary<string, Folder> markerSubFolders = KmlProcessor.GetSubFolders(markerFolder);
-        Assert.AreEqual(markerSubFolders.Count, 3); // There should be 3 subfolders
-
-        Folder gluiFolder = markerSubFolders["Glui"];
-        Assert.NotNull(gluiFolder);
-
         // Grab all placemarks
-        Placemark[] placemarks = KmlProcessor.GetPlacemarks(gluiFolder);
-        Assert.AreEqual(placemarks.Count(), 22); // There should be 22 placemarks
+        Placemark[] placemarks = KmlProcessor.GetPlacemarksFromKml(kml);
+        Assert.AreEqual(placemarks.Length, 22); // There should be 22 placemarks
 
         // Convert all to animal marks
         AnimalMark[] animalMarks = KmlProcessor.ConvertPlacemarksToAnimalMarks(placemarks);

@@ -9,14 +9,14 @@ namespace Deer_o_matic.Models;
 public class FlightData
 {
     public readonly string name;
-    public readonly AnimalMark[] placemarks;
+    public readonly AnimalMark[] animalMarks;
 
 
 
     public FlightData(string name, AnimalMark[] placemarks)
     {
         this.name = name;
-        this.placemarks = placemarks;
+        this.animalMarks = placemarks;
     }
 
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Deer_o_matic.Models;
 using Deer_o_matic.Services;
 
 namespace Deer_o_matic.ViewModels;
@@ -39,18 +40,17 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         FileOutput[] kmlFiles = await _kmlPicker.OpenFilesAsync();
         
-        if (kmlFiles is not null)
+        if (kmlFiles is null)
         {
-            Console.WriteLine($"Got:");
-        
-            foreach (FileOutput file in kmlFiles)
-            {
-                Console.WriteLine($">> {file.name} | {file.extension}");
-            }
+            // No files were picked.
+            return;
         }
-        else
+
+        foreach (FileOutput file in kmlFiles)
         {
-            Console.WriteLine($"Content was null");
+            FlightData flightData = KmlProcessor.CreateFlightDataFromFile(file);
+            
+            FlightData.Add(new FlightDataViewModel(flightData));
         }
     }
 }
