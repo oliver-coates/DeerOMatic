@@ -42,9 +42,9 @@
         
         <TextBox Grid.Row="2" Text="{Binding HunterName}" PlaceholderText="Hunter Name"></TextBox>
 
-        <Button Grid.Row="3" Command="{Binding AddNewFlightData}">Add New</Button>
+        <Button Grid.Row="3" Command="{Binding OpenFileCommand}">Add New</Button>
 
-
+        
     </Grid>
 </Window>
 

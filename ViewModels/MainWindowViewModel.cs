@@ -1,33 +1,51 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Deer_o_matic.Services;
 
 namespace Deer_o_matic.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly IFilePickerService _kmlPicker;
+
     public ObservableCollection<FlightDataViewModel> FlightData { get; } = [];
+    
+    public AsyncRelayCommand OpenFileCommand {get; } 
 
     [ObservableProperty]
     public partial string? HunterName { get; set; }
 
-    [RelayCommand]
-    public void AddNewFlightData()
+
+    public MainWindowViewModel(IFilePickerService filePicker)
     {
-        if (HunterName == null)
-        {
-            FlightData.Add(new FlightDataViewModel("Unnamed"));        
-        }
-        else
-        {
-            FlightData.Add(new FlightDataViewModel(HunterName));
-            
-        }
+        _kmlPicker = filePicker;
+        OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
     }
+
+
 
     [RelayCommand]
     public void RemoveFlightData(FlightDataViewModel toRemove)
     {
         FlightData.Remove(toRemove);
+    }
+
+    private async Task PickKmlAsync()
+    {
+        var content = await _kmlPicker.OpenFileAsync();
+        
+        if (content is not null)
+        {
+            Console.WriteLine($"Got: {content}");
+        }
+        else
+        {
+            Console.WriteLine($"Content was null");
+        }
     }
 }
