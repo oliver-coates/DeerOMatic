@@ -17,21 +17,34 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
-    <StackPanel>
-        <Border Margin="5" CornerRadius="3" Background="LightBlue">
-            <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" FontSize="24"/>
-        </Border>
-        
-    <Grid ShowGridLines="False" Margin="5" ColumnDefinitions="120, 100" RowDefinitions="Auto, Auto">
-        <TextBlock Grid.Row = "0" Grid.Column="0" Margin="10" >Celsius</TextBlock>
-        <TextBox Grid.Row = "0" Grid.Column = "1" Margin = "0 5" Text="0" Name="Celsius" TextChanged="Celsius_TextChanged"/>
+    <Grid RowDefinitions="Auto, *, Auto, Auto" x:Name="Root">
 
-        <TextBlock Grid.Row = "1" Grid.Column="0" Margin="10">Fahrenheit</TextBlock>
-        <TextBox Grid.Row = "1" Grid.Column = "1" Margin = "0 5" Text="0" Name="Fahrenheit" IsReadOnly="True"/>
+        <TextBlock Text="GCH Deer-O-Matic"/>
+
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding FlightData}">
+                <ItemsControl.ItemTemplate>
+                    <!-- ItemTemplate defines how each flight data object should be represented -->
+                    <DataTemplate DataType="vm:FlightDataViewModel">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Grid.Column="0" 
+                                            Text="{Binding Name}"/>
+                            <Button Grid.Column="1"
+                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveFlightData}" 
+                                    CommandParameter="{Binding .}">
+                                    Delete
+                            </Button>
+                        </Grid>    
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>    
+        </ScrollViewer>
+        
+        <TextBox Grid.Row="2" Text="{Binding HunterName}" PlaceholderText="Hunter Name"></TextBox>
+
+        <Button Grid.Row="3" Command="{Binding AddNewFlightData}">Add New</Button>
+
+
     </Grid>
-        
-    <Button HorizontalAlignment="Center" Click="Button_OnClick"> Calculate </Button>
-
-        
-    </StackPanel>
 </Window>
+
