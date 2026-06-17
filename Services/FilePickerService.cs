@@ -7,7 +7,7 @@ namespace Deer_o_matic.Services;
 
 public interface IFilePickerService
 {
-    Task<string?> OpenFileAsync();
+    Task<string[]> OpenFileAsync();
 }
 
 public class FilePickerService : IFilePickerService
@@ -26,7 +26,7 @@ public class FilePickerService : IFilePickerService
         MimeTypes = null
     };
 
-    public async Task<string?> OpenFileAsync()
+    public async Task<string[]?> OpenFileAsync()
     {
         var files = await _topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
@@ -41,10 +41,19 @@ public class FilePickerService : IFilePickerService
         {
             return null;
         }
+        else
+        {
+            string[] output = new string[files.Count];
 
-        await using var stream = await files[0].OpenReadAsync();
-        using var reader = new StreamReader(stream);
-        return await reader.ReadToEndAsync();
+            for (int fileIndex = 0; fileIndex < files.Count; fileIndex++)
+            {
+                await using var stream = await files[fileIndex].OpenReadAsync();
+                using var reader = new StreamReader(stream);
+                output[fileIndex] = await reader.ReadToEndAsync();        
+            }
+
+            return output;
+        }
     }
 
 }
