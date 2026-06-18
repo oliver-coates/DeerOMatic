@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Deer_o_matic.ViewModels"
+    x:Class="Deer_o_matic.Views.FileUploadView"
+    x:DataType="vm:FileUploadViewModel">
+
+       <Grid RowDefinitions="Auto, *, Auto, Auto" x:Name="Root">
+
+        <TextBlock Text="KML files:"/>
+
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding FlightData}">
+                <ItemsControl.ItemTemplate>
+                    <!-- ItemTemplate defines how each flight data object should be represented -->
+                    <DataTemplate DataType="vm:FlightDataViewModel">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Grid.Column="0" 
+                                            Text="{Binding Name}"/>
+                            <Button Grid.Column="1"
+                                    Command="{Binding #Root.((vm:FileUploadViewModel)DataContext).RemoveFlightData}" 
+                                    CommandParameter="{Binding .}">
+                                    Delete
+                            </Button>
+                        </Grid>    
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>    
+        </ScrollViewer>
+        
+        <TextBox Grid.Row="2" Text="{Binding HunterName}" PlaceholderText="Hunter Name"></TextBox>
+
+        <Button Grid.Row="3" Command="{Binding OpenFileCommand}">Add New</Button>
+
+        
+    </Grid>
+</UserControl>

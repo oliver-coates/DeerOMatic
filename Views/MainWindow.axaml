@@ -3,6 +3,7 @@
         xmlns:vm="using:Deer_o_matic.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Deer_o_matic.Views"
         mc:Ignorable="d" d:DesignWidth="1902" d:DesignHeight="1080"
         x:Class="Deer_o_matic.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -17,34 +18,13 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
-    <Grid RowDefinitions="Auto, *, Auto, Auto" x:Name="Root">
+    <Grid ColumnDefinitions="*,*">
 
-        <TextBlock Text="GCH Deer-O-Matic"/>
+    <views:FileUploadView Grid.Column="1" DataContext="{Binding FileUpload}"/>
 
-        <ScrollViewer Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding FlightData}">
-                <ItemsControl.ItemTemplate>
-                    <!-- ItemTemplate defines how each flight data object should be represented -->
-                    <DataTemplate DataType="vm:FlightDataViewModel">
-                        <Grid ColumnDefinitions="*, Auto">
-                            <TextBlock Grid.Column="0" 
-                                            Text="{Binding Name}"/>
-                            <Button Grid.Column="1"
-                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveFlightData}" 
-                                    CommandParameter="{Binding .}">
-                                    Delete
-                            </Button>
-                        </Grid>    
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>    
-        </ScrollViewer>
-        
-        <TextBox Grid.Row="2" Text="{Binding HunterName}" PlaceholderText="Hunter Name"></TextBox>
+    <TextBlock Grid.Column="0">This is also test</TextBlock>
 
-        <Button Grid.Row="3" Command="{Binding OpenFileCommand}">Add New</Button>
-
-        
     </Grid>
+    
 </Window>
 

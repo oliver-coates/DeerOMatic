@@ -37,6 +37,7 @@ public partial class App : Application
         }
 
         services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<FileUploadViewModel>();
 
         var provider = services.BuildServiceProvider();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop2)

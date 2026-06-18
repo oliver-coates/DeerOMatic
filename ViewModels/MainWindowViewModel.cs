@@ -12,45 +12,10 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private readonly IFilePickerService _kmlPicker;
+    public FileUploadViewModel FileUpload { get; }
 
-    public ObservableCollection<FlightDataViewModel> FlightData { get; } = [];
-    
-    public AsyncRelayCommand OpenFileCommand {get; } 
-
-    [ObservableProperty]
-    public partial string? HunterName { get; set; }
-
-
-    public MainWindowViewModel(IFilePickerService filePicker)
+    public MainWindowViewModel(FileUploadViewModel fileUpload)
     {
-        _kmlPicker = filePicker;
-        OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
-    }
-
-
-
-    [RelayCommand]
-    public void RemoveFlightData(FlightDataViewModel toRemove)
-    {
-        FlightData.Remove(toRemove);
-    }
-
-    private async Task PickKmlAsync()
-    {
-        FileOutput[] kmlFiles = await _kmlPicker.OpenFilesAsync();
-        
-        if (kmlFiles is null)
-        {
-            // No files were picked.
-            return;
-        }
-
-        foreach (FileOutput file in kmlFiles)
-        {
-            FlightData flightData = KmlProcessor.CreateFlightDataFromFile(file);
-            
-            FlightData.Add(new FlightDataViewModel(flightData));
-        }
+        FileUpload = fileUpload;
     }
 }
