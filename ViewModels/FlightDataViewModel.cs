@@ -8,22 +8,20 @@ public partial class FlightDataViewModel : ViewModelBase
     [ObservableProperty]
     private string _name;
 
-    private AnimalMark[] marks;
+    [ObservableProperty]
+    private string _path;
 
-    public FlightDataViewModel(string name)
-    {
-        _name = name;
-        marks = [];
-    }
+    private AnimalMark[] marks;
 
     public FlightDataViewModel(FlightData data)
     {
         _name = data.name;
+        _path = data.path;
         marks = data.animalMarks;
     }
 
     public FlightData Get()
     {
-        return new FlightData(this.Name, marks);
+        return new FlightData(this.Name, this.Path, marks);
     }
 }

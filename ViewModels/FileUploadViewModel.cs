@@ -25,7 +25,10 @@ public partial class FileUploadViewModel : ViewModelBase
         OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
     }
 
-
+    public void RemoveAllFlightData()
+    {
+        FlightData.Clear();
+    }
 
     [RelayCommand]
     public void RemoveFlightData(FlightDataViewModel toRemove)

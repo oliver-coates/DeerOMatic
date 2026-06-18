@@ -4,18 +4,22 @@
     x:Class="Deer_o_matic.Views.FileUploadView"
     x:DataType="vm:FileUploadViewModel">
 
-       <Grid RowDefinitions="Auto, *, Auto, Auto" x:Name="Root">
+       <Grid RowDefinitions="Auto, Auto, *, Auto, Auto" x:Name="Root" Margin="8">
 
-        <TextBlock Text="KML files:"/>
+        <TextBlock Margin="8" Text="KML files:"/>
+        <Rectangle Grid.Row="1" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
 
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Margin="8" Grid.Row="2">
             <ItemsControl ItemsSource="{Binding FlightData}">
                 <ItemsControl.ItemTemplate>
                     <!-- ItemTemplate defines how each flight data object should be represented -->
-                    <DataTemplate DataType="vm:FlightDataViewModel">
-                        <Grid ColumnDefinitions="*, Auto">
-                            <TextBlock Grid.Column="0" 
-                                            Text="{Binding Name}"/>
+                    <DataTemplate DataType="vm:FlightDataViewModel" >
+                        <Grid ColumnDefinitions="*, Auto" Margin="8">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock Text="{Binding Path}" />        
+                            </StackPanel>    
+                        
                             <Button Grid.Column="1"
                                     Command="{Binding #Root.((vm:FileUploadViewModel)DataContext).RemoveFlightData}" 
                                     CommandParameter="{Binding .}">
@@ -26,11 +30,13 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>    
         </ScrollViewer>
-        
-        <TextBox Grid.Row="2" Text="{Binding HunterName}" PlaceholderText="Hunter Name"></TextBox>
 
-        <Button Grid.Row="3" Command="{Binding OpenFileCommand}">Add New</Button>
+        <Rectangle Grid.Row="3" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
 
+        <Grid Grid.Row="4" ColumnDefinitions = "Auto, *" Margin="8">
+            <Button  Grid.Column="0" Command="{Binding OpenFileCommand}">Add New</Button>
+            <Button  Grid.Column="1" Command="{Binding RemoveAllFlightData}">Clear</Button>
+        </Grid>
         
     </Grid>
 </UserControl>

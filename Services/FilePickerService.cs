@@ -72,6 +72,11 @@ public class FileOutput
     /// </summary>
     public string content = String.Empty;
 
+    /// <summary>
+    /// The path to the file
+    /// </summary>
+    public string path = String.Empty;
+
     private FileOutput() { }
 
     async public static Task<FileOutput> CreateAsnyc(IStorageFile file)
@@ -79,6 +84,7 @@ public class FileOutput
         FileOutput output = new FileOutput()
         {
             name = file.Name,
+            path = file.Path.ToString(),
             extension = GetFileExtension(file.Name),
             content = await ReadContent(file)
         };
