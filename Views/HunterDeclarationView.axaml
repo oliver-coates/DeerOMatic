@@ -1,18 +1,104 @@
 <UserControl xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:Deer_o_matic.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Class="Deer_o_matic.Views.HunterDeclarationView"
-    x:DataType="vm:HunterDeclarationViewModel">
+    x:DataType="vm:HunterDeclarationViewModel"
+    mc:Ignorable="d" d:DesignWidth="1000">
 
-    <Grid RowDefinitions="Auto, Auto, *, Auto, Auto" x:Name="Root" Margin="8">
+    <!-- STYLES -->
+    <UserControl.Styles>
+        <Style Selector="TextBlock.smallLabel">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0, 0, 8, 4"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineSpacing" Value="4"/>
+        </Style>
 
-        <TextBlock Margin="8" Text="Hunt information:"/>
+        <Style Selector="TextBlock.header">
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </UserControl.Styles>
 
+
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" x:Name="Root" Margin="8">
+
+        <!-- HUNT INFORMATION HEADER -->
+        <TextBlock Margin="8" Text="Hunt information:" Classes="header"/>
         <Rectangle Grid.Row="1" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
+        
+        <!-- HUNT INFORMATION -->
+        <Grid Grid.Row="2" Margin="24, 8, 8, 24" ColumnDefinitions="*, *" RowDefinitions="*">
+            
+            <Grid Grid.Row="0" Grid.Column="0" Margin="4" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto">
 
-        <TextBlock Grid.Row="2" Margin="8" >Data here </TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Text="Hunter Name: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="0" PlaceholderText="John Doe" Margin="0, 0, 0, 4" />
 
-        <Rectangle Grid.Row="3" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="RMP Identifier: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="1234a" Margin="0, 0, 0, 4" />
+
+                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="Helicopter Registration: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="2" PlaceholderText="ZX-ABC" Margin="0, 0, 0, 4" />
+
+            </Grid>
+
+            <Grid Grid.Row="0" Grid.Column="1" Margin="24, 0, 0, 0" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto">
+
+                <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Text="Other Hunter Names: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="0" PlaceholderText="John Doe" Margin="0, 0, 0, 4" />
+
+                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="Date arrived at depot: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="1234a" Margin="0, 0, 0, 4" />
+
+            </Grid>
+            
+        </Grid>
+
+        <!-- ADDITIONAL INFORMATION HEADER -->
+        <Grid Grid.Row="4" Margin="8, 0, 0, 0" ColumnDefinitions="*, Auto, Auto">
+            <TextBlock Grid.Column="0" Margin="0, 0, 0, 0" Text="Additional Information:" HorizontalAlignment="Left" Classes="header"/>
+            <TextBlock Grid.Column="1" Text="All:" VerticalAlignment="Center" Margin="0, 0, 8, 4"/>
+            <CheckBox Grid.Column="2" Margin="0, 0, 8, 4"/>
+        </Grid>
+        
+        <Rectangle Grid.Row="5" Grid.Column="0" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
+
+        <!-- ADDITIONAL INFORMATION -->
+        <Grid Grid.Row="6" Grid.Column="0" Margin="24, 8, 8, 24" ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Classes="smallLabel" 
+            Text="A: Can you confirm these animals were procured in accordance with your Operations Manual?" />
+            <CheckBox Grid.Column="1" Grid.Row="0" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="1" Classes="smallLabel" 
+            Text="B: Can you confirm that none of the animals have been recovered from poisoned land or buffer zones within the applicable caution periods, as described in note 4?"/>
+            <CheckBox Grid.Column="1" Grid.Row="1" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="2" Classes="smallLabel" 
+            Text="C: Can you confirm the animals when live, and their carcasses, were free from visible signs of illness or disease?"/>
+            <CheckBox Grid.Column="1" Grid.Row="2" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="3" Classes="smallLabel"
+            Text="D: Can you confirm, to the best of your knowledge, that the carcasses are below the MRL and MPL (see note 5)?" />
+            <CheckBox Grid.Column="1" Grid.Row="3" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="4" Classes="smallLabel" 
+            Text="E: Can you confirm, to the best of your knowledge, that these animals had not ingested agricultural chemicals and are outside the withholding period for any veterinary medicines (see note 6)? If no, these animals are not eligible for processing." />
+            <CheckBox Grid.Column="1" Grid.Row="4" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+        
+            <TextBlock TextWrapping="Wrap" Grid.Column="0" Grid.Row="5" Classes="smallLabel" 
+            Text="F: Can you confirm that the carcasses, while under your control, were maintained under conditions that minimise contamination and deterioration, and not frozen?"/>
+            <CheckBox Grid.Column="1" Grid.Row="5" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="6" Classes="smallLabel" 
+            Text="G: Can you confirm that all deer covered by this declaration, were killed in Tb vector free areas, as described in note 7? (leave blank if no deer were supplied)."/>
+            <CheckBox Grid.Column="1" Grid.Row="6" Margin="0, 0, 0, 4" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <!-- <Rectangle Grid.Row="7" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/> -->
         
     </Grid>
 </UserControl>
