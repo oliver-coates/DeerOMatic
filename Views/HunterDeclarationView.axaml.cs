@@ -9,4 +9,3 @@ public partial class HunterDeclarationView : UserControl
         InitializeComponent();
     }
 }
-
