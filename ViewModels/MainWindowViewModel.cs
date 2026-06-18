@@ -15,6 +15,7 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     // View models:
     public FileUploadViewModel FileUpload { get; }
+    public HunterDeclarationViewModel HunterDeclaration { get; }
 
     // Services:
     private readonly IFilePickerService _filePicker;
@@ -26,11 +27,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(
         FileUploadViewModel fileUpload,
+        HunterDeclarationViewModel hunterDeclaration,
         IDocumentCreationService documentCreation,
         IPdfExportService pdfExport,
         IFilePickerService filePicker)
     {
         FileUpload = fileUpload;
+        HunterDeclaration = hunterDeclaration;
 
         _documentCreation = documentCreation;
         _pdfExport = pdfExport;

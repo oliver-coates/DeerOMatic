@@ -38,6 +38,7 @@ public partial class App : Application
 
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<FileUploadViewModel>();
+        services.AddTransient<HunterDeclarationViewModel>();
 
         services.AddSingleton<IPdfExportService, PdfExportService>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
