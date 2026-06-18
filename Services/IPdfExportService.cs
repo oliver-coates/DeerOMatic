@@ -5,18 +5,19 @@ using Spire.Pdf.Fields;
 using Spire.Pdf.Widget;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
+using Avalonia.Platform.Storage;
 
 namespace Deer_o_matic.Services;
 
 public interface IPdfExportService
 {
-    public Task ExportDocumentAsync(HunterDeclarationDocumentData data);
+    public Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder);
 }
 
 
 public class PdfExportService : IPdfExportService
 {
-    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data)
+    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder)
     {
         PdfDocument doc = new PdfDocument();
 
@@ -27,9 +28,10 @@ public class PdfExportService : IPdfExportService
         
         FillForm(doc, arguments);
         Flatten(doc);
-    
-        // TODO: Allow user to choose where the exported pdfs go
-        doc.SaveToFile("C:/Users/Oliver/Desktop/dummy.pdf");
+
+        string fullPath = $"{folder.Path.LocalPath} LHDF ({DateTime.Now.ToString("d-M-y HH-mm")}).pdf";
+
+        doc.SaveToFile(fullPath);
     }
 
     private static FormArgument[] GetFormArguments(HunterDeclarationDocumentData data)

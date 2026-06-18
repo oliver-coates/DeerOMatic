@@ -27,7 +27,7 @@
 
         <Grid RowDefinitions="Auto, Auto" Margin="8" DockPanel.Dock="Bottom">
             <Rectangle Grid.Row="0" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
-            <Button Grid.Row="1" Margin="8">Export</Button>
+            <Button Grid.Row="1" Margin="8" Command="{Binding ExportCommand}">Export</Button>
         </Grid>
 
         <Grid ColumnDefinitions="*,*">

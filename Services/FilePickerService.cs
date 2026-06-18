@@ -9,6 +9,7 @@ namespace Deer_o_matic.Services;
 public interface IFilePickerService
 {
     Task<FileOutput[]> OpenFilesAsync();
+    Task<IStorageFolder?> PickFileSaveLocation();
 }
 
 public class KmlPickerService : IFilePickerService
@@ -54,6 +55,26 @@ public class KmlPickerService : IFilePickerService
         }
     }
 
+    public async Task<IStorageFolder?> PickFileSaveLocation()
+    {
+        IStorageFolder? downloadsFolder = await _topLevel.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Downloads);
+
+        var selectedFolders = await _topLevel.StorageProvider.OpenFolderPickerAsync(
+            new FolderPickerOpenOptions
+            {
+                Title = "Choose where to export",
+                SuggestedStartLocation = downloadsFolder,
+            }
+        );
+
+        if (selectedFolders is null || selectedFolders.Count == 0)
+        {
+            // User cancelelled
+            return null;
+        }
+
+        return selectedFolders[0];
+    }
 }
 
 public class FileOutput

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Deer_o_matic.Models;
@@ -45,6 +46,16 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async Task ExportAsync()
     {
-        // TODO: Export here
+        IStorageFolder? saveFolder = await _filePicker.PickFileSaveLocation();
+
+        if (saveFolder == null)
+        {
+            // User cancelled.
+            return;
+        }
+
+        HunterDeclarationDocumentData data = _documentCreation.BuildDocument(FileUpload, HunterDeclaration);
+
+        await _pdfExport.ExportDocumentAsync(data, saveFolder);
     }
 }
