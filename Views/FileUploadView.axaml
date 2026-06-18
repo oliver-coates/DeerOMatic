@@ -4,31 +4,21 @@
     x:Class="Deer_o_matic.Views.FileUploadView"
     x:DataType="vm:FileUploadViewModel">
 
-       <Grid RowDefinitions="Auto, Auto, *, Auto, Auto" x:Name="Root" Margin="8">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/FlightDataTemplate.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto, Auto" x:Name="Root" Margin="8">
 
         <TextBlock Margin="8" Text="KML files:"/>
         <Rectangle Grid.Row="1" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
 
         <ScrollViewer Margin="8" Grid.Row="2">
-            <ItemsControl ItemsSource="{Binding FlightData}">
-                <ItemsControl.ItemTemplate>
-                    <!-- ItemTemplate defines how each flight data object should be represented -->
-                    <DataTemplate DataType="vm:FlightDataViewModel" >
-                        <Grid ColumnDefinitions="*, Auto" Margin="8">
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="{Binding Name}"/>
-                                <TextBlock Text="{Binding Path}" />        
-                            </StackPanel>    
-                        
-                            <Button Grid.Column="1"
-                                    Command="{Binding #Root.((vm:FileUploadViewModel)DataContext).RemoveFlightData}" 
-                                    CommandParameter="{Binding .}">
-                                    Delete
-                            </Button>
-                        </Grid>    
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>    
+            <ItemsControl ItemsSource="{Binding FlightData}" ItemTemplate="{StaticResource FlightDataTemplate}"/>    
         </ScrollViewer>
 
         <Rectangle Grid.Row="3" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
