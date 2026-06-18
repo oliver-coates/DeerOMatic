@@ -16,11 +16,17 @@ public class HunterDeclarationDocumentData
     public required DateTime dateOfArrivalAtProcessor;
     public required string numAndTypeOfAnimals;
     public required string helicopterRegistration;
-    
+    public DateTime dateSigned;
+
+    public required bool[] questionTicks;
+
     public List<FlightData> flightDatas;
+
+
 
     public HunterDeclarationDocumentData()
     {
         flightDatas = new ();
+        dateSigned = DateTime.Now;
     } 
 }

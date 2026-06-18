@@ -6,6 +6,7 @@ using Spire.Pdf.Widget;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
 using Avalonia.Platform.Storage;
+using System.Linq;
 
 namespace Deer_o_matic.Services;
 
@@ -17,6 +18,28 @@ public interface IPdfExportService
 
 public class PdfExportService : IPdfExportService
 {
+    private static readonly string[] formQuestionsTrue =
+    {
+        "bool-procured-accordance-operations-manual-yes",
+            "bool-recovery-none-poisoned-yes",
+            "bool-animals-no-disease-yes",
+            "bool-below-mrl-mpl-yes",
+            "bool-no-chemicals-medicine-yes",
+            "bool-carcasses-good-conditions-yes",
+            "bool-deer-tb-free-yes"
+    };
+
+    private static readonly string[] formQuestionsFalse =
+    {
+        "bool-procured-accordance-operations-manual-no",
+        "bool-recovery-none-poisoned-no",
+        "bool-animals-no-disease-no",
+        "bool-below-mrl-mpl-no",
+        "bool-no-chemicals-medicine-no",
+        "bool-carcasses-good-conditions-no",
+        "bool-deer-tb-free-no"
+    };
+
     public async Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder)
     {
         PdfDocument doc = new PdfDocument();
@@ -36,7 +59,7 @@ public class PdfExportService : IPdfExportService
 
     private static FormArgument[] GetFormArguments(HunterDeclarationDocumentData data)
     {
-        FormArgument[] arguments =
+        FormArgument[] primaryArguments =
         [
             new FormArgument("text-hunter-name", data.hunterName),
             new FormArgument("text-other-hunters", data.otherHunters),
@@ -44,10 +67,25 @@ public class PdfExportService : IPdfExportService
             new FormArgument("date-date-of-arrival", data.dateOfArrivalAtProcessor.ToString()),
             new FormArgument("text-number-and-species", data.numAndTypeOfAnimals),
             new FormArgument("text-helicopter-registration", data.helicopterRegistration),
-            new FormArgument("bool-procured-accordance-operations-manual-yes", "Yes")
+            new FormArgument("text-date-signed", data.dateSigned.ToShortDateString())
         ];
 
-        return arguments;
+        FormArgument[] questionArguments = new FormArgument[7];
+        for (int questionIndex = 0; questionIndex < 7; questionIndex++)
+        {
+            string argument;
+            if (data.questionTicks[questionIndex])
+            {
+                argument = formQuestionsTrue[questionIndex];
+            }
+            else
+            {
+                argument = formQuestionsFalse[questionIndex];    
+            }
+            questionArguments[questionIndex] = new FormArgument(argument, "Yes");
+        }
+
+        return [.. primaryArguments, .. questionArguments];
     }
 
 

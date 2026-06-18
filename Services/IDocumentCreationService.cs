@@ -20,6 +20,17 @@ public class DocumentCreationService : IDocumentCreationService
 {
     public HunterDeclarationDocumentData BuildDocument(FileUploadViewModel fileUpload, HunterDeclarationViewModel hunterDeclaration)
     {
+        bool[] questionTicks = new bool[]
+        {
+            hunterDeclaration.QuestionA,
+            hunterDeclaration.QuestionB,
+            hunterDeclaration.QuestionC,
+            hunterDeclaration.QuestionD,
+            hunterDeclaration.QuestionE,
+            hunterDeclaration.QuestionF,
+            hunterDeclaration.QuestionG,
+        };
+
         HunterDeclarationDocumentData doc = new()
         {
             hunterName = hunterDeclaration.HunterName,
@@ -27,7 +38,8 @@ public class DocumentCreationService : IDocumentCreationService
             rmpIdentifier = hunterDeclaration.RmpIdentifier,
             numAndTypeOfAnimals = "Not Yet Implemented",
             dateOfArrivalAtProcessor = CreateDateTime(hunterDeclaration.DateOfArrivalAtProcessor),
-            helicopterRegistration = hunterDeclaration.HelicopterRegistrationNumber 
+            helicopterRegistration = hunterDeclaration.HelicopterRegistrationNumber,
+            questionTicks = questionTicks
         };
 
         foreach (var f in fileUpload.FlightData)
