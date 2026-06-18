@@ -7,23 +7,29 @@ public partial class HunterDeclarationViewModel : ViewModelBase
 {
     [ObservableProperty]
     private string _hunterName;
+    
+    [ObservableProperty]
+    private string _otherHunterNames;
 
+    [ObservableProperty]
+    private string _rmpIdentifier;
+
+    [ObservableProperty]
+    private string _dateOfArrivalAtProcessor;
+
+    [ObservableProperty]
+    private string _helicopterRegistrationNumber;
+    
 
     /// <summary>
     /// Creates a new, blank, HunterDeclaration ViewModel
     /// </summary>
     public HunterDeclarationViewModel()
     {
-        _hunterName = "";        
-    }
-
-    public HunterDeclaration Get()
-    {
-        HunterDeclaration declaration = new()
-        {
-            hunterName = this.HunterName
-        };
-
-        return declaration;
+        _hunterName = "";
+        _otherHunterNames = "";
+        _rmpIdentifier = "";
+        _dateOfArrivalAtProcessor = "";
+        _helicopterRegistrationNumber = "";
     }
 }

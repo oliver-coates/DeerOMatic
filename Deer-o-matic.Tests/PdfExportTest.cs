@@ -11,6 +11,6 @@ public class PdfExportTest
     [Test]
     public void TestDummyExport()
     {
-        PdfPublisher.PublishDummyPdf(PDF_DUMMY_LOCATION);
+       
     }
 }

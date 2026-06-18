@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,10 +13,35 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    // View models:
     public FileUploadViewModel FileUpload { get; }
 
-    public MainWindowViewModel(FileUploadViewModel fileUpload)
+    // Services:
+    private readonly IFilePickerService _filePicker;
+    private readonly IDocumentCreationService _documentCreation;
+    private readonly IPdfExportService _pdfExport;
+
+    // Commands:
+    public AsyncRelayCommand ExportCommand { get; }
+
+    public MainWindowViewModel(
+        FileUploadViewModel fileUpload,
+        IDocumentCreationService documentCreation,
+        IPdfExportService pdfExport,
+        IFilePickerService filePicker)
     {
         FileUpload = fileUpload;
+
+        _documentCreation = documentCreation;
+        _pdfExport = pdfExport;
+        _filePicker = filePicker;
+
+        ExportCommand = new AsyncRelayCommand(ExportAsync);
+    }
+
+
+    private async Task ExportAsync()
+    {
+        // TODO: Export here
     }
 }

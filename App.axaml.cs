@@ -39,6 +39,9 @@ public partial class App : Application
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<FileUploadViewModel>();
 
+        services.AddSingleton<IPdfExportService, PdfExportService>();
+        services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
+
         var provider = services.BuildServiceProvider();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop2)
         {

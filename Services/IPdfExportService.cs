@@ -3,11 +3,52 @@ using System.Collections.Generic;
 using Spire.Pdf;
 using Spire.Pdf.Fields;
 using Spire.Pdf.Widget;
+using System.Threading.Tasks;
+using Deer_o_matic.Models;
 
-namespace Deer_o_matic.Models;
+namespace Deer_o_matic.Services;
 
-public static class PdfPublisher
+public interface IPdfExportService
 {
+    public Task ExportDocumentAsync(HunterDeclarationDocumentData data);
+}
+
+
+public class PdfExportService : IPdfExportService
+{
+    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data)
+    {
+        PdfDocument doc = new PdfDocument();
+
+        // TODO: This needs to be an actual reference, not just this placeholder absolute reference
+        doc.LoadFromFile("C:/Projects/GCH Deer-o-matic/deer-o-matic/Assets/Forms/14743-LHSD_fillable3.pdf");
+
+        FormArgument[] arguments = GetFormArguments(data);
+        
+        FillForm(doc, arguments);
+        Flatten(doc);
+    
+        // TODO: Allow user to choose where the exported pdfs go
+        doc.SaveToFile("C:/Users/Oliver/Desktop/dummy.pdf");
+    }
+
+    private static FormArgument[] GetFormArguments(HunterDeclarationDocumentData data)
+    {
+        FormArgument[] arguments =
+        [
+            new FormArgument("text-hunter-name", data.hunterName),
+            new FormArgument("text-other-hunters", data.otherHunters),
+            new FormArgument("text-animal-material-depot", data.rmpIdentifier),
+            new FormArgument("date-date-of-arrival", data.dateOfArrivalAtProcessor.ToString()),
+            new FormArgument("text-number-and-species", data.numAndTypeOfAnimals),
+            new FormArgument("text-helicopter-registration", data.helicopterRegistration),
+            new FormArgument("bool-procured-accordance-operations-manual-yes", "Yes")
+        ];
+
+        return arguments;
+    }
+
+
     /// <summary>
     /// Publishes a dummy PDF to the user's desktop. Used for debugging and testing the PDF publisher.
     /// </summary>
@@ -114,5 +155,5 @@ public static class PdfPublisher
             this.value = value;
         }
     }
+    
 }
-
