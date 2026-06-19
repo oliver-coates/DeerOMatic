@@ -36,6 +36,9 @@ public partial class HunterDeclarationViewModel : ViewModelBase
     [ObservableProperty]
     private string _helicopterRegistrationNumber;
     
+    [ObservableProperty]
+    private string _timeArrivalAtDepot;
+
     #region Questions
     [ObservableProperty]
     private bool _questionA;
@@ -70,6 +73,7 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         _dateOfArrivalAtProcessor = "";
         _helicopterRegistrationNumber = "";
         _hunterIdentificationNumber = "";
+        _timeArrivalAtDepot = "";
     }
 
 

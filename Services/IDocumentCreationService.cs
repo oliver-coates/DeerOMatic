@@ -40,7 +40,7 @@ public class DocumentCreationService : IDocumentCreationService
             otherHunters = hunterDeclaration.OtherHunterNames,
             rmpIdentifier = hunterDeclaration.RmpIdentifier,
             numAndTypeOfAnimals = $"{GetTotalNumPlacemarks(fileUpload.FlightData)} Deer",
-            dateOfArrivalAtProcessor = CreateDateTime(hunterDeclaration.DateOfArrivalAtProcessor),
+            dateOfArrivalAtProcessor = hunterDeclaration.DateOfArrivalAtProcessor,
             helicopterRegistration = hunterDeclaration.HelicopterRegistrationNumber,
             questionTicks = questionTicks
         };
@@ -65,9 +65,4 @@ public class DocumentCreationService : IDocumentCreationService
         return total;
     }
 
-    private DateTime CreateDateTime(string dateTimeString)
-    {
-        // TODO: Implement this
-        return DateTime.Now;
-    }
 }

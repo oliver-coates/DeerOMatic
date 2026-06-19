@@ -13,7 +13,7 @@ namespace Deer_o_matic.Services;
 
 public interface IPdfExportService
 {
-    public Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder);
+    public Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable);
 }
 
 
@@ -41,7 +41,7 @@ public class PdfExportService : IPdfExportService
         "bool-deer-tb-free-no"
     };
 
-    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder)
+    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable)
     {
         PdfDocument doc = new PdfDocument();
 
@@ -50,7 +50,10 @@ public class PdfExportService : IPdfExportService
         FormArgument[] arguments = GetFormArguments(data);
         
         FillForm(doc, arguments);
-        Flatten(doc);
+        if (fillable == false)
+        {
+            Flatten(doc);        
+        }
 
         string fullPath = $"{folder.Path.LocalPath} LHDF ({DateTime.Now.ToString("d-M-y HH-mm")}).pdf";
 
@@ -75,7 +78,7 @@ public class PdfExportService : IPdfExportService
             new FormArgument("text-hunter-name", $"{data.hunterName} {data.hunterId}"),
             new FormArgument("text-other-hunters", data.otherHunters),
             new FormArgument("text-animal-material-depot", data.rmpIdentifier),
-            new FormArgument("date-date-of-arrival", data.dateOfArrivalAtProcessor.ToString()),
+            new FormArgument("date-date-of-arrival", data.dateOfArrivalAtProcessor),
             new FormArgument("text-number-and-species", data.numAndTypeOfAnimals),
             new FormArgument("text-helicopter-registration", data.helicopterRegistration),
             new FormArgument("text-date-signed", data.dateSigned.ToShortDateString()),

@@ -55,7 +55,7 @@
                 <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="ZX-ABC" Margin="0, 0, 0, 4" Text="{Binding HelicopterRegistrationNumber}"/>                
 
                 <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="Date arrived at depot: " Margin="0, 0, 8, 4" />
-                <TextBox Grid.Column="1" Grid.Row="2" PlaceholderText="1234a" Margin="0, 0, 0, 4" Text="{Binding DateOfArrivalAtProcessor}"/>
+                <TextBox Grid.Column="1" Grid.Row="2" PlaceholderText="4/10/2026" Margin="0, 0, 0, 4" Text="{Binding DateOfArrivalAtProcessor}"/>
 
             </Grid>
         </Grid>

@@ -26,6 +26,10 @@ public partial class MainWindowViewModel : ViewModelBase
     // Commands:
     public AsyncRelayCommand ExportCommand { get; }
 
+    // Settings
+    [ObservableProperty]
+    private bool _exportPdfFillable = false;
+
     public MainWindowViewModel(
         FileUploadViewModel fileUpload,
         HunterDeclarationViewModel hunterDeclaration,
@@ -56,6 +60,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
         HunterDeclarationDocumentData data = _documentCreation.BuildDocument(FileUpload, HunterDeclaration);
 
-        await _pdfExport.ExportDocumentAsync(data, saveFolder);
+        await _pdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);
     }
 }
