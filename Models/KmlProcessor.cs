@@ -161,7 +161,7 @@ public static class KmlProcessor
 
         AnimalMark[] animalMarks = ConvertPlacemarksToAnimalMarks(placemarks);
 
-        FlightData flightData = new (file.name, file.path, animalMarks);
+        FlightData flightData = new (file.name, file.path, null, animalMarks);
 
         return flightData;
     }

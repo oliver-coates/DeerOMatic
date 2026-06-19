@@ -86,7 +86,57 @@ public class PdfExportService : IPdfExportService
             questionArguments[questionIndex] = new FormArgument(argument, "Yes");
         }
 
-        return [.. primaryArguments, .. questionArguments];
+        FormArgument[] consignmentArguments = GetConsignmentArguments(data);
+
+        return [.. primaryArguments, .. questionArguments, .. consignmentArguments];
+    }
+
+    private static FormArgument[] GetConsignmentArguments(HunterDeclarationDocumentData data)
+    {
+        List<FormArgument> arguments = new();
+        int absoluteIndex = 1;
+        int row = 0;
+
+        foreach (FlightData flightData in data.flightDatas)
+        {
+            // How many animals were killed this flight?
+            int numAnimalsThisFlight = (flightData.animalMarks.Length+1);
+
+            // The start and end index for our marks (i.e "Mark 7 to 24")
+            int startIndex = absoluteIndex;
+            int endIndex = startIndex + numAnimalsThisFlight - 1;
+
+            if (flightData.refrigerationTime == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (flightData.startTime == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            string carcassIdentifier = $"{startIndex} to {endIndex}";
+            string killLocation = $"Mark 1 to {numAnimalsThisFlight}";
+            string dateAndTime = $"{flightData.startTime?.ToString("dd/MM/yy HH:mm")} NZST";
+            string timeRefrigerated = $"{flightData.refrigerationTime?.ToString("dd/MM/yy HH:mm")} NZST";
+
+            arguments.AddRange(
+                new FormArgument[] {
+                    new FormArgument($"text-carcass-id-{row}", carcassIdentifier),
+                    new FormArgument($"text-kill-location-{row}", killLocation),
+                    new FormArgument($"date-date-time-killed-{row}", dateAndTime),
+                    new FormArgument($"date-date-and-time-fridge-{row}", timeRefrigerated)
+                }
+            );
+
+            // Increment the absolute index forward for the next flightdata
+            // If this flight data went from animals 7-24,
+            // The next flight data might go for animals 25-32 for example
+            absoluteIndex = endIndex+1;
+            row+=1;
+        }
+
+        return arguments.ToArray();
     }
 
 

@@ -1,5 +1,7 @@
 
 
+using System;
+
 namespace Deer_o_matic.Models;
 
 /// <summary>
@@ -10,15 +12,27 @@ public class FlightData
 {
     public readonly string name;
     public readonly string path;
+    public readonly DateTime? startTime; // Time of the first animal shot
+    public readonly DateTime? refrigerationTime;
     public readonly AnimalMark[] animalMarks;
 
 
 
-    public FlightData(string name, string path, AnimalMark[] placemarks)
+    public FlightData(string name, string path, DateTime? refridgerationTime, AnimalMark[] placemarks)
     {
         this.name = name;
         this.path = path;
+        this.refrigerationTime = refridgerationTime;
         this.animalMarks = placemarks;
+
+        if (placemarks != null && placemarks.Length > 0)
+        {
+            this.startTime = placemarks[0].time;        
+        }
+        else
+        {
+            this.startTime = null;
+        }
     }
 
 }

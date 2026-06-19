@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Deer_o_matic.Models;
 using Deer_o_matic.ViewModels;
@@ -37,7 +39,7 @@ public class DocumentCreationService : IDocumentCreationService
             hunterId = hunterDeclaration.HunterIdentificationNumber,
             otherHunters = hunterDeclaration.OtherHunterNames,
             rmpIdentifier = hunterDeclaration.RmpIdentifier,
-            numAndTypeOfAnimals = "Not Yet Implemented",
+            numAndTypeOfAnimals = $"{GetTotalNumPlacemarks(fileUpload.FlightData)} Deer",
             dateOfArrivalAtProcessor = CreateDateTime(hunterDeclaration.DateOfArrivalAtProcessor),
             helicopterRegistration = hunterDeclaration.HelicopterRegistrationNumber,
             questionTicks = questionTicks
@@ -49,6 +51,18 @@ public class DocumentCreationService : IDocumentCreationService
         }
 
         return doc;
+    }
+
+    private int GetTotalNumPlacemarks(ObservableCollection<FlightDataViewModel> flightDatas)
+    {
+        int total = 0;
+
+        foreach (var f in flightDatas)
+        {
+            total += f.Get().animalMarks.Length;
+        }
+
+        return total;
     }
 
     private DateTime CreateDateTime(string dateTimeString)
