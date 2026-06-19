@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Deer_o_matic.Models;
 using Avalonia.Platform.Storage;
 using System.Linq;
+using System.IO;
 
 namespace Deer_o_matic.Services;
 
@@ -44,8 +45,7 @@ public class PdfExportService : IPdfExportService
     {
         PdfDocument doc = new PdfDocument();
 
-        // TODO: This needs to be an actual reference, not just this placeholder absolute reference
-        doc.LoadFromFile("C:/Projects/GCH Deer-o-matic/deer-o-matic/Assets/Forms/14743-LHSD_fillable4.pdf");
+        doc.LoadFromStream(GetFormTemplate());
 
         FormArgument[] arguments = GetFormArguments(data);
         
@@ -55,6 +55,17 @@ public class PdfExportService : IPdfExportService
         string fullPath = $"{folder.Path.LocalPath} LHDF ({DateTime.Now.ToString("d-M-y HH-mm")}).pdf";
 
         doc.SaveToFile(fullPath);
+    }
+
+    private Stream GetFormTemplate()
+    {
+        var assembly = typeof(IPdfExportService).Assembly;
+        var resourcePath = "Deer-o-matic.Assets.Forms.LHSD.pdf";
+
+        var stream = assembly.GetManifestResourceStream(resourcePath)
+            ?? throw new FileNotFoundException($"LHSD Form not found! at {resourcePath}");
+    
+        return stream;
     }
 
     private static FormArgument[] GetFormArguments(HunterDeclarationDocumentData data)
