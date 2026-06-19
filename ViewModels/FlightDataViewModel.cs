@@ -15,18 +15,34 @@ public partial class FlightDataViewModel : ViewModelBase
     [ObservableProperty]
     private string _fridgeTime;
 
-    private AnimalMark[] marks;
+    [ObservableProperty]
+    private DateTime? _fridgeDate;
+
+    public AnimalMark[] marks = new AnimalMark[0];
 
     public FlightDataViewModel(FlightData data)
     {
         _name = data.name;
         _path = data.path;
-        _fridgeTime = "";
+
         marks = data.animalMarks;
+
+        _fridgeTime = "";
+        if (marks != null && marks.Length > 0)
+        {
+            _fridgeDate = marks[marks.Length-1].time.Date;       
+        }
+        else
+        {
+            _fridgeDate = null;
+        }
+
     }
 
     public FlightData Get()
     {
-        return new FlightData(this.Name, this.Path, DateTime.Now , marks);
+        string fridgeTime = $"{FridgeDate?.ToString("dd/MM/yy")} {FridgeTime} NZST";
+        
+        return new FlightData(this.Name, this.Path, fridgeTime , marks);
     }
 }

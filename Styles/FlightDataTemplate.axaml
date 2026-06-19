@@ -4,14 +4,18 @@
                     xmlns:models="clr-namespace:Deer_o_matic.Models">
 
     <DataTemplate DataType="vm:FlightDataViewModel"  x:Key="FlightDataTemplate">
-        <Grid ColumnDefinitions="*, Auto" Margin="8">
+        <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto" Margin="8">
             <StackPanel Grid.Column="0">
                 <TextBlock Text="{Binding Name}"/>
                 <TextBlock FontSize="10" Text="{Binding Path}" />        
             </StackPanel>    
             
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Refrigerated:" Margin="0, 0, 8, 0"/>
+            <TextBox Grid.Column="2" Text="{Binding FridgeTime}" PlaceholderText="14:00" Margin="0, 0, 8, 0"/>
+            <CalendarDatePicker Grid.Column="3" SelectedDate="{Binding FridgeDate}" Margin="0, 0, 24, 0"/>
+
             <!-- $parent[UserControl] walks up the visual tree until it finds a UserControl (Which will be the FileUploadViewModel) -->
-            <Button Grid.Column="1" 
+            <Button Grid.Column="4" 
                     Command="{Binding $parent[UserControl].((vm:FileUploadViewModel)DataContext).RemoveFlightData}"
                     CommandParameter="{Binding .}">
                     Delete

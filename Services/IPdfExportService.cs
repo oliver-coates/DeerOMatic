@@ -118,7 +118,7 @@ public class PdfExportService : IPdfExportService
             string carcassIdentifier = $"{startIndex} to {endIndex}";
             string killLocation = $"Mark 1 to {numAnimalsThisFlight}";
             string dateAndTime = $"{flightData.startTime?.ToString("dd/MM/yy HH:mm")} NZST";
-            string timeRefrigerated = $"{flightData.refrigerationTime?.ToString("dd/MM/yy HH:mm")} NZST";
+            string timeRefrigerated = $"{flightData.refrigerationTime}";
 
             arguments.AddRange(
                 new FormArgument[] {

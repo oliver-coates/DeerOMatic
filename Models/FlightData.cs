@@ -13,12 +13,12 @@ public class FlightData
     public readonly string name;
     public readonly string path;
     public readonly DateTime? startTime; // Time of the first animal shot
-    public readonly DateTime? refrigerationTime;
+    public readonly string refrigerationTime; // As a string as the user just types the time in directly
     public readonly AnimalMark[] animalMarks;
 
 
 
-    public FlightData(string name, string path, DateTime? refridgerationTime, AnimalMark[] placemarks)
+    public FlightData(string name, string path, string refridgerationTime, AnimalMark[] placemarks)
     {
         this.name = name;
         this.path = path;
