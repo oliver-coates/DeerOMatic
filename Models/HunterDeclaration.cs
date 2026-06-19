@@ -11,6 +11,7 @@ namespace Deer_o_matic.Models;
 public class HunterDeclarationDocumentData
 {
     public required string hunterName;
+    public required string hunterId;
     public required string otherHunters;
     public required string rmpIdentifier;
     public required DateTime dateOfArrivalAtProcessor;

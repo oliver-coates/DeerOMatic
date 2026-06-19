@@ -20,6 +20,9 @@ public partial class HunterDeclarationViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _hunterName;
+
+    [ObservableProperty]
+    private string _hunterIdentificationNumber;
     
     [ObservableProperty]
     private string _otherHunterNames;
@@ -66,6 +69,7 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         _rmpIdentifier = "";
         _dateOfArrivalAtProcessor = "";
         _helicopterRegistrationNumber = "";
+        _hunterIdentificationNumber = "";
     }
 
 

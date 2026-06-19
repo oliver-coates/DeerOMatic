@@ -45,7 +45,7 @@ public class PdfExportService : IPdfExportService
         PdfDocument doc = new PdfDocument();
 
         // TODO: This needs to be an actual reference, not just this placeholder absolute reference
-        doc.LoadFromFile("C:/Projects/GCH Deer-o-matic/deer-o-matic/Assets/Forms/14743-LHSD_fillable3.pdf");
+        doc.LoadFromFile("C:/Projects/GCH Deer-o-matic/deer-o-matic/Assets/Forms/14743-LHSD_fillable4.pdf");
 
         FormArgument[] arguments = GetFormArguments(data);
         
@@ -61,13 +61,14 @@ public class PdfExportService : IPdfExportService
     {
         FormArgument[] primaryArguments =
         [
-            new FormArgument("text-hunter-name", data.hunterName),
+            new FormArgument("text-hunter-name", $"{data.hunterName} {data.hunterId}"),
             new FormArgument("text-other-hunters", data.otherHunters),
             new FormArgument("text-animal-material-depot", data.rmpIdentifier),
             new FormArgument("date-date-of-arrival", data.dateOfArrivalAtProcessor.ToString()),
             new FormArgument("text-number-and-species", data.numAndTypeOfAnimals),
             new FormArgument("text-helicopter-registration", data.helicopterRegistration),
-            new FormArgument("text-date-signed", data.dateSigned.ToShortDateString())
+            new FormArgument("text-date-signed", data.dateSigned.ToShortDateString()),
+            new FormArgument("listed-hunter-signature", data.hunterName)
         ];
 
         FormArgument[] questionArguments = new FormArgument[7];

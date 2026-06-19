@@ -34,6 +34,7 @@ public class DocumentCreationService : IDocumentCreationService
         HunterDeclarationDocumentData doc = new()
         {
             hunterName = hunterDeclaration.HunterName,
+            hunterId = hunterDeclaration.HunterIdentificationNumber,
             otherHunters = hunterDeclaration.OtherHunterNames,
             rmpIdentifier = hunterDeclaration.RmpIdentifier,
             numAndTypeOfAnimals = "Not Yet Implemented",

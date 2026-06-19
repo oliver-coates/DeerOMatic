@@ -37,21 +37,25 @@
                 <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Text="Hunter Name: " Margin="0, 0, 8, 4" />
                 <TextBox Grid.Column="1" Grid.Row="0" PlaceholderText="John Doe" Margin="0, 0, 0, 4" Text="{Binding HunterName}"/>
 
-                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="RMP Identifier: " Margin="0, 0, 8, 4" />
-                <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="1234a" Margin="0, 0, 0, 4" Text="{Binding RmpIdentifier}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="Hunter Identification Number: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="1234" Margin="0, 0, 0, 4" Text="{Binding HunterIdentificationNumber}"/>
 
-                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="Helicopter Registration: " Margin="0, 0, 8, 4" />
-                <TextBox Grid.Column="1" Grid.Row="2" PlaceholderText="ZX-ABC" Margin="0, 0, 0, 4" Text="{Binding HelicopterRegistrationNumber}"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="Other Hunter Names: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="2" PlaceholderText="Jane Doe" Margin="0, 0, 0, 4" Text="{Binding OtherHunterNames}"/>
 
             </Grid>
 
             <Grid Grid.Row="0" Grid.Column="1" Margin="24, 0, 0, 0" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto">
 
-                <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Text="Other Hunter Names: " Margin="0, 0, 8, 4" />
-                <TextBox Grid.Column="1" Grid.Row="0" PlaceholderText="John Doe" Margin="0, 0, 0, 4" Text="{Binding OtherHunterNames}"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Text="RMP Identifier: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="0" PlaceholderText="1234a" Margin="0, 0, 0, 4" Text="{Binding RmpIdentifier}"/>
 
-                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="Date arrived at depot: " Margin="0, 0, 8, 4" />
-                <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="1234a" Margin="0, 0, 0, 4" Text="{Binding DateOfArrivalAtProcessor}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="Helicopter Registration: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="1" PlaceholderText="ZX-ABC" Margin="0, 0, 0, 4" Text="{Binding HelicopterRegistrationNumber}"/>                
+
+                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="Date arrived at depot: " Margin="0, 0, 8, 4" />
+                <TextBox Grid.Column="1" Grid.Row="2" PlaceholderText="1234a" Margin="0, 0, 0, 4" Text="{Binding DateOfArrivalAtProcessor}"/>
 
             </Grid>
         </Grid>
