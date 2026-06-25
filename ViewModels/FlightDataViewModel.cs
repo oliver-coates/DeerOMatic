@@ -41,8 +41,21 @@ public partial class FlightDataViewModel : ViewModelBase
 
     public FlightData Get()
     {
-        string fridgeTime = $"{FridgeDate?.ToString("dd/MM/yy")} {FridgeTime} NZST";
+        if (FridgeDate == null)
+        {
+            throw new NullReferenceException("No Refridgeration Date Set.");
+            
+        }
+
+        DateTime fridgeDateTime = (DateTime) FridgeDate;
         
-        return new FlightData(this.Name, this.Path, fridgeTime , marks);
+        string[] timeInput = FridgeTime.Split(':');
+        long hours = long.Parse(timeInput[0]);
+        long minutes = long.Parse(timeInput[1]);
+
+        fridgeDateTime = fridgeDateTime.AddHours(hours);
+        fridgeDateTime = fridgeDateTime.AddMinutes(minutes);
+
+        return new FlightData(this.Name, this.Path, fridgeDateTime , marks);
     }
 }

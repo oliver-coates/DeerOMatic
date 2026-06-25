@@ -45,9 +45,10 @@ public class DocumentCreationService : IDocumentCreationService
             questionTicks = questionTicks
         };
 
-        foreach (var f in fileUpload.FlightData)
+        foreach (var file in fileUpload.FlightData)
         {
-            doc.flightDatas.Add(f.Get());
+            file.Get().ValidateRefridgerationTime();
+            doc.flightDatas.Add(file.Get());
         }
 
         return doc;
