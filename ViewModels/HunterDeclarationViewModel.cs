@@ -45,9 +45,6 @@ public partial class HunterDeclarationViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _helicopterRegistrationNumber;
-    
-    [ObservableProperty]
-    private string _timeArrivalAtDepot;
     #endregion
 
     #region Questions
@@ -88,7 +85,6 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         _dateOfArrivalAtProcessor = "";
         _helicopterRegistrationNumber = "";
         _hunterIdentificationNumber = "";
-        _timeArrivalAtDepot = "";
 
         var _ = LoadDefaults();
     }
@@ -122,7 +118,7 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         HelicopterRegistrationNumber = settings.HelicopterRegistrationNumber;
         
         DateOfArrivalAtProcessor = String.Empty;
-        TimeArrivalAtDepot = String.Empty;
+
 
         QuestionA = settings.QuestionResponses[0];
         QuestionB = settings.QuestionResponses[1];
