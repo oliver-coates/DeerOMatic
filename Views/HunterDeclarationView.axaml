@@ -23,7 +23,7 @@
     </UserControl.Styles>
 
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" x:Name="Root" Margin="8">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" x:Name="Root" Margin="8">
 
         <!-- HUNT INFORMATION HEADER -->
         <TextBlock Margin="8" Text="Hunt information:" Classes="header"/>
@@ -99,8 +99,8 @@
             Text="G: Can you confirm that all deer covered by this declaration, were killed in Tb vector free areas, as described in note 7? (leave blank if no deer were supplied)."/>
             <CheckBox Grid.Column="1" Grid.Row="6" Margin="0, 0, 0, 4" HorizontalAlignment="Right" IsChecked="{Binding QuestionG}"/>
         </Grid>
-
-        <!-- <Rectangle Grid.Row="7" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/> -->
+        <Rectangle Grid.Row="7" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
         
+        <Button Grid.Row="8" Margin="8, 8, 8, 8" Command="{Binding SaveDefaultsCommand}">Save Defaults</Button>
     </Grid>
 </UserControl>

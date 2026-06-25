@@ -43,6 +43,7 @@ public partial class App : Application
         services.AddSingleton<IKmlProcessor, KmlProcessor>();
         services.AddSingleton<IPdfExportService, PdfExportService>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
+        services.AddSingleton<ISettingsService, SettingsService>();
 
         var provider = services.BuildServiceProvider();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop2)

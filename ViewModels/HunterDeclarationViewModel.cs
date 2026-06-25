@@ -1,10 +1,16 @@
 using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Deer_o_matic.Models;
+using Deer_o_matic.Services;
 
 namespace Deer_o_matic.ViewModels;
 
 public partial class HunterDeclarationViewModel : ViewModelBase
 {
+    public ISettingsService _Settings;
+
     private bool _isAllQuestionsChecked;
     public bool IsAllQuestionsChecked
     {
@@ -18,6 +24,10 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         }
     }
 
+    public AsyncRelayCommand SaveDefaultsCommand { get; }
+
+
+    #region Hunt Info    
     [ObservableProperty]
     private string _hunterName;
 
@@ -38,6 +48,7 @@ public partial class HunterDeclarationViewModel : ViewModelBase
     
     [ObservableProperty]
     private string _timeArrivalAtDepot;
+    #endregion
 
     #region Questions
     [ObservableProperty]
@@ -65,8 +76,12 @@ public partial class HunterDeclarationViewModel : ViewModelBase
     /// <summary>
     /// Creates a new, blank, HunterDeclaration ViewModel
     /// </summary>
-    public HunterDeclarationViewModel()
+    public HunterDeclarationViewModel(ISettingsService settings)
     {
+        _Settings = settings;
+
+        SaveDefaultsCommand = new AsyncRelayCommand(SaveDefaults);
+ 
         _hunterName = "";
         _otherHunterNames = "";
         _rmpIdentifier = "";
@@ -74,6 +89,8 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         _helicopterRegistrationNumber = "";
         _hunterIdentificationNumber = "";
         _timeArrivalAtDepot = "";
+
+        var _ = LoadDefaults();
     }
 
 
@@ -87,5 +104,56 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         QuestionE = value; 
         QuestionF = value; 
         QuestionG = value;
+    }
+
+    private async Task LoadDefaults()
+    {
+        HunterDeclarationSettings? settings = await _Settings.LoadHunterDeclarationSettingsAsync();
+    
+        if (settings == null)
+        {
+            return;
+        }
+
+        HunterName = settings.HunterName;
+        HunterIdentificationNumber = settings.HunterID;
+        OtherHunterNames = settings.OtherHunterNames;
+        RmpIdentifier = settings.RmpIdentifier;
+        HelicopterRegistrationNumber = settings.HelicopterRegistrationNumber;
+        
+        DateOfArrivalAtProcessor = String.Empty;
+        TimeArrivalAtDepot = String.Empty;
+
+        QuestionA = settings.QuestionResponses[0];
+        QuestionB = settings.QuestionResponses[1];
+        QuestionC = settings.QuestionResponses[2];
+        QuestionD = settings.QuestionResponses[3];
+        QuestionE = settings.QuestionResponses[4];
+        QuestionF = settings.QuestionResponses[5];
+        QuestionG = settings.QuestionResponses[6];
+    }
+
+    private async Task SaveDefaults()
+    {
+        HunterDeclarationSettings settings = new HunterDeclarationSettings()
+        {
+            HunterName = HunterName,
+            HunterID = HunterIdentificationNumber,
+            OtherHunterNames = OtherHunterNames,
+            RmpIdentifier = RmpIdentifier,
+            HelicopterRegistrationNumber = HelicopterRegistrationNumber,
+            QuestionResponses = new bool[]
+            {
+                QuestionA,
+                QuestionB,
+                QuestionC,
+                QuestionD,
+                QuestionE,
+                QuestionF,
+                QuestionG
+            }
+        };
+    
+        await _Settings.SaveHunterDeclarationSettingsAsync(settings);
     }
 }
