@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -107,9 +109,24 @@ public class PickedFile
             name = file.Name,
             path = file.Path.ToString(),
             extension = GetFileExtension(file.Name),
-            content = await ReadContent(file)
+            
         };
         
+        switch (output.extension)
+        {
+            case ".kml":
+                output.content = await ReadContent(file);
+                break;
+
+            case ".kmz":
+                output.content = await UnzipAndRead(file);
+                break;
+            
+            default:
+                throw new NotImplementedException($"File picker cannot handle files with a '{output.extension}' extension");
+
+        }
+
         return output;
     }
 
@@ -125,4 +142,30 @@ public class PickedFile
         using var reader = new StreamReader(stream);
         return await reader.ReadToEndAsync();
     }
+
+    async private static Task<string> UnzipAndRead(IStorageFile file)
+    {
+        string path = file.Path.LocalPath;
+
+        using var zip = await ZipFile.OpenReadAsync(path);
+
+        if (zip == null)
+        {
+            throw new FileNotFoundException($"Could not find a .kmz file at path: {path}");
+        }
+
+        // Find the KML entry within the zip
+        var kmlEntry = zip.Entries.FirstOrDefault(e => e.Name.EndsWith(".kml", StringComparison.OrdinalIgnoreCase));
+    
+        if (kmlEntry == null)
+        {
+            throw new FileNotFoundException($"Could not find a .kml file within the .kmz archive at {path}");
+        }
+
+        using Stream stream = await kmlEntry.OpenAsync();
+        using StreamReader reader = new(stream);
+
+        return await reader.ReadToEndAsync();
+    }
+
 }

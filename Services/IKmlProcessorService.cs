@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
+using System.Threading.Tasks;
 using Deer_o_matic.Models;
 using SharpKml.Base;
 using SharpKml.Dom;
@@ -9,11 +11,8 @@ namespace Deer_o_matic.Services;
 
 public interface IKmlProcessor
 {
-    public FlightData CreateFlightData(PickedFile file);
-    
-    public Kml Parse(string stringInput);
+    public Task<FlightData> CreateFlightData(PickedFile file);
 
-    public Kml Parse(PickedFile file);   
 }
 
 public class KmlProcessor : IKmlProcessor
@@ -24,9 +23,9 @@ public class KmlProcessor : IKmlProcessor
     /// <summary>
     /// Creates a flight data object from a provided file output object.
     /// </summary>
-    public FlightData CreateFlightData(PickedFile file)
+    public async Task<FlightData> CreateFlightData(PickedFile file)
     {
-        Kml kml = Parse(file);
+        Kml kml = await Parse(file);
 
         Placemark[] placemarks = GetPlacemarksFromKml(kml);
 
@@ -37,10 +36,14 @@ public class KmlProcessor : IKmlProcessor
         return flightData;
     }
 
+    #endregion
+
+    #region Internal Methods
+    
     /// <summary>
     /// Creates a KML object from a string
     /// </summary>
-    public Kml Parse(string stringInput)
+    private static Kml Parse(string stringInput)
     {
         // Parse the string into a parser object
         Parser parser = new Parser();
@@ -52,25 +55,18 @@ public class KmlProcessor : IKmlProcessor
     /// <summary>
     /// Creates a KML object from a provided fileOutput. Accepts .kml and .kmz files.
     /// </summary>
-    public Kml Parse(PickedFile file)
+    private static async Task<Kml> Parse(PickedFile file)
     {
-        switch (file.extension)
+        if (file.extension is ".kml" or ".kmz")
         {
-            case ".kml":
-                return Parse(file.content);
-            
-            case ".kmz":
-                // TODO: Implement Unzipping
-                throw new NotImplementedException();
-        
-            default:
-                throw new NullReferenceException();
+            return Parse(file.content);        
+        }
+        else
+        {
+            throw new NullReferenceException();            
         }
     }
-    
-    #endregion
 
-    #region Internal Methods
     
     /// <summary>
     /// Pulls a list of placemarks from a provided kml file.
@@ -157,6 +153,8 @@ public class KmlProcessor : IKmlProcessor
 
         return animalMarks;
     }
+
+
 
     #endregion
 

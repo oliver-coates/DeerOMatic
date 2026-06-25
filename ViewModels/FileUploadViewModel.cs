@@ -49,24 +49,25 @@ public partial class FileUploadViewModel : ViewModelBase
             return;
         }
 
-        try
-        {
-            AttemptExtractFiles(kmlFiles);        
-        }
-        catch (Exception e)
-        {
-            // TODO: Handle exceptions
-            Console.WriteLine($"Error - Unhandled Exception when picking KML: {e.ToString()}");
-        }
+        await AttemptExtractFiles(kmlFiles);                
     }
 
-    private void AttemptExtractFiles(PickedFile[] kmlFiles)
+    private async Task AttemptExtractFiles(PickedFile[] kmlFiles)
     {
         foreach (PickedFile file in kmlFiles)
         {
-            FlightData flightData = _kmlProcessor.CreateFlightData(file);
+            try
+            {
+                FlightData flightData = await _kmlProcessor.CreateFlightData(file);
 
-            FlightData.Add(new FlightDataViewModel(flightData));
+                FlightData.Add(new FlightDataViewModel(flightData));   
+            }
+            catch (Exception e)
+            {
+                // TODO: Handle exceptions
+                Console.WriteLine($"Error - Unhandled Exception when picking KML: {e.ToString()}");
+            }
+            
         }
     }
 
