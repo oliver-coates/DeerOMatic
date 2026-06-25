@@ -10,8 +10,9 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class FileUploadViewModel : ViewModelBase
 {
-    private readonly IFilePickerService _kmlPicker;
-    private readonly IKmlProcessor _kmlProcessor;
+    private readonly IFilePickerService _KmlPicker;
+    private readonly IKmlProcessor _KmlProcessor;
+    private readonly INotificationService _Notifications;
 
     public ObservableCollection<FlightDataViewModel> FlightData { get; } = [];
     
@@ -21,10 +22,11 @@ public partial class FileUploadViewModel : ViewModelBase
     public partial string? HunterName { get; set; }
 
 
-    public FileUploadViewModel(IFilePickerService filePicker, IKmlProcessor kmlProcessor)
+    public FileUploadViewModel(IFilePickerService filePicker, IKmlProcessor kmlProcessor, INotificationService notifications)
     {
-        _kmlPicker = filePicker;
-        _kmlProcessor = kmlProcessor;
+        _KmlPicker = filePicker;
+        _KmlProcessor = kmlProcessor;
+        _Notifications = notifications;
         OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
     }
 
@@ -41,7 +43,7 @@ public partial class FileUploadViewModel : ViewModelBase
 
     private async Task PickKmlAsync()
     {
-        PickedFile[] kmlFiles = await _kmlPicker.OpenFilesAsync();
+        PickedFile[] kmlFiles = await _KmlPicker.OpenFilesAsync();
 
         if (kmlFiles is null)
         {
@@ -58,14 +60,14 @@ public partial class FileUploadViewModel : ViewModelBase
         {
             try
             {
-                FlightData flightData = await _kmlProcessor.CreateFlightData(file);
+                FlightData flightData = await _KmlProcessor.CreateFlightData(file);
 
                 FlightData.Add(new FlightDataViewModel(flightData));   
             }
             catch (Exception e)
             {
-                // TODO: Handle exceptions
-                Console.WriteLine($"Error - Unhandled Exception when picking KML: {e.ToString()}");
+                string errorMessage = $"Error - Unhandled Exception when picking KML: {e.ToString()}"; 
+                await _Notifications.ShowErrorAsync(errorMessage);
             }
             
         }

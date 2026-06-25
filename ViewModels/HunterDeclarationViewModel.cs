@@ -9,7 +9,8 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class HunterDeclarationViewModel : ViewModelBase
 {
-    public ISettingsService _Settings;
+    private readonly ISettingsService _Settings;
+    private readonly INotificationService _Notifications;
 
     private bool _isAllQuestionsChecked;
     public bool IsAllQuestionsChecked
@@ -73,9 +74,10 @@ public partial class HunterDeclarationViewModel : ViewModelBase
     /// <summary>
     /// Creates a new, blank, HunterDeclaration ViewModel
     /// </summary>
-    public HunterDeclarationViewModel(ISettingsService settings)
+    public HunterDeclarationViewModel(ISettingsService settings, INotificationService notifications)
     {
         _Settings = settings;
+        _Notifications = notifications;
 
         SaveDefaultsCommand = new AsyncRelayCommand(SaveDefaults);
  
@@ -151,5 +153,7 @@ public partial class HunterDeclarationViewModel : ViewModelBase
         };
     
         await _Settings.SaveHunterDeclarationSettingsAsync(settings);
+ 
+        await _Notifications.ShowSuccessAsync("✓ Settings Saved");
     }
 }

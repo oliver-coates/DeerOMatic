@@ -19,9 +19,10 @@ public partial class MainWindowViewModel : ViewModelBase
     public HunterDeclarationViewModel HunterDeclaration { get; }
 
     // Services:
-    private readonly IFilePickerService _filePicker;
-    private readonly IDocumentCreationService _documentCreation;
-    private readonly IPdfExportService _pdfExport;
+    private readonly IFilePickerService _FilePicker;
+    private readonly IDocumentCreationService _DocumentCreation;
+    private readonly IPdfExportService _PdfExport;
+    private readonly INotificationService _Notifications;
 
     // Commands:
     public AsyncRelayCommand ExportCommand { get; }
@@ -35,14 +36,16 @@ public partial class MainWindowViewModel : ViewModelBase
         HunterDeclarationViewModel hunterDeclaration,
         IDocumentCreationService documentCreation,
         IPdfExportService pdfExport,
-        IFilePickerService filePicker)
+        IFilePickerService filePicker,
+        INotificationService notifications)
     {
         FileUpload = fileUpload;
         HunterDeclaration = hunterDeclaration;
 
-        _documentCreation = documentCreation;
-        _pdfExport = pdfExport;
-        _filePicker = filePicker;
+        _DocumentCreation = documentCreation;
+        _PdfExport = pdfExport;
+        _FilePicker = filePicker;
+        _Notifications = notifications;
 
         ExportCommand = new AsyncRelayCommand(ExportAsync);
     }
@@ -50,7 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async Task ExportAsync()
     {
-        IStorageFolder? saveFolder = await _filePicker.PickFileSaveLocation();
+        IStorageFolder? saveFolder = await _FilePicker.PickFileSaveLocation();
 
         if (saveFolder == null)
         {
@@ -58,8 +61,18 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        HunterDeclarationDocumentData data = _documentCreation.BuildDocument(FileUpload, HunterDeclaration);
+        try
+        {
+            HunterDeclarationDocumentData data = _DocumentCreation.BuildDocument(FileUpload, HunterDeclaration);
+    
+            await _PdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);        
+        
+            await _Notifications.ShowSuccessAsync("✓ Exported Successfully");
+        }
+        catch (Exception e)
+        {
+            await _Notifications.ShowErrorAsync(e.ToString());
+        }
 
-        await _pdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);
     }
 }

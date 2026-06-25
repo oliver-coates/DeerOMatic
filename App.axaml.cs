@@ -44,6 +44,7 @@ public partial class App : Application
         services.AddSingleton<IPdfExportService, PdfExportService>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
         services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<INotificationService, NotificationService>();
 
         var provider = services.BuildServiceProvider();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop2)
