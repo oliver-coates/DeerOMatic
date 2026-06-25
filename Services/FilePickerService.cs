@@ -8,7 +8,7 @@ namespace Deer_o_matic.Services;
 
 public interface IFilePickerService
 {
-    Task<FileOutput[]> OpenFilesAsync();
+    Task<PickedFile[]> OpenFilesAsync();
     Task<IStorageFolder?> PickFileSaveLocation();
 }
 
@@ -28,7 +28,7 @@ public class KmlPickerService : IFilePickerService
         MimeTypes = null
     };
 
-    public async Task<FileOutput[]> OpenFilesAsync()
+    public async Task<PickedFile[]> OpenFilesAsync()
     {
         var files = await _topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
@@ -44,11 +44,11 @@ public class KmlPickerService : IFilePickerService
         }
         else
         {
-            FileOutput[] output = new FileOutput[files.Count];
+            PickedFile[] output = new PickedFile[files.Count];
 
             for (int fileIndex = 0; fileIndex < files.Count; fileIndex++)
             {
-                output[fileIndex] = await FileOutput.CreateAsnyc(files[fileIndex]);
+                output[fileIndex] = await PickedFile.CreateAsnyc(files[fileIndex]);
             }
 
             return output;
@@ -77,7 +77,7 @@ public class KmlPickerService : IFilePickerService
     }
 }
 
-public class FileOutput
+public class PickedFile
 {
     /// <summary>
     /// The name and file extension.
@@ -98,11 +98,11 @@ public class FileOutput
     /// </summary>
     public string path = String.Empty;
 
-    private FileOutput() { }
+    private PickedFile() { }
 
-    async public static Task<FileOutput> CreateAsnyc(IStorageFile file)
+    async public static Task<PickedFile> CreateAsnyc(IStorageFile file)
     {
-        FileOutput output = new FileOutput()
+        PickedFile output = new PickedFile()
         {
             name = file.Name,
             path = file.Path.ToString(),

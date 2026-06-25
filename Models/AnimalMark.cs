@@ -16,7 +16,7 @@ public class AnimalMark
     {
         name = placemark.Name;
 
-        time = KmlProcessor.GetDateTimeForPlacemark(placemark.Time);
+        time = DateTimeConversionUtility.GetDateTimeForPlacemark(placemark.Time);
 
         SharpKml.Dom.Point point = (SharpKml.Dom.Point) placemark.Geometry;
         coordinates = new Vector2(

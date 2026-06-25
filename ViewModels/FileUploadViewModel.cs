@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -10,6 +11,7 @@ namespace Deer_o_matic.ViewModels;
 public partial class FileUploadViewModel : ViewModelBase
 {
     private readonly IFilePickerService _kmlPicker;
+    private readonly IKmlProcessor _kmlProcessor;
 
     public ObservableCollection<FlightDataViewModel> FlightData { get; } = [];
     
@@ -19,9 +21,10 @@ public partial class FileUploadViewModel : ViewModelBase
     public partial string? HunterName { get; set; }
 
 
-    public FileUploadViewModel(IFilePickerService filePicker)
+    public FileUploadViewModel(IFilePickerService filePicker, IKmlProcessor kmlProcessor)
     {
         _kmlPicker = filePicker;
+        _kmlProcessor = kmlProcessor;
         OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
     }
 
@@ -38,19 +41,33 @@ public partial class FileUploadViewModel : ViewModelBase
 
     private async Task PickKmlAsync()
     {
-        FileOutput[] kmlFiles = await _kmlPicker.OpenFilesAsync();
-        
+        PickedFile[] kmlFiles = await _kmlPicker.OpenFilesAsync();
+
         if (kmlFiles is null)
         {
             // No files were picked.
             return;
         }
 
-        foreach (FileOutput file in kmlFiles)
+        try
         {
-            FlightData flightData = KmlProcessor.CreateFlightDataFromFile(file);
-            
+            AttemptExtractFiles(kmlFiles);        
+        }
+        catch (Exception e)
+        {
+            // TODO: Handle exceptions
+            Console.WriteLine($"Error - Unhandled Exception when picking KML: {e.ToString()}");
+        }
+    }
+
+    private void AttemptExtractFiles(PickedFile[] kmlFiles)
+    {
+        foreach (PickedFile file in kmlFiles)
+        {
+            FlightData flightData = _kmlProcessor.CreateFlightData(file);
+
             FlightData.Add(new FlightDataViewModel(flightData));
         }
     }
+
 }

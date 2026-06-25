@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document type="tirotech:geomap">
+<name>Job map</name>
+<open>1</open>
+<Folder type="tirotech:geomap">
+<name>Job map</name>
+<Folder>
+<name>Point Red Triangle</name>
+<Style id="Point-Red-Triangle">
+<IconStyle><color>ff0000aa</color></IconStyle>
+<PolyStyle><color>ff0000aa</color></PolyStyle>
+</Style>
+<Placemark type="tirotech:geomap">
+<name>Marker1</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T10:05:56+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782165956540</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0676890000,-43.0285181667,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker5</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T10:29:00+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782167340700</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.1011005000,-43.0088146667,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker6</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T10:29:51+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782167391459</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.1018671667,-43.0083148333,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker7</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T10:53:02+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782168782468</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.1181943333,-43.0254581667,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker8</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T10:53:55+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782168835808</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.1183876667,-43.0258293333,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker9</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T11:52:39+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782172359979</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9719383333,-43.1047463333,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker10</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T11:53:21+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782172401631</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9726198333,-43.1055286667,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker11</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T11:57:02+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782172622210</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9689055000,-43.1036130000,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker12</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:11:28+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782173488938</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9627071667,-43.1603380000,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker13</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:11:35+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782173495447</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9625613333,-43.1603203333,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker14</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:11:36+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782173496176</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9625451667,-43.1603123333,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker15</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:11:36+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782173496916</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9625251667,-43.1603026667,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker16</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:13:29+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782173609545</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9657853333,-43.1603525000,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker17</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:32:22+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782174742952</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9445890000,-43.1720418333,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker18</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:32:56+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782174776339</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9444323333,-43.1719190000,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker19</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:40:28+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782175228767</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9650780000,-43.1610835000,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker20</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:40:29+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782175229746</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9650433333,-43.1610778333,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker21</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T12:40:30+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782175230546</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>170.9650241667,-43.1610758333,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker22</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T13:40:53+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782178853312</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0563055000,-43.0843248333,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker23</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T13:41:29+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782178889084</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0550558333,-43.0845426667,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker24</name>
+<styleUrl>#Point-Red-Triangle</styleUrl>
+<TimeStamp><when>2026-06-23T13:42:15+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782178935167</value></Data>
+<Data name="flags"><value>0</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0554898333,-43.0829273333,0.00000</coordinates>
+</Point>
+</Placemark>
+</Folder>
+<Folder>
+<name>Point Blue Square</name>
+<Style id="Point-Blue-Square">
+<IconStyle><color>ffaa0000</color></IconStyle>
+<PolyStyle><color>ffaa0000</color></PolyStyle>
+</Style>
+<Placemark type="tirotech:geomap">
+<name>Marker2</name>
+<styleUrl>#Point-Blue-Square</styleUrl>
+<TimeStamp><when>2026-06-23T10:12:06+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782166326789</value></Data>
+<Data name="flags"><value>9</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0497956667,-43.0220666667,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker3</name>
+<styleUrl>#Point-Blue-Square</styleUrl>
+<TimeStamp><when>2026-06-23T10:12:15+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782166335128</value></Data>
+<Data name="flags"><value>9</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0499055000,-43.0221058333,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker4</name>
+<styleUrl>#Point-Blue-Square</styleUrl>
+<TimeStamp><when>2026-06-23T10:28:42+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782167322854</value></Data>
+<Data name="flags"><value>9</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.1006100000,-43.0087895000,0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker25</name>
+<styleUrl>#Point-Blue-Square</styleUrl>
+<TimeStamp><when>2026-06-23T14:05:36+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782180336646</value></Data>
+<Data name="flags"><value>9</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0194913333,-43.1262525000,-0.00000</coordinates>
+</Point>
+</Placemark>
+<Placemark type="tirotech:geomap">
+<name>Marker26</name>
+<styleUrl>#Point-Blue-Square</styleUrl>
+<TimeStamp><when>2026-06-23T14:05:38+12:00</when></TimeStamp>
+<ExtendedData>
+<Data name="timestamp"><value>1782180338543</value></Data>
+<Data name="flags"><value>9</value></Data>
+<Data name="rate_type"><value>0</value></Data>
+<Data name="rate_value"><value>0.000000000</value></Data>
+<Data name="type" visible="1"><value>0</value></Data>
+</ExtendedData>
+<Point>
+<coordinates>171.0195123333,-43.1262545000,0.00000</coordinates>
+</Point>
+</Placemark>
+</Folder>
+</Folder>
+</Document>
+</kml>

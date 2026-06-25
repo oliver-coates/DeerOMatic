@@ -40,6 +40,7 @@ public partial class App : Application
         services.AddTransient<FileUploadViewModel>();
         services.AddTransient<HunterDeclarationViewModel>();
 
+        services.AddSingleton<IKmlProcessor, KmlProcessor>();
         services.AddSingleton<IPdfExportService, PdfExportService>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
 
