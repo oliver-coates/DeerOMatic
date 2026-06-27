@@ -71,7 +71,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            await _Notifications.ShowErrorAsync(e.ToString());
+            await _Notifications.ShowErrorAsync(e.Message);
         }
 
     }

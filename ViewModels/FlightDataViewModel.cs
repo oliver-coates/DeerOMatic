@@ -44,18 +44,41 @@ public partial class FlightDataViewModel : ViewModelBase
         if (FridgeDate == null)
         {
             throw new NullReferenceException("No Refridgeration Date Set.");
-            
         }
 
         DateTime fridgeDateTime = (DateTime) FridgeDate;
+
+        try
+        {
+            string[] timeInput = FridgeTime.Split(':');
+            long hours = long.Parse(timeInput[0]);
+            long minutes = long.Parse(timeInput[1]);
         
-        string[] timeInput = FridgeTime.Split(':');
-        long hours = long.Parse(timeInput[0]);
-        long minutes = long.Parse(timeInput[1]);
+            fridgeDateTime = fridgeDateTime.AddHours(hours);
+            fridgeDateTime = fridgeDateTime.AddMinutes(minutes);
+        }
+        catch (Exception e)
+        {
+            if (e is FormatException || e is IndexOutOfRangeException)
+            {
+                string message;
+                if (FridgeTime == String.Empty)
+                {
+                    message = $"You must set a refridgeration time for flight data {Name}";
+                }
+                else
+                {
+                    message = $"Could not parse refridgeration time '{FridgeTime}', ensure it is  in the format 'HH:MM'";
+                }
 
-        fridgeDateTime = fridgeDateTime.AddHours(hours);
-        fridgeDateTime = fridgeDateTime.AddMinutes(minutes);
-
+                throw new FormatException(message);    
+            }
+            else
+            {
+                throw;
+            }
+        }
+        
         return new FlightData(this.Name, this.Path, fridgeDateTime , marks);
     }
 }

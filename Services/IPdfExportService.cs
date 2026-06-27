@@ -71,7 +71,7 @@ public class PdfExportService : IPdfExportService
         return stream;
     }
 
-    private static FormArgument[] GetFormArguments(HunterDeclarationDocumentData data)
+    private FormArgument[] GetFormArguments(HunterDeclarationDocumentData data)
     {
         FormArgument[] primaryArguments =
         [
@@ -105,7 +105,7 @@ public class PdfExportService : IPdfExportService
         return [.. primaryArguments, .. questionArguments, .. consignmentArguments];
     }
 
-    private static FormArgument[] GetConsignmentArguments(HunterDeclarationDocumentData data)
+    private FormArgument[] GetConsignmentArguments(HunterDeclarationDocumentData data)
     {
         List<FormArgument> arguments = new();
         int absoluteIndex = 1;
@@ -122,11 +122,11 @@ public class PdfExportService : IPdfExportService
 
             if (flightData.refrigerationTime == null)
             {
-                throw new NullReferenceException();
+                throw new NullReferenceException("No refridgeration time has been set.");
             }
-            if (flightData.startTime == null)
+            else if (flightData.startTime == null)
             {
-                throw new NullReferenceException();
+                throw new NullReferenceException("Unable to find a start time.");
             }
 
             string carcassIdentifier = $"{startIndex} to {endIndex}";
@@ -158,7 +158,7 @@ public class PdfExportService : IPdfExportService
     /// Publishes a dummy PDF to the user's desktop. Used for debugging and testing the PDF publisher.
     /// </summary>
     /// <param name="formLocation"></param>
-    public static void PublishDummyPdf(string formLocation)
+    public void PublishDummyPdf(string formLocation)
     {
         PdfDocument doc = new PdfDocument();
         doc.LoadFromFile(formLocation);
@@ -180,7 +180,7 @@ public class PdfExportService : IPdfExportService
     /// <summary>
     /// Fills out a PDF document object with the provided arguments.
     /// </summary>
-    private static void FillForm(PdfDocument doc, FormArgument[] arguments)
+    private void FillForm(PdfDocument doc, FormArgument[] arguments)
     {
         PdfFormWidget widgets = (PdfFormWidget)doc.Form;
 

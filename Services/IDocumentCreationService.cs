@@ -20,6 +20,7 @@ public interface IDocumentCreationService
 
 public class DocumentCreationService : IDocumentCreationService
 {
+
     public HunterDeclarationDocumentData BuildDocument(FileUploadViewModel fileUpload, HunterDeclarationViewModel hunterDeclaration)
     {
         bool[] questionTicks = new bool[]
@@ -47,7 +48,8 @@ public class DocumentCreationService : IDocumentCreationService
 
         foreach (var file in fileUpload.FlightData)
         {
-            file.Get().ValidateRefridgerationTime();
+            file.Get().ValidateRefridgerationTime();                
+
             doc.flightDatas.Add(file.Get());
         }
 
