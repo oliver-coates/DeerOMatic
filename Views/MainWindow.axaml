@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="1902" d:DesignHeight="1080"
         x:Class="Deer_o_matic.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/Icons/icon1.ico"
         Title="Deer_o_matic"
         Width="1920"
         Height="1080">

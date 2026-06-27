@@ -6,6 +6,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <StartupObject>Deer_o_matic.Program</StartupObject>
+    <ApplicationIcon>Assets/Icons/icon1.ico</ApplicationIcon>
   </PropertyGroup>
 
 
