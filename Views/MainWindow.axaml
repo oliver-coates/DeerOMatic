@@ -36,7 +36,13 @@
 
         <Grid ColumnDefinitions="*,*">
             <views:HunterDeclarationView Grid.Column="0" DataContext="{Binding HunterDeclaration}" />
-            <views:FileUploadView Grid.Column="1" DataContext="{Binding FileUpload}"/>
+            <Grid Grid.Column="1" RowDefinitions = "Auto, *">
+                <views:FileUploadView Grid.Row="0" DataContext="{Binding FileUpload}"/>
+                <views:MapView Grid.Row="1" DataContext="{Binding HuntMap}"/>
+                <!-- <TextBlock Grid.Row="1">Hey</TextBlock> -->
+            </Grid>
+            <!-- <views:MapView Grid.Column="1" DataContext="{Binding HuntMap}"/> -->
+
         </Grid>
 
         

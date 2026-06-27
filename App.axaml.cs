@@ -39,6 +39,7 @@ public partial class App : Application
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<FileUploadViewModel>();
         services.AddTransient<HunterDeclarationViewModel>();
+        services.AddTransient<MapViewModel>();
 
         services.AddSingleton<IKmlProcessor, KmlProcessor>();
         services.AddSingleton<IPdfExportService, PdfExportService>();

@@ -17,6 +17,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // View models:
     public FileUploadViewModel FileUpload { get; }
     public HunterDeclarationViewModel HunterDeclaration { get; }
+    public MapViewModel HuntMap { get; }
 
     // Services:
     private readonly IFilePickerService _FilePicker;
@@ -34,6 +35,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(
         FileUploadViewModel fileUpload,
         HunterDeclarationViewModel hunterDeclaration,
+        MapViewModel huntMap,
         IDocumentCreationService documentCreation,
         IPdfExportService pdfExport,
         IFilePickerService filePicker,
@@ -41,6 +43,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         FileUpload = fileUpload;
         HunterDeclaration = hunterDeclaration;
+        HuntMap = huntMap;
 
         _DocumentCreation = documentCreation;
         _PdfExport = pdfExport;
