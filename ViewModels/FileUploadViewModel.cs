@@ -10,6 +10,8 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class FileUploadViewModel : ViewModelBase
 {
+    public static event Action<FlightData>? OnFlightDataAdded;
+
     private readonly IFilePickerService _KmlPicker;
     private readonly IKmlProcessor _KmlProcessor;
     private readonly INotificationService _Notifications;
@@ -27,6 +29,7 @@ public partial class FileUploadViewModel : ViewModelBase
         _KmlPicker = filePicker;
         _KmlProcessor = kmlProcessor;
         _Notifications = notifications;
+
         OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
     }
 
@@ -63,6 +66,8 @@ public partial class FileUploadViewModel : ViewModelBase
                 FlightData flightData = await _KmlProcessor.CreateFlightData(file);
 
                 FlightData.Add(new FlightDataViewModel(flightData));   
+
+                OnFlightDataAdded?.Invoke(flightData);
             }
             catch (Exception e)
             {

@@ -55,20 +55,6 @@
                 Content="{Binding SelectedContent}">
             </ContentControl>
 
-
-            <!-- TAB 1 : Hunter Information & File Upload -->            
-            <!-- <TabItem Header="Hunt Information">
-                <Grid ColumnDefinitions="*,*">
-                    <views:HunterDeclarationView Grid.Column="0" DataContext="{Binding HunterDeclaration}" />
-                    <views:FileUploadView Grid.Column="1" DataContext="{Binding FileUpload}"/>
-                </Grid>
-            </TabItem> -->
-
-            <!-- Tab 2 : Map View -->
-            <!-- <TabItem Header="Map">
-                <views:MapView Grid.Row="1" DataContext="{Binding HuntMap}"/>
-            </TabItem> -->
-
         </Grid>
         
         
