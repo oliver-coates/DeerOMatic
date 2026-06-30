@@ -32,6 +32,35 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool _exportPdfFillable = false;
 
+    // Panel Selection State:
+    private int _selectedTabIndex = 0;
+    public int SelectedTabIndex
+    {
+        get
+        {
+            return _selectedTabIndex;
+        }
+        set
+        {
+            SetProperty(ref _selectedTabIndex, value);
+            UpdateSelectedContext();
+        }
+    }
+
+    private object? _selectedContent;
+    public object? SelectedContent
+    {
+        get
+        {
+            return _selectedContent;
+        }
+        set
+        {
+            SetProperty(ref _selectedContent, value);
+        }
+    }
+
+
     public MainWindowViewModel(
         FileUploadViewModel fileUpload,
         HunterDeclarationViewModel hunterDeclaration,
@@ -51,6 +80,8 @@ public partial class MainWindowViewModel : ViewModelBase
         _Notifications = notifications;
 
         ExportCommand = new AsyncRelayCommand(ExportAsync);
+
+        UpdateSelectedContext();
     }
 
 
@@ -77,5 +108,15 @@ public partial class MainWindowViewModel : ViewModelBase
             await _Notifications.ShowErrorAsync(e.Message);
         }
 
+    }
+
+    private void UpdateSelectedContext()
+    {
+        SelectedContent = SelectedTabIndex switch
+        {
+            0 => HunterDeclaration,
+            1 => HuntMap,
+            _ => HunterDeclaration
+        };
     }
 }

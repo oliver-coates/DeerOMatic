@@ -20,11 +20,13 @@
     
 
     <DockPanel>
+        <!-- HEADER -->
         <Grid RowDefinitions="Auto, Auto" Margin="8" DockPanel.Dock="Top">
             <TextBlock Grid.Row="0" Margin="8">Deer 'O Matic!</TextBlock>
             <Rectangle Grid.Row="1" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
         </Grid>
 
+        <!-- FOOTER (& Export Button) -->
         <Grid RowDefinitions="Auto, Auto" Margin="8" DockPanel.Dock="Bottom">
             <Rectangle Grid.Row="0" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
             
@@ -34,17 +36,40 @@
             </Grid>
         </Grid>
 
-        <Grid ColumnDefinitions="*,*">
-            <views:HunterDeclarationView Grid.Column="0" DataContext="{Binding HunterDeclaration}" />
-            <Grid Grid.Column="1" RowDefinitions = "Auto, *">
-                <views:FileUploadView Grid.Row="0" DataContext="{Binding FileUpload}"/>
+        <!-- Main Content -->
+        <Grid ColumnDefinitions="Auto, *">
+
+            <!-- Context Selection: -->
+            <ListBox 
+                Grid.Column="0"
+                SelectedIndex="{Binding SelectedTabIndex}"
+                Width="150">
+                <ListBoxItem>Hunt Info</ListBoxItem>
+                <ListBoxItem>Map View</ListBoxItem> 
+            </ListBox>
+
+            <!-- Content Display: -->
+            <ContentControl
+                Grid.Column="1"
+                Content="{Binding SelectedContent}">
+            </ContentControl>
+
+
+            <!-- TAB 1 : Hunter Information & File Upload -->            
+            <!-- <TabItem Header="Hunt Information">
+                <Grid ColumnDefinitions="*,*">
+                    <views:HunterDeclarationView Grid.Column="0" DataContext="{Binding HunterDeclaration}" />
+                    <views:FileUploadView Grid.Column="1" DataContext="{Binding FileUpload}"/>
+                </Grid>
+            </TabItem> -->
+
+            <!-- Tab 2 : Map View -->
+            <!-- <TabItem Header="Map">
                 <views:MapView Grid.Row="1" DataContext="{Binding HuntMap}"/>
-                <!-- <TextBlock Grid.Row="1">Hey</TextBlock> -->
-            </Grid>
-            <!-- <views:MapView Grid.Column="1" DataContext="{Binding HuntMap}"/> -->
+            </TabItem> -->
 
         </Grid>
-
+        
         
     </DockPanel>
 </Window>
