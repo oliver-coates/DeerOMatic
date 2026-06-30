@@ -10,7 +10,9 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class FileUploadViewModel : ViewModelBase
 {
-    public static event Action<FlightData>? OnFlightDataAdded;
+    public static event Action<FlightDataViewModel>? OnFlightDataAdded;
+    public static event Action? OnFlightDataCleared;
+    public static event Action<FlightDataViewModel>? OnFlightDataRemoved;
 
     private readonly IFilePickerService _KmlPicker;
     private readonly IKmlProcessor _KmlProcessor;
@@ -36,12 +38,14 @@ public partial class FileUploadViewModel : ViewModelBase
     public void RemoveAllFlightData()
     {
         FlightData.Clear();
+        OnFlightDataCleared?.Invoke();
     }
 
     [RelayCommand]
     public void RemoveFlightData(FlightDataViewModel toRemove)
     {
         FlightData.Remove(toRemove);
+        OnFlightDataRemoved?.Invoke(toRemove);
     }
 
     private async Task PickKmlAsync()
@@ -65,16 +69,31 @@ public partial class FileUploadViewModel : ViewModelBase
             {
                 FlightData flightData = await _KmlProcessor.CreateFlightData(file);
 
-                FlightData.Add(new FlightDataViewModel(flightData));   
+                EnsureFlightDataNameIsUnique(flightData.name);
 
-                OnFlightDataAdded?.Invoke(flightData);
+                FlightDataViewModel viewModel = new FlightDataViewModel(flightData); 
+                FlightData.Add(viewModel);   
+
+                OnFlightDataAdded?.Invoke(viewModel);
             }
             catch (Exception e)
             {
-                string errorMessage = $"Error - Unhandled Exception when picking KML: {e.ToString()}"; 
+                string errorMessage = $"Error - Unhandled Exception when picking KML: {e.Message}"; 
                 await _Notifications.ShowErrorAsync(errorMessage);
             }
             
+        }
+    }
+
+    private void EnsureFlightDataNameIsUnique(string name)
+    {
+        foreach (FlightDataViewModel flightViewModel in FlightData)
+        {
+            if (flightViewModel.Name == name)
+            {
+                throw new Exception($"KML files cannot have duplicate names ('{name}' already exists)");
+            }
+             
         }
     }
 

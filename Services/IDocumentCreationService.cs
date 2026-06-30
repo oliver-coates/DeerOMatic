@@ -48,9 +48,11 @@ public class DocumentCreationService : IDocumentCreationService
 
         foreach (var file in fileUpload.FlightData)
         {
-            file.Get().ValidateRefridgerationTime();                
+            FlightData flightData = file.Get();
+            
+            flightData.ValidateTime();                
 
-            doc.flightDatas.Add(file.Get());
+            doc.flightDatas.Add(flightData);
         }
 
         return doc;

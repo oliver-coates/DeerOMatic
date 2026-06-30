@@ -43,11 +43,16 @@ public class FlightData
     /// </summary>
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="RefridgerationTimeException"></exception>
-    public void ValidateRefridgerationTime()
+    public void ValidateTime()
     {
-        if (startTime == null || refrigerationTime == null)
+        if (startTime == null)
         {
-            throw new NullReferenceException();
+            throw new NullReferenceException("No start time could be parsed.");
+        }
+
+        if (refrigerationTime == null)
+        {
+            throw new NullReferenceException("No Refridgeration Time found.");
         }
 
         DateTime start = (DateTime) startTime;

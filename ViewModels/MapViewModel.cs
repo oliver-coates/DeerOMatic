@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Deer_o_matic.Models;
 using HarfBuzzSharp;
@@ -17,51 +18,62 @@ public partial class MapViewModel : ViewModelBase
     [ObservableProperty]
     private Map _simpleMap;
 
-
+    private Dictionary<string, ILayer> layerDictionary;
 
     public MapViewModel()
     {
         _simpleMap = new Map();
 
+        layerDictionary = new Dictionary<string, ILayer>();
+
         SimpleMap.Layers.Add(OpenStreetMap.CreateTileLayer(), -1);   
 
         FileUploadViewModel.OnFlightDataAdded += LoadFlightData;
-        
-        // double latitude = -43.590527;
-        // double longitude = 170.008469;
-
-        // List<IFeature> testFeatures = new List<IFeature>()
-        // {
-        //     CreateMarker(latitude, longitude, "Manual!")
-        // };
-
-        // MemoryLayer testLayer = CreateAnimalLayer("Test Layer", testFeatures);
-
-        // _simpleMap.Layers.AddOnTop(testLayer);
-
-        // SimpleMap.Navigator.ZoomToBox(testLayer.Extent, MBoxFit.Fit, 100);
-
+        FileUploadViewModel.OnFlightDataRemoved += RemoveFlightData;
+        FileUploadViewModel.OnFlightDataCleared += ClearFlightData;
     }
 
-    public void LoadFlightData(FlightData flightData)
+    public void LoadFlightData(FlightDataViewModel flightDataViewModel)
     {
         List<IFeature> features = new();
 
-        foreach (AnimalMark mark in flightData.animalMarks)
+        foreach (AnimalMark mark in flightDataViewModel.marks)
         {
             var coords = mark.coordinates;
 
             features.Add(CreateMarker(coords.X, coords.Y, mark.name));
         }
 
-        MemoryLayer layer = CreateAnimalLayer(flightData.name, features);
+        MemoryLayer layer = CreateAnimalLayer(flightDataViewModel.Name, features);
             
         SimpleMap.Layers.AddOnTop(layer, 0); 
 
         SimpleMap.Navigator.ZoomToBox(layer.Extent, MBoxFit.Fit, 100);
-
+        
+        layerDictionary.Add(flightDataViewModel.Name, layer);
     }   
-    
+
+    private void RemoveFlightData(FlightDataViewModel flightData)
+    {
+        ILayer layer = layerDictionary[flightData.Name];
+
+        SimpleMap.Layers.Remove(layer);
+
+        layerDictionary.Remove(flightData.Name);
+    }
+
+    private void ClearFlightData()
+    {
+        string[] layerNames = layerDictionary.Keys.ToArray();
+
+        foreach (string layerName in layerNames)
+        {
+            ILayer layer = layerDictionary[layerName];
+            SimpleMap.Layers.Remove(layer);
+            layerDictionary.Remove(layerName);
+        }
+    }
+
     private IFeature CreateMarker(double latitude, double longitude, string label)
     {
         PointFeature point = new PointFeature(SphericalMercator.FromLonLat(longitude, latitude));
