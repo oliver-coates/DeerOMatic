@@ -4,14 +4,6 @@
     x:Class="Deer_o_matic.Views.FileUploadView"
     x:DataType="vm:FileUploadViewModel">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Styles/FlightDataTemplate.axaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" x:Name="Root" Margin="8">
 
         <!-- Title -->

@@ -45,7 +45,8 @@
                 SelectedIndex="{Binding SelectedTabIndex}"
                 Width="150">
                 <ListBoxItem>Hunt Info</ListBoxItem>
-                <ListBoxItem>Map View</ListBoxItem> 
+                <ListBoxItem>KML Upload</ListBoxItem>
+                <ListBoxItem>Hunt Map</ListBoxItem> 
             </ListBox>
 
             <!-- Content Display: -->

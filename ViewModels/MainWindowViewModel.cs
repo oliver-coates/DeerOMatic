@@ -115,7 +115,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SelectedContent = SelectedTabIndex switch
         {
             0 => HunterDeclaration,
-            1 => HuntMap,
+            1 => FileUpload,
+            2 => HuntMap,
             _ => HunterDeclaration
         };
     }

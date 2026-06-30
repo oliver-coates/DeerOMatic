@@ -5,5 +5,8 @@
             x:Class="Deer_o_matic.Views.MapView"
             x:DataType="vm:MapViewModel"
 >
+    <!-- <StackPanel> -->
+    <!-- <TextBlock>Hello!</TextBlock> -->
     <mapsui:MapControl Map="{Binding SimpleMap}" />
+    <!-- </StackPanel> -->
 </UserControl>

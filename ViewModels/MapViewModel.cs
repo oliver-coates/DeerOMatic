@@ -9,7 +9,7 @@ using Mapsui.Tiling;
 
 namespace Deer_o_matic.ViewModels;
 
-public partial class MapViewModel : ObservableObject
+public partial class MapViewModel : ViewModelBase
 {
     private Map? _simpleMap;
     public Map? SimpleMap
