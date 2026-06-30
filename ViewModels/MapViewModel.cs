@@ -15,6 +15,17 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class MapViewModel : ViewModelBase
 {
+    private static readonly Color[] LayerColours = {
+        Color.IndianRed,
+        Color.Azure,
+        Color.Yellow,
+        Color.ForestGreen,
+        Color.White,
+        Color.Aquamarine,
+        Color.Beige,
+        Color.BurlyWood,
+        Color.Crimson};
+
     [ObservableProperty]
     private Map _simpleMap;
 
@@ -44,7 +55,7 @@ public partial class MapViewModel : ViewModelBase
             features.Add(CreateMarker(coords.X, coords.Y, mark.name));
         }
 
-        MemoryLayer layer = CreateAnimalLayer(flightDataViewModel.Name, features);
+        MemoryLayer layer = CreateAnimalLayer(flightDataViewModel.Name, features, SimpleMap.Layers.Count);
             
         SimpleMap.Layers.AddOnTop(layer, 0); 
 
@@ -78,12 +89,10 @@ public partial class MapViewModel : ViewModelBase
     {
         PointFeature point = new PointFeature(SphericalMercator.FromLonLat(longitude, latitude));
         
-        Console.WriteLine($"Adding point at lat: {latitude}, long: {longitude}");
-
         return point;
     }
 
-    private MemoryLayer CreateAnimalLayer(string name, List<IFeature> features)
+    private MemoryLayer CreateAnimalLayer(string name, List<IFeature> features, int layerIndex = 0)
     {
         return new MemoryLayer
         {
@@ -91,8 +100,8 @@ public partial class MapViewModel : ViewModelBase
             Features = features,
             Style = new SymbolStyle
             {
-                SymbolScale = 1.0,
-                Fill = new Brush(Color.Red)
+                SymbolScale = 0.5,
+                Fill = new Brush(LayerColours[layerIndex-1]) // Subtracting one index as the base map layer exists
             }
         };
     }
