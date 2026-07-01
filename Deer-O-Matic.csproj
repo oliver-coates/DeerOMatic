@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets/Forms/LHSD.pdf" />
+    <EmbeddedResource Include="Assets/Areas/WARO_Areas.kmz">
   </ItemGroup>
 
   <ItemGroup>

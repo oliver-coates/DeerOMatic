@@ -152,4 +152,18 @@ public partial class MapViewModel : ViewModelBase
 
     }
    
+    private MemoryLayer CreateZoneLayer(string name, List<IFeature> features)
+    {
+        // BaseStyle style = new BaseStyle 
+        // {
+        // };
+
+
+        return new MemoryLayer
+        {
+            Name = name,
+            Features = features,
+            // Style = style
+        };
+    }
 }
