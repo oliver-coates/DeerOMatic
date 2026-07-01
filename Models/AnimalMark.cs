@@ -9,6 +9,7 @@ namespace Deer_o_matic.Models;
 public class AnimalMark
 {
     public readonly string name;
+    public string displayName = "";
     public readonly DateTime time;
     public readonly Vector2 coordinates;
 

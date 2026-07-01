@@ -147,6 +147,7 @@ public class KmlProcessor : IKmlProcessor
             Placemark p = placemarks[placemarkIndex];
             
             AnimalMark a = new AnimalMark(p);
+            a.displayName = (placemarkIndex+1).ToString();
 
             animalMarks[placemarkIndex] = a;
         }

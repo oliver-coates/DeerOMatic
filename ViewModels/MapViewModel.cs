@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Deer_o_matic.Models;
 using HarfBuzzSharp;
@@ -29,13 +30,13 @@ public partial class MapViewModel : ViewModelBase
     [ObservableProperty]
     private Map _simpleMap;
 
-    private Dictionary<string, ILayer> layerDictionary;
+    private Dictionary<string, ILayer[]> layerDictionary;
 
     public MapViewModel()
     {
         _simpleMap = new Map();
 
-        layerDictionary = new Dictionary<string, ILayer>();
+        layerDictionary = new Dictionary<string, ILayer[]>();
 
         SimpleMap.Layers.Add(OpenStreetMap.CreateTileLayer(), -1);   
 
@@ -52,23 +53,25 @@ public partial class MapViewModel : ViewModelBase
         {
             var coords = mark.coordinates;
 
-            features.Add(CreateMarker(coords.X, coords.Y, mark.name));
+            features.Add(CreateMarker(coords.X, coords.Y, mark.displayName));
         }
 
-        MemoryLayer layer = CreateAnimalLayer(flightDataViewModel.Name, features, SimpleMap.Layers.Count);
-            
-        SimpleMap.Layers.AddOnTop(layer, 0); 
+        MemoryLayer pointLayer, textLayer;
+        CreateLayers(flightDataViewModel, features, out pointLayer, out textLayer);
 
-        SimpleMap.Navigator.ZoomToBox(layer.Extent, MBoxFit.Fit, 100);
-        
-        layerDictionary.Add(flightDataViewModel.Name, layer);
-    }   
+        SimpleMap.Layers.AddOnTop(pointLayer, 0);
+        SimpleMap.Layers.AddOnTop(textLayer, 0);
+
+
+        SimpleMap.Navigator.ZoomToBox(pointLayer.Extent, MBoxFit.Fit, 100);
+    }
 
     private void RemoveFlightData(FlightDataViewModel flightData)
     {
-        ILayer layer = layerDictionary[flightData.Name];
+        ILayer[] layers = layerDictionary[flightData.Name];
 
-        SimpleMap.Layers.Remove(layer);
+        SimpleMap.Layers.Remove(layers[0]);
+        SimpleMap.Layers.Remove(layers[1]);
 
         layerDictionary.Remove(flightData.Name);
     }
@@ -79,31 +82,74 @@ public partial class MapViewModel : ViewModelBase
 
         foreach (string layerName in layerNames)
         {
-            ILayer layer = layerDictionary[layerName];
-            SimpleMap.Layers.Remove(layer);
+            ILayer[] layers = layerDictionary[layerName];
+            
+            SimpleMap.Layers.Remove(layers[0]);
+            SimpleMap.Layers.Remove(layers[1]);
+            
             layerDictionary.Remove(layerName);
         }
+    }
+
+
+    private void CreateLayers(FlightDataViewModel flightDataViewModel, List<IFeature> features, out MemoryLayer pointLayer, out MemoryLayer textLayer)
+    {
+        Color color = LayerColours[layerDictionary.Count];
+        
+        pointLayer = CreatePointLayer(flightDataViewModel.Name + " (Points)", features, color);
+        textLayer = CreateTextLayer(flightDataViewModel.Name + " (Text)", features);
+        
+        ILayer[] layers = new ILayer[2] { pointLayer, textLayer };
+        layerDictionary.Add(flightDataViewModel.Name, layers);
     }
 
     private IFeature CreateMarker(double latitude, double longitude, string label)
     {
         PointFeature point = new PointFeature(SphericalMercator.FromLonLat(longitude, latitude));
-        
+
+        point["Name"] = label;
+
         return point;
     }
 
-    private MemoryLayer CreateAnimalLayer(string name, List<IFeature> features, int layerIndex = 0)
+    private MemoryLayer CreatePointLayer(string name, List<IFeature> features, Color color)
     {
+        BaseStyle style = new SymbolStyle
+        {
+            SymbolScale = 0.75,
+            Fill = new Brush(color)
+        };
+
         return new MemoryLayer
         {
             Name = name,
             Features = features,
-            Style = new SymbolStyle
-            {
-                SymbolScale = 0.5,
-                Fill = new Brush(LayerColours[layerIndex-1]) // Subtracting one index as the base map layer exists
-            }
+            Style = style
         };
+    }
+
+    private MemoryLayer CreateTextLayer(string name, List<IFeature> features)
+    {
+        BaseStyle style = new LabelStyle
+        {
+            LabelColumn = "Name",
+
+            VerticalAlignment = LabelStyle.VerticalAlignmentEnum.Center,
+            HorizontalAlignment = LabelStyle.HorizontalAlignmentEnum.Center,
+            
+            Font = new Mapsui.Styles.Font { FontFamily = "Arial", Size = 8 },
+            ForeColor = Color.Black,
+            BackColor = new Brush(Color.White),
+            
+        };
+
+        return new MemoryLayer
+        {
+            Name = name,
+            Features = features,
+            Style = style
+        };
+
     }
    
 }
