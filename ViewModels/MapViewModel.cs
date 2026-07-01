@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Deer_o_matic.Models;
-using HarfBuzzSharp;
+using Deer_o_matic.Services;
 using Mapsui;
 using Mapsui.Layers;
+using Mapsui.Nts;
 using Mapsui.Projections;
 using Mapsui.Styles;
 using Mapsui.Tiling;
@@ -27,13 +27,17 @@ public partial class MapViewModel : ViewModelBase
         Color.BurlyWood,
         Color.Crimson};
 
+    private IAreaProcessorService AreaProcessor; 
+
     [ObservableProperty]
     private Map _simpleMap;
 
     private Dictionary<string, ILayer[]> layerDictionary;
 
-    public MapViewModel()
+    public MapViewModel(IAreaProcessorService areaProcessor)
     {
+        AreaProcessor = areaProcessor;
+
         _simpleMap = new Map();
 
         layerDictionary = new Dictionary<string, ILayer[]>();
@@ -43,6 +47,24 @@ public partial class MapViewModel : ViewModelBase
         FileUploadViewModel.OnFlightDataAdded += LoadFlightData;
         FileUploadViewModel.OnFlightDataRemoved += RemoveFlightData;
         FileUploadViewModel.OnFlightDataCleared += ClearFlightData;
+
+        TestAddArea();
+    }
+
+    private void TestAddArea()
+    {        
+        // Testing how polygons work.....
+        Polygon polygon = AreaProcessor.GetArea();
+
+        List<IFeature> features = new List<IFeature>();
+
+        GeometryFeature feature = new GeometryFeature(polygon);
+
+        features.Add(feature);
+
+        MemoryLayer testAreaLayer = CreateZoneLayer("WARO", features);
+
+        SimpleMap.Layers.AddOnTop(testAreaLayer);
     }
 
     public void LoadFlightData(FlightDataViewModel flightDataViewModel)
@@ -154,16 +176,17 @@ public partial class MapViewModel : ViewModelBase
    
     private MemoryLayer CreateZoneLayer(string name, List<IFeature> features)
     {
-        // BaseStyle style = new BaseStyle 
-        // {
-        // };
-
+        BaseStyle style = new VectorStyle
+        {
+            Line = new Pen(Color.DarkRed, width:3),
+            Outline = new Pen(Color.Black, width:5)
+        };
 
         return new MemoryLayer
         {
             Name = name,
             Features = features,
-            // Style = style
+            Style = style
         };
     }
 }

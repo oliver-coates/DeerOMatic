@@ -42,6 +42,7 @@ public partial class App : Application
         services.AddTransient<MapViewModel>();
 
         services.AddSingleton<IKmlProcessor, KmlProcessor>();
+        services.AddSingleton<IAreaProcessorService, AreaProcessorService>();
         services.AddSingleton<IPdfExportService, PdfExportService>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
         services.AddSingleton<ISettingsService, SettingsService>();
