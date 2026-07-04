@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Deer_o_matic.Models;
 using Deer_o_matic.Services;
@@ -47,14 +48,16 @@ public partial class MapViewModel : ViewModelBase
         FileUploadViewModel.OnFlightDataAdded += LoadFlightData;
         FileUploadViewModel.OnFlightDataRemoved += RemoveFlightData;
         FileUploadViewModel.OnFlightDataCleared += ClearFlightData;
-
-        TestAddArea();
     }
 
-    private void TestAddArea()
+    public async Task TestAddAreaAsync()
     {        
+        Console.WriteLine("testing add area...");
+
+        await Task.Delay(100);  // Small delay to ensure map is ready
+
         // Testing how polygons work.....
-        Polygon polygon = AreaProcessor.GetArea();
+        Polygon polygon = await AreaProcessor.GetArea();
 
         List<IFeature> features = new List<IFeature>();
 
@@ -65,6 +68,8 @@ public partial class MapViewModel : ViewModelBase
         MemoryLayer testAreaLayer = CreateZoneLayer("WARO", features);
 
         SimpleMap.Layers.AddOnTop(testAreaLayer);
+
+        Console.WriteLine("finished add area.");
     }
 
     public void LoadFlightData(FlightDataViewModel flightDataViewModel)

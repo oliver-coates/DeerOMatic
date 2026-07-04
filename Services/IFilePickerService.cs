@@ -147,12 +147,8 @@ public class PickedFile
     {
         string path = file.Path.LocalPath;
 
-        using var zip = await ZipFile.OpenReadAsync(path);
-
-        if (zip == null)
-        {
-            throw new FileNotFoundException($"Could not find a .kmz file at path: {path}");
-        }
+        using var zip = await ZipFile.OpenReadAsync(path)
+            ?? throw new FileNotFoundException($"Could not find a .kmz file at path: {path}");
 
         // Find the KML entry within the zip
         var kmlEntry = zip.Entries.FirstOrDefault(e => e.Name.EndsWith(".kml", StringComparison.OrdinalIgnoreCase));

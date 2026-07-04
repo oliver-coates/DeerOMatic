@@ -1,9 +1,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
+using BruTile.Wmts.Generated;
 using Deer_o_matic.Models;
+using NetTopologySuite.Algorithm;
 using SharpKml.Base;
 using SharpKml.Dom;
 
@@ -12,6 +14,8 @@ namespace Deer_o_matic.Services;
 public interface IKmlProcessor
 {
     public Task<FlightData> CreateFlightData(PickedFile file);
+
+    public Task<AreaData[]> ReadAreasFromKmz(string content);
 
 }
 
@@ -36,6 +40,47 @@ public class KmlProcessor : IKmlProcessor
         return flightData;
     }
 
+    public async Task<AreaData[]> ReadAreasFromKmz(string content)
+    {
+        Kml kml = await Parse(content);
+
+        Document doc = (Document) kml.Feature;
+        
+        // The root folder contains every WARO zone:
+        Folder rootFolder = (Folder) doc.Features.ElementAt(0); 
+
+        
+        List<AreaData> areaDatas = new ();
+        foreach (Feature placemark in rootFolder.Features)
+        {
+
+            Placemark waroArea = (Placemark) placemark;
+
+            AreaData data;
+            if (waroArea.Geometry is MultipleGeometry multipleGeometry)
+            {
+                data = new AreaData(placemark.Name, [.. multipleGeometry.Geometry]);
+            }
+            else if (waroArea.Geometry is Polygon polygon)
+            {
+                Geometry[] g = new Geometry[1]
+                {
+                    polygon
+                };
+
+                data = new AreaData(placemark.Name, g);
+            }
+            else
+            {
+                throw new NullReferenceException($"Unxpected geometry type for '{placemark.Name}' of '{placemark.GetType()}' while parsing area.");
+            }
+        
+            areaDatas.Add(data);
+        }
+
+        return [.. areaDatas];
+    }
+
     #endregion
 
     #region Internal Methods
@@ -43,7 +88,7 @@ public class KmlProcessor : IKmlProcessor
     /// <summary>
     /// Creates a KML object from a string
     /// </summary>
-    private static Kml Parse(string stringInput)
+    private static async Task<Kml> Parse(string stringInput)
     {
         // Parse the string into a parser object
         Parser parser = new Parser();
@@ -59,7 +104,7 @@ public class KmlProcessor : IKmlProcessor
     {
         if (file.extension is ".kml" or ".kmz")
         {
-            return Parse(file.content);        
+            return await Parse(file.content);        
         }
         else
         {
@@ -154,8 +199,6 @@ public class KmlProcessor : IKmlProcessor
 
         return animalMarks;
     }
-
-
 
     #endregion
 
