@@ -4,13 +4,14 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
+using Mapsui.Projections;
 using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.Services;
 
 public interface IAreaProcessorService
 {
-    public Task<Polygon> GetArea();
+    public Task<Polygon> GetTestArea();
 }
 
 
@@ -23,21 +24,34 @@ public class AreaProcessorService : IAreaProcessorService
         KmlProcessor = kmlProcessor;
     }
 
-    public async Task<Polygon> GetArea()
+    public async Task<Polygon> GetTestArea()
     {
         // TODO: 
-        // Extract KMZ file from Assets/Areas/WARO_Areas.kmz
-        // Figure out how to get it into the nts Geometry Polygon object
-        string contents = await GetAreaContents();
+        // Figure out how to get it into the nts Geometry Polygon object        
         
-        AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
+        // string contents = await GetAreaContents();
+        
+        // AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
 
-        List<Coordinate> points = new List<Coordinate>();
+        // List<Coordinate> points = new List<Coordinate>
+        // {
+        //     new Coordinate(Mercator.FromLonLat(-42.62638795276321, 171.39375259816507)),
+        //     new Coordinate(Mercator.FromLonLat(-42.58040772904203, 171.44898314766252)),
+        //     new Coordinate(Mercator.FromLonLat(-42.596660262604665, 171.49482676408988)),
+        //     new Coordinate(Mercator.FromLonLat(-42.62638795276321, 171.39375259816507))
+        // };
 
-        // Points then become a linearRing which we can turn into a polygon
-        LinearRing linearRing = new LinearRing([.. points]); // <-- [.. points] converts the list to an array
+        var geoFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory();
 
-        return new Polygon(linearRing);
+        Polygon polygon = geoFactory.CreatePolygon(new[] {
+            new Coordinate(SphericalMercator.FromLonLat(169.0, -43.0)),
+            new Coordinate(SphericalMercator.FromLonLat(170.0, -43.0)),
+            new Coordinate(SphericalMercator.FromLonLat(170.0, -44.0)),
+            new Coordinate(SphericalMercator.FromLonLat(169.0, -44.0)),
+            new Coordinate(SphericalMercator.FromLonLat(169.0, -43.0))
+        });
+
+        return polygon;
     }
 
     private static async Task<string> GetAreaContents()

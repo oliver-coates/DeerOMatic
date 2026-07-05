@@ -63,10 +63,10 @@ public class KmlProcessor : IKmlProcessor
             }
             else if (waroArea.Geometry is Polygon polygon)
             {
-                Geometry[] g = new Geometry[1]
-                {
+                Geometry[] g =
+                [
                     polygon
-                };
+                ];
 
                 data = new AreaData(placemark.Name, g);
             }

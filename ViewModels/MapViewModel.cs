@@ -43,6 +43,7 @@ public partial class MapViewModel : ViewModelBase
 
         layerDictionary = new Dictionary<string, ILayer[]>();
 
+        Console.WriteLine("Creating map!");
         SimpleMap.Layers.Add(OpenStreetMap.CreateTileLayer(), -1);   
 
         FileUploadViewModel.OnFlightDataAdded += LoadFlightData;
@@ -57,19 +58,29 @@ public partial class MapViewModel : ViewModelBase
         await Task.Delay(100);  // Small delay to ensure map is ready
 
         // Testing how polygons work.....
-        Polygon polygon = await AreaProcessor.GetArea();
+        Polygon polygon = await AreaProcessor.GetTestArea();
 
-        List<IFeature> features = new List<IFeature>();
-
-        GeometryFeature feature = new GeometryFeature(polygon);
-
-        features.Add(feature);
+        List<IFeature> features = new()
+        {
+            new GeometryFeature(polygon)
+        };
 
         MemoryLayer testAreaLayer = CreateZoneLayer("WARO", features);
 
-        SimpleMap.Layers.AddOnTop(testAreaLayer);
+        SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
+
+        SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
 
         Console.WriteLine("finished add area.");
+
+        foreach (BaseLayer l in SimpleMap.Layers.Cast<BaseLayer>())
+        {
+            Console.WriteLine($"> {l.Name}");
+            if (l is MemoryLayer m)
+            {
+                Console.WriteLine($"-- num features: {m.Features.Count()}");
+            }
+        }
     }
 
     public void LoadFlightData(FlightDataViewModel flightDataViewModel)
@@ -155,7 +166,7 @@ public partial class MapViewModel : ViewModelBase
         };
     }
 
-    private MemoryLayer CreateTextLayer(string name, List<IFeature> features)
+    private static MemoryLayer CreateTextLayer(string name, List<IFeature> features)
     {
         BaseStyle style = new LabelStyle
         {
@@ -179,19 +190,31 @@ public partial class MapViewModel : ViewModelBase
 
     }
    
-    private MemoryLayer CreateZoneLayer(string name, List<IFeature> features)
+    private static MemoryLayer CreateZoneLayer(string name, List<IFeature> features)
     {
-        BaseStyle style = new VectorStyle
+        Brush brush = new Brush
         {
+            Color = Color.Blue,
+            Background = Color.Red,
+            FillStyle = FillStyle.Solid
+        };
+
+        VectorStyle style = new()
+        {
+            Fill = brush,
             Line = new Pen(Color.DarkRed, width:3),
             Outline = new Pen(Color.Black, width:5)
         };
 
-        return new MemoryLayer
+        MemoryLayer layer =  new()
         {
             Name = name,
             Features = features,
-            Style = style
+            Style = style,
+            Opacity = 0.4,
+            Enabled = true
         };
+
+        return layer;
     }
 }
