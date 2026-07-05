@@ -1,3 +1,4 @@
+using SharpKml.Base;
 using SharpKml.Dom;
 
 namespace Deer_o_matic.Models;
@@ -8,11 +9,14 @@ namespace Deer_o_matic.Models;
 public class AreaData
 {
     public readonly string name;
-    public readonly Geometry[] geometries;
+    public readonly string geometryXml;
 
-    public AreaData(string name, Geometry[] geometries)
+    public AreaData(string name, Geometry geometry)
     {
         this.name = name;
-        this.geometries = geometries;
+
+        Serializer serializer = new();    
+        serializer.Serialize(geometry);
+        this.geometryXml = serializer.Xml;
     }
 }

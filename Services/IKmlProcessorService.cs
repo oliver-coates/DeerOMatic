@@ -53,29 +53,9 @@ public class KmlProcessor : IKmlProcessor
         List<AreaData> areaDatas = new ();
         foreach (Feature placemark in rootFolder.Features)
         {
-
             Placemark waroArea = (Placemark) placemark;
-
-            AreaData data;
-            if (waroArea.Geometry is MultipleGeometry multipleGeometry)
-            {
-                data = new AreaData(placemark.Name, [.. multipleGeometry.Geometry]);
-            }
-            else if (waroArea.Geometry is Polygon polygon)
-            {
-                Geometry[] g =
-                [
-                    polygon
-                ];
-
-                data = new AreaData(placemark.Name, g);
-            }
-            else
-            {
-                throw new NullReferenceException($"Unxpected geometry type for '{placemark.Name}' of '{placemark.GetType()}' while parsing area.");
-            }
-        
-            areaDatas.Add(data);
+         
+            areaDatas.Add(new AreaData(placemark.Name, waroArea.Geometry));
         }
 
         return [.. areaDatas];

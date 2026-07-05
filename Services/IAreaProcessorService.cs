@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
 using Mapsui.Projections;
+using NetTopologySuite;
 using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.Services;
@@ -12,47 +13,54 @@ namespace Deer_o_matic.Services;
 public interface IAreaProcessorService
 {
     public Task<Polygon> GetTestArea();
+
+    public Task<Geometry> GetSampleWaroArea();
 }
 
 
 public class AreaProcessorService : IAreaProcessorService
 {
     private readonly IKmlProcessor KmlProcessor;
+    private readonly GeometryFactory _geoFactory;
 
     public AreaProcessorService(IKmlProcessor kmlProcessor)
     {
         KmlProcessor = kmlProcessor;
+
+        _geoFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory();
+
     }
 
     public async Task<Polygon> GetTestArea()
     {
-        // TODO: 
-        // Figure out how to get it into the nts Geometry Polygon object        
-        
-        // string contents = await GetAreaContents();
-        
-        // AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
-
-        // List<Coordinate> points = new List<Coordinate>
-        // {
-        //     new Coordinate(Mercator.FromLonLat(-42.62638795276321, 171.39375259816507)),
-        //     new Coordinate(Mercator.FromLonLat(-42.58040772904203, 171.44898314766252)),
-        //     new Coordinate(Mercator.FromLonLat(-42.596660262604665, 171.49482676408988)),
-        //     new Coordinate(Mercator.FromLonLat(-42.62638795276321, 171.39375259816507))
-        // };
-
-        var geoFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory();
-
-        Polygon polygon = geoFactory.CreatePolygon(new[] {
-            new Coordinate(SphericalMercator.FromLonLat(169.0, -43.0)),
-            new Coordinate(SphericalMercator.FromLonLat(170.0, -43.0)),
-            new Coordinate(SphericalMercator.FromLonLat(170.0, -44.0)),
-            new Coordinate(SphericalMercator.FromLonLat(169.0, -44.0)),
-            new Coordinate(SphericalMercator.FromLonLat(169.0, -43.0))
+        Polygon polygon = _geoFactory.CreatePolygon(new[] {
+            new Coordinate(169.0, -43.0),
+            new Coordinate(170.0, -43.0),
+            new Coordinate(170.0, -44.0),
+            new Coordinate(169.0, -44.0),
+            new Coordinate(169.0, -43.0)
         });
 
         return polygon;
     }
+
+    public async Task<Geometry> GetSampleWaroArea()
+    {
+        string contents = await GetAreaContents();   
+        AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
+
+        AreaData sampleData = areaData[0];
+
+
+        GeometryFactory factory = new();
+        NetTopologySuite.IO.KML.KMLReader reader = new(new [] {"altitudeMode", "tesselate", "extrude"});
+
+        Geometry parsedGeometry = reader.Read(sampleData.geometryXml);
+
+        return parsedGeometry;
+    }
+
+
 
     private static async Task<string> GetAreaContents()
     {
@@ -84,4 +92,5 @@ public class AreaProcessorService : IAreaProcessorService
 
         return await reader.ReadToEndAsync();
     }
+
 }

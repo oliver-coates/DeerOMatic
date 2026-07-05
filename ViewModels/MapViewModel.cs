@@ -9,6 +9,7 @@ using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Nts;
 using Mapsui.Projections;
+using Mapsui.Providers;
 using Mapsui.Styles;
 using Mapsui.Tiling;
 using NetTopologySuite.Geometries;
@@ -39,7 +40,10 @@ public partial class MapViewModel : ViewModelBase
     {
         AreaProcessor = areaProcessor;
 
-        _simpleMap = new Map();
+        _simpleMap = new Map
+        {
+            CRS = "EPSG:3857"
+        };
 
         layerDictionary = new Dictionary<string, ILayer[]>();
 
@@ -53,34 +57,21 @@ public partial class MapViewModel : ViewModelBase
 
     public async Task TestAddAreaAsync()
     {        
-        Console.WriteLine("testing add area...");
-
         await Task.Delay(100);  // Small delay to ensure map is ready
 
-        // Testing how polygons work.....
-        Polygon polygon = await AreaProcessor.GetTestArea();
+        Geometry areaGeometry = await AreaProcessor.GetTestArea();
 
-        List<IFeature> features = new()
-        {
-            new GeometryFeature(polygon)
-        };
+        List<IFeature> features =
+        [
+            Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry)
+        ];
 
-        MemoryLayer testAreaLayer = CreateZoneLayer("WARO", features);
-
+        // Create Layer:
+        BaseLayer testAreaLayer = CreateZoneLayer("WARO", features);
         SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
 
+        // Zoom to the newly created layer:
         SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
-
-        Console.WriteLine("finished add area.");
-
-        foreach (BaseLayer l in SimpleMap.Layers.Cast<BaseLayer>())
-        {
-            Console.WriteLine($"> {l.Name}");
-            if (l is MemoryLayer m)
-            {
-                Console.WriteLine($"-- num features: {m.Features.Count()}");
-            }
-        }
     }
 
     public void LoadFlightData(FlightDataViewModel flightDataViewModel)
@@ -190,8 +181,9 @@ public partial class MapViewModel : ViewModelBase
 
     }
    
-    private static MemoryLayer CreateZoneLayer(string name, List<IFeature> features)
+    private static BaseLayer CreateZoneLayer(string name, List<IFeature> features)
     {
+        // --- Styling:
         Brush brush = new Brush
         {
             Color = Color.Blue,
@@ -206,14 +198,35 @@ public partial class MapViewModel : ViewModelBase
             Outline = new Pen(Color.Black, width:5)
         };
 
-        MemoryLayer layer =  new()
+        // --- Data Providers:
+        MemoryProvider memoryProvider = new(features)
+        {
+            CRS = "EPSG:4326"
+        };
+
+        ProjectingProvider dataSource = new (memoryProvider)
+        {
+            CRS = "EPSG:3857"
+        };
+
+        // --- Layer:
+        Layer layer = new ()
         {
             Name = name,
-            Features = features,
+            DataSource = dataSource,
             Style = style,
-            Opacity = 0.4,
+            Opacity = 1.0,
             Enabled = true
         };
+
+        // MemoryLayer layer =  new()
+        // {            
+        //     Name = name,
+        //     Features = features,
+        //     Style = style,
+        //     Opacity = 0.4,
+        //     Enabled = true
+        // };
 
         return layer;
     }
