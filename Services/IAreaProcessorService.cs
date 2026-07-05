@@ -15,6 +15,8 @@ public interface IAreaProcessorService
     public Task<Polygon> GetTestArea();
 
     public Task<Geometry> GetSampleWaroArea();
+
+    public Task<Geometry[]> GetAllWaroGeometry();
 }
 
 
@@ -51,16 +53,27 @@ public class AreaProcessorService : IAreaProcessorService
 
         AreaData sampleData = areaData[0];
 
-
-        GeometryFactory factory = new();
-        NetTopologySuite.IO.KML.KMLReader reader = new(new [] {"altitudeMode", "tesselate", "extrude"});
+        NetTopologySuite.IO.KML.KMLReader reader = new(["altitudeMode", "tesselate", "extrude"]);
 
         Geometry parsedGeometry = reader.Read(sampleData.geometryXml);
 
         return parsedGeometry;
     }
 
+    public async Task<Geometry[]> GetAllWaroGeometry()
+    {
+        string contents = await GetAreaContents();   
+        AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
+        Geometry[] outGeometry = new Geometry[areaData.Length];
+        
+        NetTopologySuite.IO.KML.KMLReader reader = new(["altitudeMode", "tesselate", "extrude"]);
+        for (int index = 0; index < areaData.Length; index++)
+        {
+            outGeometry[index] = reader.Read(areaData[index].geometryXml);
+        }
 
+        return outGeometry;
+    }
 
     private static async Task<string> GetAreaContents()
     {
@@ -93,4 +106,5 @@ public class AreaProcessorService : IAreaProcessorService
         return await reader.ReadToEndAsync();
     }
 
+    
 }

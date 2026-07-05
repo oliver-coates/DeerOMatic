@@ -59,12 +59,14 @@ public partial class MapViewModel : ViewModelBase
     {        
         await Task.Delay(100);  // Small delay to ensure map is ready
 
-        Geometry areaGeometry = await AreaProcessor.GetTestArea();
+        Geometry[] areaGeometry = await AreaProcessor.GetAllWaroGeometry();
 
-        List<IFeature> features =
-        [
-            Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry)
-        ];
+        IFeature[] features = new IFeature[areaGeometry.Length];
+        for (int index = 0; index < areaGeometry.Length; index++)
+        {
+            features[index] = Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry[index]);
+            
+        }
 
         // Create Layer:
         BaseLayer testAreaLayer = CreateZoneLayer("WARO", features);
@@ -181,21 +183,21 @@ public partial class MapViewModel : ViewModelBase
 
     }
    
-    private static BaseLayer CreateZoneLayer(string name, List<IFeature> features)
+    private static BaseLayer CreateZoneLayer(string name, IEnumerable<IFeature> features)
     {
         // --- Styling:
         Brush brush = new Brush
         {
-            Color = Color.Blue,
-            Background = Color.Red,
+            Color = Color.Green,
+            // Background = Color.Red,
             FillStyle = FillStyle.Solid
         };
 
         VectorStyle style = new()
         {
             Fill = brush,
-            Line = new Pen(Color.DarkRed, width:3),
-            Outline = new Pen(Color.Black, width:5)
+            // Line = new Pen(Color.DarkRed, width:3),
+            Outline = new Pen(Color.Black, width:1)
         };
 
         // --- Data Providers:
@@ -208,14 +210,14 @@ public partial class MapViewModel : ViewModelBase
         {
             CRS = "EPSG:3857"
         };
-
+        
         // --- Layer:
         Layer layer = new ()
         {
             Name = name,
             DataSource = dataSource,
             Style = style,
-            Opacity = 1.0,
+            Opacity = 0.5,
             Enabled = true
         };
 
