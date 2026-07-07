@@ -33,7 +33,7 @@ public partial class App : Application
             {
                 services.AddSingleton(topLevel);            
             }
-            services.AddSingleton<IFilePickerService, KmlPickerService>();
+            services.AddSingleton<IKmlPickerService, KmlPickerService>();
         }
 
         services.AddTransient<MainWindowViewModel>();

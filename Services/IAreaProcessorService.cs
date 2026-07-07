@@ -23,11 +23,13 @@ public interface IAreaProcessorService
 public class AreaProcessorService : IAreaProcessorService
 {
     private readonly IKmlProcessor KmlProcessor;
+    private readonly IKmlPickerService FilePicker;
     private readonly GeometryFactory _geoFactory;
 
-    public AreaProcessorService(IKmlProcessor kmlProcessor)
+    public AreaProcessorService(IKmlProcessor kmlProcessor, IKmlPickerService filePicker)
     {
         KmlProcessor = kmlProcessor;
+        FilePicker = filePicker;
 
         _geoFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory();
 
@@ -48,8 +50,8 @@ public class AreaProcessorService : IAreaProcessorService
 
     public async Task<Geometry> GetSampleWaroArea()
     {
-        string contents = await GetAreaContents();   
-        AreaData[] areaData = await KmlProcessor.ParseAreaDataFromKmlAsync(contents);
+        PickedFile waroFile = await GetWaroFile();   
+        AreaData[] areaData = await KmlProcessor.ParseAreaDataFromKmlAsync(waroFile);
 
         AreaData sampleData = areaData[0];
 
@@ -62,8 +64,8 @@ public class AreaProcessorService : IAreaProcessorService
 
     public async Task<Geometry[]> GetAllWaroGeometry()
     {
-        string contents = await GetAreaContents();   
-        AreaData[] areaData = await KmlProcessor.ParseAreaDataFromKmlAsync(contents);
+        PickedFile waroFile = await GetWaroFile();   
+        AreaData[] areaData = await KmlProcessor.ParseAreaDataFromKmlAsync(waroFile);
         Geometry[] outGeometry = new Geometry[areaData.Length];
         
         NetTopologySuite.IO.KML.KMLReader reader = new(["altitudeMode", "tesselate", "extrude"]);
@@ -75,7 +77,7 @@ public class AreaProcessorService : IAreaProcessorService
         return outGeometry;
     }
 
-    private static async Task<string> GetAreaContents()
+    private async Task<PickedFile> GetWaroFile()
     {
         // Assembly and resource path determine where the resource is stored:
         var assembly = typeof(IAreaProcessorService).Assembly;
@@ -103,7 +105,9 @@ public class AreaProcessorService : IAreaProcessorService
         using Stream stream = await kmlEntry.OpenAsync();
         using StreamReader reader = new(stream);
 
-        return await reader.ReadToEndAsync();
+        string content = await reader.ReadToEndAsync();
+        
+        return FilePicker.GenerateDummyFile("Waro Areas", content, ".kml", "not implemented");
     }
 
     

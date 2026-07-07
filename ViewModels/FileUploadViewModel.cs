@@ -14,7 +14,7 @@ public partial class FileUploadViewModel : ViewModelBase
     public static event Action? OnFlightDataCleared;
     public static event Action<FlightDataViewModel>? OnFlightDataRemoved;
 
-    private readonly IFilePickerService _KmlPicker;
+    private readonly IKmlPickerService _KmlPicker;
     private readonly IKmlProcessor _KmlProcessor;
     private readonly INotificationService _Notifications;
 
@@ -26,7 +26,7 @@ public partial class FileUploadViewModel : ViewModelBase
     public partial string? HunterName { get; set; }
 
 
-    public FileUploadViewModel(IFilePickerService filePicker, IKmlProcessor kmlProcessor, INotificationService notifications)
+    public FileUploadViewModel(IKmlPickerService filePicker, IKmlProcessor kmlProcessor, INotificationService notifications)
     {
         _KmlPicker = filePicker;
         _KmlProcessor = kmlProcessor;

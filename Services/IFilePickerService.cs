@@ -8,13 +8,14 @@ using Avalonia.Platform.Storage;
 
 namespace Deer_o_matic.Services;
 
-public interface IFilePickerService
+public interface IKmlPickerService
 {
-    Task<PickedFile[]> OpenFilesAsync();
-    Task<IStorageFolder?> PickFileSaveLocation();
+    public Task<PickedFile[]> OpenFilesAsync();
+    public Task<IStorageFolder?> PickFileSaveLocation();
+    public PickedFile GenerateDummyFile(string name, string content, string extension, string path);
 }
 
-public class KmlPickerService : IFilePickerService
+public class KmlPickerService : IKmlPickerService
 {
     private readonly TopLevel _topLevel;
 
@@ -29,6 +30,7 @@ public class KmlPickerService : IFilePickerService
         AppleUniformTypeIdentifiers = null,
         MimeTypes = null
     };
+
 
     public async Task<PickedFile[]> OpenFilesAsync()
     {
@@ -77,7 +79,14 @@ public class KmlPickerService : IFilePickerService
 
         return selectedFolders[0];
     }
+
+    public PickedFile GenerateDummyFile(string name, string content, string extension, string path)
+    {
+        return new PickedFile(name, extension, content, path);
+    }
+
 }
+
 
 public class PickedFile
 {
@@ -101,6 +110,14 @@ public class PickedFile
     public string path = String.Empty;
 
     private PickedFile() { }
+    internal PickedFile(string name, string extension, string content, string path)
+    {
+        this.name = name;
+        this.extension = extension;
+        this.content = content;
+        this.path = path;
+    }
+
 
     async public static Task<PickedFile> CreateAsnyc(IStorageFile file)
     {
@@ -142,6 +159,7 @@ public class PickedFile
         using var reader = new StreamReader(stream);
         return await reader.ReadToEndAsync();
     }
+
 
     async private static Task<string> UnzipAndRead(IStorageFile file)
     {

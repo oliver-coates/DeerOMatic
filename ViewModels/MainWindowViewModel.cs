@@ -20,7 +20,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MapViewModel HuntMap { get; }
 
     // Services:
-    private readonly IFilePickerService _FilePicker;
+    private readonly IKmlPickerService _FilePicker;
     private readonly IDocumentCreationService _DocumentCreation;
     private readonly IPdfExportService _PdfExport;
     private readonly INotificationService _Notifications;
@@ -67,7 +67,7 @@ public partial class MainWindowViewModel : ViewModelBase
         MapViewModel huntMap,
         IDocumentCreationService documentCreation,
         IPdfExportService pdfExport,
-        IFilePickerService filePicker,
+        IKmlPickerService filePicker,
         INotificationService notifications)
     {
         FileUpload = fileUpload;
