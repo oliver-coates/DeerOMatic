@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Deer_o_matic.Models;
 using Deer_o_matic.Services;
 using Mapsui;
@@ -26,7 +28,8 @@ public partial class MapViewModel : ViewModelBase
         Color.BurlyWood,
         Color.Crimson};
 
-    private IAreaProcessorService AreaProcessor; 
+    private readonly IAreaProcessorService AreaProcessor; 
+    private readonly IKmlPickerService KmlPicker;
 
     [ObservableProperty]
     private Map _simpleMap;
@@ -36,10 +39,13 @@ public partial class MapViewModel : ViewModelBase
     /// </summary>
     private Dictionary<string, ILayer[]> layerDictionary;
 
+    public AsyncRelayCommand PickFilesCommand {get;}
 
-    public MapViewModel(IAreaProcessorService areaProcessor)
+    public MapViewModel(IAreaProcessorService areaProcessor, IKmlPickerService kmlPicker)
     {
         AreaProcessor = areaProcessor;
+        KmlPicker = kmlPicker;
+
         layerDictionary = [];
 
         // Create the map with the OpenStreetMap layer as a base.
@@ -53,10 +59,13 @@ public partial class MapViewModel : ViewModelBase
         FileUploadViewModel.OnFlightDataAdded += LoadFlightData;
         FileUploadViewModel.OnFlightDataRemoved += RemoveFlightData;
         FileUploadViewModel.OnFlightDataCleared += ClearFlightData;
+
+        // Command creation:
+        PickFilesCommand = new AsyncRelayCommand(PickFileAsnyc);
     }
 
-
-     public void LoadFlightData(FlightDataViewModel flightDataViewModel)
+    #region Flight Data Changes Response Methods
+    public void LoadFlightData(FlightDataViewModel flightDataViewModel)
     {
         List<IFeature> features = new();
 
@@ -101,7 +110,20 @@ public partial class MapViewModel : ViewModelBase
             layerDictionary.Remove(layerName);
         }
     }
+    #endregion
 
+    private async Task PickFileAsnyc()
+    {
+        PickedFile[] kmlFiles = await KmlPicker.OpenFilesAsync();
+
+        if (kmlFiles is null)
+        {
+            // No files were picked.
+            return;
+        }
+
+        Console.WriteLine($"Picked {kmlFiles.Length} Files!");
+    }
 
     private void CreateLayers(FlightDataViewModel flightDataViewModel, List<IFeature> features, out MemoryLayer pointLayer, out MemoryLayer textLayer)
     {

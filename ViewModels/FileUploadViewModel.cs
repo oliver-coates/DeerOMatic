@@ -22,9 +22,6 @@ public partial class FileUploadViewModel : ViewModelBase
     
     public AsyncRelayCommand OpenFileCommand {get; } 
 
-    [ObservableProperty]
-    public partial string? HunterName { get; set; }
-
 
     public FileUploadViewModel(IKmlPickerService filePicker, IKmlProcessor kmlProcessor, INotificationService notifications)
     {

@@ -12,6 +12,8 @@ public interface IKmlPickerService
 {
     public Task<PickedFile[]> OpenFilesAsync();
     public Task<IStorageFolder?> PickFileSaveLocation();
+
+
     public PickedFile GenerateDummyFile(string name, string content, string extension, string path);
 }
 
