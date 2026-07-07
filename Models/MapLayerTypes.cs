@@ -11,6 +11,11 @@ namespace Deer_o_matic.Models;
 /// </summary>
 public static class MapLayerTypes
 {
+    public const int BACKGROUND_LAYER_INT = -1;
+    public const int AREAS_LAYER_INT = 0;
+    public const int PLACEMARKS_LAYER_INT = 1;
+
+
     public static MemoryLayer CreatePointLayer(string name, List<IFeature> features, Color color)
     {
         BaseStyle style = new SymbolStyle
@@ -86,6 +91,7 @@ public static class MapLayerTypes
             DataSource = dataSource,
             Style = style,
             Opacity = 0.5,
+            MaxVisible = 35,
             Enabled = true
         };
 

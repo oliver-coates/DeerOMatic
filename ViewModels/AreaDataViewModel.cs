@@ -6,21 +6,21 @@ using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.ViewModels;
 
-public partial class AreaDataViewModel : ViewModelBase
+public partial class AreaDataViewModel : ViewModelBase, IDisplayableOnMap
 {
     [ObservableProperty]
     private string _name;
 
-    public Geometry[] _geometry;
+    public Geometry[] geometry;
 
     public AreaDataViewModel(AreaData areaData)
     {
         _name = areaData.name;
-        _geometry = areaData.geometries;
+        geometry = areaData.geometries;
     }
 
     public AreaData Get()
     {
-        return new AreaData(Name, _geometry);
+        return new AreaData(Name, geometry);
     }
 }

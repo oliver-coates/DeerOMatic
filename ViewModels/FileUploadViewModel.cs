@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,9 +11,8 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class FileUploadViewModel : ViewModelBase
 {
-    public static event Action<FlightDataViewModel>? OnFlightDataAdded;
-    public static event Action? OnFlightDataCleared;
-    public static event Action<FlightDataViewModel>? OnFlightDataRemoved;
+
+    public static event Action<object?, NotifyCollectionChangedEventArgs>? OnFlightDataChanged;
 
     private readonly IKmlPickerService _KmlPicker;
     private readonly IKmlProcessor _KmlProcessor;
@@ -30,19 +30,28 @@ public partial class FileUploadViewModel : ViewModelBase
         _Notifications = notifications;
 
         OpenFileCommand = new AsyncRelayCommand(PickKmlAsync);
+
+        FlightData.CollectionChanged += FlightDataChanged;
     }
+
+
+    #region Flight Data Collection changed routing
+    // This just exposes this flight data collection changed event so the map can access it.
+    private void FlightDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        OnFlightDataChanged?.Invoke(sender, e);
+    }
+    #endregion
 
     public void RemoveAllFlightData()
     {
         FlightData.Clear();
-        OnFlightDataCleared?.Invoke();
     }
 
     [RelayCommand]
     public void RemoveFlightData(FlightDataViewModel toRemove)
     {
         FlightData.Remove(toRemove);
-        OnFlightDataRemoved?.Invoke(toRemove);
     }
 
     private async Task PickKmlAsync()
@@ -70,8 +79,6 @@ public partial class FileUploadViewModel : ViewModelBase
 
                 FlightDataViewModel viewModel = new FlightDataViewModel(flightData); 
                 FlightData.Add(viewModel);   
-
-                OnFlightDataAdded?.Invoke(viewModel);
             }
             catch (Exception e)
             {
