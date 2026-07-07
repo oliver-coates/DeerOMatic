@@ -10,7 +10,7 @@
     <Grid ColumnDefinitions="180, *">
         <Grid Grid.Column="0" RowDefinitions="Auto, Auto, *, Auto, Auto" Margin="8, 8, 8, 8">
             
-            <TextBlock Grid.Row="0" Margin="0, 0, 0, 8">KML Area Files:</TextBlock>
+            <TextBlock Grid.Row="0" Margin="0, 0, 0, 8">Poison Area Files:</TextBlock>
             <Rectangle Grid.Row="1" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
             
             <ScrollViewer Grid.Row="2" Margin="0, 8, 0, 8">
