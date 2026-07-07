@@ -90,7 +90,7 @@ public partial class MapViewModel : ViewModelBase
                 break;
             
             case NotifyCollectionChangedAction.Reset:
-                throw new NotImplementedException();
+                ClearAllFlightData();
                 break;
         }
 
@@ -139,17 +139,20 @@ public partial class MapViewModel : ViewModelBase
 
     private void ClearAllFlightData()
     {
-        // string[] layerNames = layerDictionary.Keys.ToArray();
+        IEnumerable<IDisplayableOnMap> keys = layerDictionary.Keys;
 
-        // foreach (string layerName in layerNames)
-        // {
-        //     ILayer[] layers = layerDictionary[layerName];
-            
-        //     SimpleMap.Layers.Remove(layers[0]);
-        //     SimpleMap.Layers.Remove(layers[1]);
-            
-        //     layerDictionary.Remove(layerName);
-        // }
+        foreach (IDisplayableOnMap mapObject in keys)
+        {
+            if (mapObject is FlightDataViewModel)
+            {
+                ILayer[] layers = layerDictionary[mapObject];
+
+                SimpleMap.Layers.Remove(layers[0]);
+                SimpleMap.Layers.Remove(layers[1]);
+
+                layerDictionary.Remove(mapObject);
+            }            
+        }
     }
     
     private void AreaDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -200,15 +203,18 @@ public partial class MapViewModel : ViewModelBase
         }
     }
     
-
-    private void RemoveAreaData(IEnumerable<AreaDataViewModel> toDisplay)
+    private void RemoveAreaData(IEnumerable<AreaDataViewModel> toRemove)
     {
-        
+        foreach (AreaDataViewModel areaDataViewModel in toRemove)
+        {
+            ILayer layerToRemove = layerDictionary[areaDataViewModel][0];
+            
+            SimpleMap.Layers.Remove(layerToRemove);
+            layerDictionary.Remove(areaDataViewModel);
+        }
     }
 
     #endregion
-
-
 
     private async Task PickFileAsnyc()
     {
