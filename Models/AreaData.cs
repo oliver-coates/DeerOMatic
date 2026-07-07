@@ -1,22 +1,22 @@
 using SharpKml.Base;
-using SharpKml.Dom;
+using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.Models;
 
 /// <summary>
-/// Represents an area of land o
+/// Represents a loaded file containing geometry
 /// </summary>
 public class AreaData
 {
     public readonly string name;
-    public readonly string geometryXml;
+    public readonly Geometry[] geometries;
 
-    public AreaData(string name, Geometry geometry)
+    public AreaData(string name, Geometry[] geometry)
     {
         this.name = name;
-
-        Serializer serializer = new();    
-        serializer.Serialize(geometry);
-        this.geometryXml = serializer.Xml;
+        this.geometries = geometry;        
     }
+
+
+    
 }

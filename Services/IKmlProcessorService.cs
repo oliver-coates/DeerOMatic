@@ -15,7 +15,7 @@ public interface IKmlProcessor
 {
     public Task<FlightData> ParseFlightDataFromKmlAsync(PickedFile file);
 
-    public Task<AreaData[]> ParseAreaDataFromKmlAsync(PickedFile file);
+    public Task<Placemark[]> ParseAreaDataFromKmlAsync(PickedFile file);
 }
 
 public class KmlProcessor : IKmlProcessor
@@ -40,11 +40,10 @@ public class KmlProcessor : IKmlProcessor
     }
 
     /// <summary>
-    /// Creates an array of AreaData objects from a provided file.
+    /// Takes a KML file and pulls all the placemarks.
+    /// This function assumes that all placemarks within the root folder are areas.
     /// </summary>
-    /// <param name="file"></param>
-    /// <returns></returns>
-    public async Task<AreaData[]> ParseAreaDataFromKmlAsync(PickedFile file)
+    public async Task<Placemark[]> ParseAreaDataFromKmlAsync(PickedFile file)
     {
         Kml kml = await Parse(file.content);
 
@@ -55,12 +54,12 @@ public class KmlProcessor : IKmlProcessor
         // The root folder contains every zone:
         Folder rootFolder = (Folder) doc.Features.ElementAt(0); 
 
-        List<AreaData> areaDatas = new ();
+        List<Placemark> areaPlacemarks = [];
         foreach (Feature feature in rootFolder.Features)
         {
             if (feature is Placemark area)
             {
-                areaDatas.Add(new AreaData(feature.Name, area.Geometry));            
+                areaPlacemarks.Add(area);            
             }
             else
             {
@@ -68,7 +67,7 @@ public class KmlProcessor : IKmlProcessor
             }
         }
 
-        return [.. areaDatas];
+        return [.. areaPlacemarks];
     }
 
     #endregion

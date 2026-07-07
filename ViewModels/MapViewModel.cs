@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,7 +11,6 @@ using Mapsui.Layers;
 using Mapsui.Projections;
 using Mapsui.Styles;
 using Mapsui.Tiling;
-using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.ViewModels;
 
@@ -33,6 +32,8 @@ public partial class MapViewModel : ViewModelBase
 
     [ObservableProperty]
     private Map _simpleMap;
+
+    public ObservableCollection<AreaDataViewModel> AreaData {get; } = [];
 
     /// <summary>
     /// Dictionary relating names to the layer.
@@ -122,7 +123,12 @@ public partial class MapViewModel : ViewModelBase
             return;
         }
 
-        Console.WriteLine($"Picked {kmlFiles.Length} Files!");
+        foreach (PickedFile file in kmlFiles)
+        {
+            AreaData data = await AreaProcessor.ParseKmlAsync(file);
+
+            AreaData.Add(new AreaDataViewModel(data));        
+        }
     }
 
     private void CreateLayers(FlightDataViewModel flightDataViewModel, List<IFeature> features, out MemoryLayer pointLayer, out MemoryLayer textLayer)
@@ -150,25 +156,25 @@ public partial class MapViewModel : ViewModelBase
     /// <summary>
     /// Async method testing adding all the WARO areas into the map.
     /// </summary>
-    public async Task TestAddWaroAreasAsync()
-    {        
-        await Task.Delay(100);  // Small delay to ensure map is ready
+    // public async Task TestAddWaroAreasAsync()
+    // {        
+    //     await Task.Delay(100);  // Small delay to ensure map is ready
 
-        Geometry[] areaGeometry = await AreaProcessor.GetAllWaroGeometry();
+    //     Geometry[] areaGeometry = await AreaProcessor.GetAllWaroGeometry();
 
-        IFeature[] features = new IFeature[areaGeometry.Length];
-        for (int index = 0; index < areaGeometry.Length; index++)
-        {
-            features[index] = Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry[index]);
+    //     IFeature[] features = new IFeature[areaGeometry.Length];
+    //     for (int index = 0; index < areaGeometry.Length; index++)
+    //     {
+    //         features[index] = Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry[index]);
             
-        }
+    //     }
 
-        // Create Layer:
-        BaseLayer testAreaLayer = MapLayerTypes.CreateZoneLayer("WARO", features);
-        SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
+    //     // Create Layer:
+    //     BaseLayer testAreaLayer = MapLayerTypes.CreateZoneLayer("WARO", features);
+    //     SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
 
-        // Zoom to the newly created layer:
-        SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
-    }
+    //     // Zoom to the newly created layer:
+    //     SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
+    // }
     #endregion
 }

@@ -1,22 +1,14 @@
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
-using Mapsui.Projections;
-using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO.KML;
 
 namespace Deer_o_matic.Services;
 
 public interface IAreaProcessorService
 {
-    public Task<Polygon> GetTestArea();
-
-    public Task<Geometry> GetSampleWaroArea();
-
-    public Task<Geometry[]> GetAllWaroGeometry();
+    public Task<AreaData> ParseKmlAsync(PickedFile file);
 }
 
 
@@ -35,19 +27,8 @@ public class AreaProcessorService : IAreaProcessorService
 
     }
 
-    public async Task<Polygon> GetTestArea()
-    {
-        Polygon polygon = _geoFactory.CreatePolygon(new[] {
-            new Coordinate(169.0, -43.0),
-            new Coordinate(170.0, -43.0),
-            new Coordinate(170.0, -44.0),
-            new Coordinate(169.0, -44.0),
-            new Coordinate(169.0, -43.0)
-        });
-
-        return polygon;
-    }
-
+    #region Depreciated
+    #if FALSE
     public async Task<Geometry> GetSampleWaroArea()
     {
         PickedFile waroFile = await GetWaroFile();   
@@ -76,6 +57,7 @@ public class AreaProcessorService : IAreaProcessorService
 
         return outGeometry;
     }
+    
 
     private async Task<PickedFile> GetWaroFile()
     {
@@ -109,6 +91,34 @@ public class AreaProcessorService : IAreaProcessorService
         
         return FilePicker.GenerateDummyFile("Waro Areas", content, ".kml", "not implemented");
     }
-
+    #endif
+    #endregion
     
+    /// <summary>
+    /// Parses a picked KML file into AreaData objects
+    /// </summary>
+    public async Task<AreaData> ParseKmlAsync(PickedFile file)
+    {
+        SharpKml.Dom.Placemark[] areaPlacemarks = await KmlProcessor.ParseAreaDataFromKmlAsync(file);
+        
+        List<Geometry> geo = new();
+
+        // Create the serializer and reader objects we are going to need to convert SharpKML placemarks into NTS objects
+        SharpKml.Base.Serializer serializer = new();
+        KMLReader reader = new(["altitudeMode", "tesselate", "extrude"]);
+
+        foreach (SharpKml.Dom.Placemark placemark in areaPlacemarks)
+        {
+            // Serialize the placemark into raw XML
+            serializer.Serialize(placemark.Geometry);
+
+            // Read the raw xml into a NTS geometry object
+            Geometry geometry = reader.Read(serializer.Xml);
+
+            geo.Add(geometry);
+        }
+
+        return new AreaData(file.name, [.. geo]);
+    }
+
 }

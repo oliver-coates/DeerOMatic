@@ -17,9 +17,10 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <!-- Flight Data Template: -->
+            <!-- Flight & Area Data Templates: -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/FlightDataTemplate.axaml" />
+                <ResourceInclude Source="/Styles/AreaDataTemplate.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
