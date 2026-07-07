@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Deer_o_matic.ViewModels;
 using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Providers;
@@ -11,6 +12,30 @@ namespace Deer_o_matic.Models;
 /// </summary>
 public static class MapLayerTypes
 {
+
+    // Dictionaries mapping colours to who is using them
+    private static readonly Dictionary<Color, IColourable?> AnimalMarkColourDictionary = new(){
+        {Color.IndianRed, null},
+        {Color.Azure, null},
+        {Color.Yellow, null},
+        {Color.ForestGreen, null},
+        {Color.White, null},
+        {Color.Aquamarine, null},
+        {Color.Beige, null},
+        {Color.BurlyWood, null},
+        {Color.Crimson, null}
+    };
+
+    private static readonly Dictionary<Color, IColourable?> AreaColorDictionary = new() {
+        {Color.Red, null},
+        {Color.Green, null},
+        {Color.Blue, null},
+        {Color.Yellow, null},
+        {Color.Black, null},
+        {Color.BlanchedAlmond, null},
+        {Color.Purple, null},
+    };
+
     public const int BACKGROUND_LAYER_INT = -1;
     public const int AREAS_LAYER_INT = 0;
     public const int PLACEMARKS_LAYER_INT = 1;
@@ -56,20 +81,18 @@ public static class MapLayerTypes
 
     }
    
-    public static BaseLayer CreateZoneLayer(string name, IEnumerable<IFeature> features)
+    public static BaseLayer CreateZoneLayer(string name, IEnumerable<IFeature> features, Color color)
     {
         // --- Styling:
         Brush brush = new Brush
         {
-            Color = Color.Green,
-            // Background = Color.Red,
+            Color = color,
             FillStyle = FillStyle.Solid
         };
 
         VectorStyle style = new()
         {
             Fill = brush,
-            // Line = new Pen(Color.DarkRed, width:3),
             Outline = new Pen(Color.Black, width:1)
         };
 
@@ -97,5 +120,57 @@ public static class MapLayerTypes
 
         return layer;
     }
+    
+    #region Colour Methods
+    public static Color RequestAnimalMarkColor(IColourable requester)
+    {
+        return RequestLayerColour(AnimalMarkColourDictionary, requester);
+    }
 
+    public static void ReleaseAnimalMarkColor(IColourable releaser)
+    {
+        ReleaseLayerColour(AnimalMarkColourDictionary, releaser);
+    }
+
+    public static Color RequestAreaColor(IColourable requester)
+    {
+        return RequestLayerColour(AreaColorDictionary, requester);
+    }
+
+    public static void ReleaseAreaColor(IColourable releaser)
+    {
+        ReleaseLayerColour(AreaColorDictionary, releaser);
+    }
+
+    private static Color RequestLayerColour(Dictionary<Color, IColourable?> dict, IColourable requester)
+    {
+        foreach (Color color in dict.Keys)
+        {
+            if (dict[color] == null)
+            {
+                // Not in use
+                dict[color] = requester;
+                return color;
+            }
+        }
+
+        return Color.Magenta;
+    }
+
+    private static void ReleaseLayerColour(Dictionary<Color, IColourable?> dict, IColourable releaser)
+    {
+        foreach (Color color in dict.Keys)
+        {
+            if (dict[color] == releaser)
+            {
+                dict[color] = null;
+            }
+        }
+    }
+    #endregion
+}
+
+public interface IColourable
+{
+    
 }

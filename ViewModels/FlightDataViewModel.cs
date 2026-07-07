@@ -4,7 +4,7 @@ using Deer_o_matic.Models;
 
 namespace Deer_o_matic.ViewModels;
 
-public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap
+public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, IColourable
 {
     [ObservableProperty]
     private string _name;

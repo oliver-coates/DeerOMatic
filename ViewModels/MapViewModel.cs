@@ -19,17 +19,6 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class MapViewModel : ViewModelBase
 {
-    private static readonly Color[] LayerColours = {
-        Color.IndianRed,
-        Color.Azure,
-        Color.Yellow,
-        Color.ForestGreen,
-        Color.White,
-        Color.Aquamarine,
-        Color.Beige,
-        Color.BurlyWood,
-        Color.Crimson};
-
     private readonly IAreaProcessorService AreaProcessor; 
     private readonly IKmlPickerService KmlPicker;
 
@@ -134,6 +123,7 @@ public partial class MapViewModel : ViewModelBase
             SimpleMap.Layers.Remove(layers[1]);
 
             layerDictionary.Remove(flightDataViewModel);
+            MapLayerTypes.ReleaseAnimalMarkColor(flightDataViewModel);
         }
     }
 
@@ -151,6 +141,7 @@ public partial class MapViewModel : ViewModelBase
                 SimpleMap.Layers.Remove(layers[1]);
 
                 layerDictionary.Remove(mapObject);
+                MapLayerTypes.ReleaseAnimalMarkColor((IColourable) mapObject);
             }            
         }
     }
@@ -192,7 +183,7 @@ public partial class MapViewModel : ViewModelBase
             }
 
             // Create Layer:
-            BaseLayer layer = MapLayerTypes.CreateZoneLayer(areaData.Name, features);
+            BaseLayer layer = MapLayerTypes.CreateZoneLayer(areaData.Name, features, areaData.MapColour);
             SimpleMap.Layers.AddOnTop(layer, MapLayerTypes.AREAS_LAYER_INT);
 
             // Zoom to the newly created layer:
@@ -210,6 +201,7 @@ public partial class MapViewModel : ViewModelBase
             ILayer layerToRemove = layerDictionary[areaDataViewModel][0];
             
             SimpleMap.Layers.Remove(layerToRemove);
+            
             layerDictionary.Remove(areaDataViewModel);
         }
     }
@@ -242,9 +234,9 @@ public partial class MapViewModel : ViewModelBase
 
     private void CreateLayers(FlightDataViewModel flightDataViewModel, List<IFeature> features, out MemoryLayer pointLayer, out MemoryLayer textLayer)
     {
-        Color color = LayerColours[layerDictionary.Count];
-        
-        pointLayer = MapLayerTypes.CreatePointLayer(flightDataViewModel.Name + " (Points)", features, color);
+        Color layerColor = MapLayerTypes.RequestAnimalMarkColor(flightDataViewModel);
+
+        pointLayer = MapLayerTypes.CreatePointLayer(flightDataViewModel.Name + " (Points)", features, layerColor);
         textLayer = MapLayerTypes.CreateTextLayer(flightDataViewModel.Name + " (Text)", features);
         
         ILayer[] layers = new ILayer[2] { pointLayer, textLayer };

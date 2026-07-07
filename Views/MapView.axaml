@@ -18,7 +18,7 @@
             </ScrollViewer>
 
             <Rectangle Grid.Row="3" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
-            <Button Grid.Row="4" Command="{Binding PickFilesCommand}" Margin="0, 8, 0, 0">Add New</Button>
+            <Button Grid.Row="4" Command="{Binding PickFilesCommand}" Margin="0, 8, 0, 0">Upload</Button>
         
                 
         </Grid>
