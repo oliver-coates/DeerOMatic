@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +6,7 @@ using Deer_o_matic.Models;
 using Deer_o_matic.Services;
 using Mapsui;
 using Mapsui.Layers;
-using Mapsui.Nts;
 using Mapsui.Projections;
-using Mapsui.Providers;
 using Mapsui.Styles;
 using Mapsui.Tiling;
 using NetTopologySuite.Geometries;
@@ -34,49 +31,32 @@ public partial class MapViewModel : ViewModelBase
     [ObservableProperty]
     private Map _simpleMap;
 
+    /// <summary>
+    /// Dictionary relating names to the layer.
+    /// </summary>
     private Dictionary<string, ILayer[]> layerDictionary;
+
 
     public MapViewModel(IAreaProcessorService areaProcessor)
     {
         AreaProcessor = areaProcessor;
+        layerDictionary = [];
 
+        // Create the map with the OpenStreetMap layer as a base.
         _simpleMap = new Map
         {
             CRS = "EPSG:3857"
         };
-
-        layerDictionary = new Dictionary<string, ILayer[]>();
-
-        Console.WriteLine("Creating map!");
         SimpleMap.Layers.Add(OpenStreetMap.CreateTileLayer(), -1);   
-
+        
+        // Subscribe to methods for adding and removing flight data:
         FileUploadViewModel.OnFlightDataAdded += LoadFlightData;
         FileUploadViewModel.OnFlightDataRemoved += RemoveFlightData;
         FileUploadViewModel.OnFlightDataCleared += ClearFlightData;
     }
 
-    public async Task TestAddAreaAsync()
-    {        
-        await Task.Delay(100);  // Small delay to ensure map is ready
 
-        Geometry[] areaGeometry = await AreaProcessor.GetAllWaroGeometry();
-
-        IFeature[] features = new IFeature[areaGeometry.Length];
-        for (int index = 0; index < areaGeometry.Length; index++)
-        {
-            features[index] = Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry[index]);
-            
-        }
-
-        // Create Layer:
-        BaseLayer testAreaLayer = CreateZoneLayer("WARO", features);
-        SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
-
-        // Zoom to the newly created layer:
-        SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
-    }
-
-    public void LoadFlightData(FlightDataViewModel flightDataViewModel)
+     public void LoadFlightData(FlightDataViewModel flightDataViewModel)
     {
         List<IFeature> features = new();
 
@@ -127,8 +107,8 @@ public partial class MapViewModel : ViewModelBase
     {
         Color color = LayerColours[layerDictionary.Count];
         
-        pointLayer = CreatePointLayer(flightDataViewModel.Name + " (Points)", features, color);
-        textLayer = CreateTextLayer(flightDataViewModel.Name + " (Text)", features);
+        pointLayer = MapLayerTypes.CreatePointLayer(flightDataViewModel.Name + " (Points)", features, color);
+        textLayer = MapLayerTypes.CreateTextLayer(flightDataViewModel.Name + " (Text)", features);
         
         ILayer[] layers = new ILayer[2] { pointLayer, textLayer };
         layerDictionary.Add(flightDataViewModel.Name, layers);
@@ -143,93 +123,30 @@ public partial class MapViewModel : ViewModelBase
         return point;
     }
 
-    private MemoryLayer CreatePointLayer(string name, List<IFeature> features, Color color)
-    {
-        BaseStyle style = new SymbolStyle
-        {
-            SymbolScale = 0.75,
-            Fill = new Brush(color)
-        };
 
-        return new MemoryLayer
-        {
-            Name = name,
-            Features = features,
-            Style = style
-        };
-    }
+    #region Testing methods
+    /// <summary>
+    /// Async method testing adding all the WARO areas into the map.
+    /// </summary>
+    public async Task TestAddWaroAreasAsync()
+    {        
+        await Task.Delay(100);  // Small delay to ensure map is ready
 
-    private static MemoryLayer CreateTextLayer(string name, List<IFeature> features)
-    {
-        BaseStyle style = new LabelStyle
-        {
-            LabelColumn = "Name",
+        Geometry[] areaGeometry = await AreaProcessor.GetAllWaroGeometry();
 
-            VerticalAlignment = LabelStyle.VerticalAlignmentEnum.Center,
-            HorizontalAlignment = LabelStyle.HorizontalAlignmentEnum.Center,
+        IFeature[] features = new IFeature[areaGeometry.Length];
+        for (int index = 0; index < areaGeometry.Length; index++)
+        {
+            features[index] = Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry[index]);
             
-            Font = new Mapsui.Styles.Font { FontFamily = "Arial", Size = 8 },
-            ForeColor = Color.Black,
-            BackColor = new Brush(Color.White),
-            
-        };
+        }
 
-        return new MemoryLayer
-        {
-            Name = name,
-            Features = features,
-            Style = style
-        };
+        // Create Layer:
+        BaseLayer testAreaLayer = MapLayerTypes.CreateZoneLayer("WARO", features);
+        SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
 
+        // Zoom to the newly created layer:
+        SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
     }
-   
-    private static BaseLayer CreateZoneLayer(string name, IEnumerable<IFeature> features)
-    {
-        // --- Styling:
-        Brush brush = new Brush
-        {
-            Color = Color.Green,
-            // Background = Color.Red,
-            FillStyle = FillStyle.Solid
-        };
-
-        VectorStyle style = new()
-        {
-            Fill = brush,
-            // Line = new Pen(Color.DarkRed, width:3),
-            Outline = new Pen(Color.Black, width:1)
-        };
-
-        // --- Data Providers:
-        MemoryProvider memoryProvider = new(features)
-        {
-            CRS = "EPSG:4326"
-        };
-
-        ProjectingProvider dataSource = new (memoryProvider)
-        {
-            CRS = "EPSG:3857"
-        };
-        
-        // --- Layer:
-        Layer layer = new ()
-        {
-            Name = name,
-            DataSource = dataSource,
-            Style = style,
-            Opacity = 0.5,
-            Enabled = true
-        };
-
-        // MemoryLayer layer =  new()
-        // {            
-        //     Name = name,
-        //     Features = features,
-        //     Style = style,
-        //     Opacity = 0.4,
-        //     Enabled = true
-        // };
-
-        return layer;
-    }
+    #endregion
 }

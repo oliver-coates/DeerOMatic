@@ -67,7 +67,7 @@ public partial class FileUploadViewModel : ViewModelBase
         {
             try
             {
-                FlightData flightData = await _KmlProcessor.CreateFlightData(file);
+                FlightData flightData = await _KmlProcessor.ParseFlightDataFromKmlAsync(file);
 
                 EnsureFlightDataNameIsUnique(flightData.name);
 

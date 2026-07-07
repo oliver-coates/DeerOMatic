@@ -13,10 +13,9 @@ namespace Deer_o_matic.Services;
 
 public interface IKmlProcessor
 {
-    public Task<FlightData> CreateFlightData(PickedFile file);
+    public Task<FlightData> ParseFlightDataFromKmlAsync(PickedFile file);
 
-    public Task<AreaData[]> ReadAreasFromKmz(string content);
-
+    public Task<AreaData[]> ParseAreaDataFromKmlAsync(PickedFile file);
 }
 
 public class KmlProcessor : IKmlProcessor
@@ -25,9 +24,9 @@ public class KmlProcessor : IKmlProcessor
     #region Public Methods
 
     /// <summary>
-    /// Creates a flight data object from a provided file output object.
+    /// Creates a flight data object from a provided file.
     /// </summary>
-    public async Task<FlightData> CreateFlightData(PickedFile file)
+    public async Task<FlightData> ParseFlightDataFromKmlAsync(PickedFile file)
     {
         Kml kml = await Parse(file);
 
@@ -40,22 +39,33 @@ public class KmlProcessor : IKmlProcessor
         return flightData;
     }
 
-    public async Task<AreaData[]> ReadAreasFromKmz(string content)
+    /// <summary>
+    /// Creates an array of AreaData objects from a provided file.
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public async Task<AreaData[]> ParseAreaDataFromKmlAsync(PickedFile file)
     {
-        Kml kml = await Parse(content);
+        Kml kml = await Parse(file.content);
 
         Document doc = (Document) kml.Feature;
         
-        // The root folder contains every WARO zone:
+        // NOTE: The following assumes a schema for every passed KML file, which will probably not be the case - so expect this to break.
+
+        // The root folder contains every zone:
         Folder rootFolder = (Folder) doc.Features.ElementAt(0); 
 
-        
         List<AreaData> areaDatas = new ();
-        foreach (Feature placemark in rootFolder.Features)
+        foreach (Feature feature in rootFolder.Features)
         {
-            Placemark waroArea = (Placemark) placemark;
-         
-            areaDatas.Add(new AreaData(placemark.Name, waroArea.Geometry));
+            if (feature is Placemark area)
+            {
+                areaDatas.Add(new AreaData(feature.Name, area.Geometry));            
+            }
+            else
+            {
+                // NOTE: Consider unexpected type handling here?
+            }
         }
 
         return [.. areaDatas];
@@ -84,11 +94,11 @@ public class KmlProcessor : IKmlProcessor
     {
         if (file.extension is ".kml" or ".kmz")
         {
-            return await Parse(file.content);        
+            return await Parse(file.content);
         }
         else
         {
-            throw new NullReferenceException();            
+            throw new NotImplementedException($"Parsing of file extension '{file.extension}' is not handled.");
         }
     }
 

@@ -49,7 +49,7 @@ public class AreaProcessorService : IAreaProcessorService
     public async Task<Geometry> GetSampleWaroArea()
     {
         string contents = await GetAreaContents();   
-        AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
+        AreaData[] areaData = await KmlProcessor.ParseAreaDataFromKmlAsync(contents);
 
         AreaData sampleData = areaData[0];
 
@@ -63,7 +63,7 @@ public class AreaProcessorService : IAreaProcessorService
     public async Task<Geometry[]> GetAllWaroGeometry()
     {
         string contents = await GetAreaContents();   
-        AreaData[] areaData = await KmlProcessor.ReadAreasFromKmz(contents);
+        AreaData[] areaData = await KmlProcessor.ParseAreaDataFromKmlAsync(contents);
         Geometry[] outGeometry = new Geometry[areaData.Length];
         
         NetTopologySuite.IO.KML.KMLReader reader = new(["altitudeMode", "tesselate", "extrude"]);
