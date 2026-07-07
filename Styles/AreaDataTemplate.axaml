@@ -4,18 +4,15 @@
                     xmlns:models="clr-namespace:Deer_o_matic.Models">
 
     <DataTemplate DataType="vm:AreaDataViewModel"  x:Key="AreaDataTemplate">
-        <Grid ColumnDefinitions="*" Margin="8">
+        <Grid ColumnDefinitions="*, Auto" Margin="8">
             <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-            <!--<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Refrigerated:" Margin="0, 0, 8, 0"/>
-            <TextBox Grid.Column="2" Text="{Binding FridgeTime}" PlaceholderText="14:00" Margin="0, 0, 8, 0"/>
-            <CalendarDatePicker Grid.Column="3" SelectedDate="{Binding FridgeDate}" Margin="0, 0, 24, 0"/> -->
 
-            <!-- $parent[UserControl] walks up the visual tree until it finds a UserControl (Which will be the FileUploadViewModel) -->
-            <!-- <Button Grid.Column="4" 
-                    Command="{Binding $parent[UserControl].((vm:FileUploadViewModel)DataContext).RemoveFlightData}"
+            <!-- $parent[UserControl] walks up the visual tree until it finds a UserControl (Which will be the MapView) -->
+            <Button Grid.Column="1" 
+                    Command="{Binding $parent[UserControl].((vm:MapViewModel)DataContext).DeleteAreaData}"
                     CommandParameter="{Binding .}">
                     Delete
-            </Button> -->
+            </Button>
         </Grid>    
     </DataTemplate>
 

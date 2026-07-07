@@ -216,6 +216,12 @@ public partial class MapViewModel : ViewModelBase
 
     #endregion
 
+    [RelayCommand]
+    public void DeleteAreaData(AreaDataViewModel toRemove)
+    {
+        AreaData.Remove(toRemove);
+    }
+
     private async Task PickFileAsnyc()
     {
         PickedFile[] kmlFiles = await KmlPicker.OpenFilesAsync();
