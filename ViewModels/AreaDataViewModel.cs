@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using Deer_o_matic.Models;
+using Deer_o_matic.Services;
 using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.ViewModels;
@@ -19,10 +20,14 @@ public partial class AreaDataViewModel : ViewModelBase, IDisplayableOnMap
     private Mapsui.Styles.Color _mapColor;
     public Mapsui.Styles.Color MapColour {get => _mapColor; }
 
-    public AreaDataViewModel(AreaData areaData)
+    public PickedFile File {get; private set;}
+
+    public AreaDataViewModel(AreaData areaData, PickedFile file)
     {
         _name = areaData.name;
         geometry = areaData.geometries;
+
+        File = file;
 
         _mapColor = areaData.color; // <-- The colour used on the map
         _uiColor = ConvertColor(_mapColor); // The colour used on the UI

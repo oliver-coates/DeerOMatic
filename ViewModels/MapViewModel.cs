@@ -21,6 +21,7 @@ public partial class MapViewModel : ViewModelBase
     private readonly IAreaProcessorService AreaProcessor; 
     private readonly IKmlPickerService KmlPicker;
     private readonly IKmlPersistenceService KmlSaveLoader;
+    private readonly INotificationService Notifications;
 
     private bool _hasRequestedFiles;
 
@@ -36,11 +37,12 @@ public partial class MapViewModel : ViewModelBase
 
     public AsyncRelayCommand PickFilesCommand {get;}
 
-    public MapViewModel(IAreaProcessorService areaProcessor, IKmlPickerService kmlPicker, IKmlPersistenceService kmlSaveLoader)
+    public MapViewModel(IAreaProcessorService areaProcessor, IKmlPickerService kmlPicker, IKmlPersistenceService kmlSaveLoader, INotificationService notifications)
     {
         AreaProcessor = areaProcessor;
         KmlPicker = kmlPicker;
         KmlSaveLoader = kmlSaveLoader;
+        Notifications = notifications;
 
         layerDictionary = [];
 
@@ -84,7 +86,7 @@ public partial class MapViewModel : ViewModelBase
     private async Task LoadAreaFile(PickedFile file)
     {
         AreaData data = await AreaProcessor.ParseKmlAsync(file);
-        AreaData.Add(new AreaDataViewModel(data));        
+        AreaData.Add(new AreaDataViewModel(data, file));        
     }
 
 
@@ -246,6 +248,7 @@ public partial class MapViewModel : ViewModelBase
     public void DeleteAreaData(AreaDataViewModel toRemove)
     {
         AreaData.Remove(toRemove);
+        KmlSaveLoader.RemoveKmlFileFromDisk(toRemove.File);
     }
 
     private async Task PickFileAsnyc()
@@ -258,15 +261,50 @@ public partial class MapViewModel : ViewModelBase
             return;
         }
 
+        List<PickedFile> filesToSave = new List<PickedFile>();
         foreach (PickedFile file in kmlFiles)
         {
+            if (EnsureFileNameIsUnique(file.name) == false)
+            {
+                await Notifications.ShowErrorAsync($"Cannot upload multiple area files with the same name ('{file.name}')");
+                continue;
+            }
+
             await LoadAreaFile(file);
+            filesToSave.Add(file);
         }
         
-        foreach (PickedFile file in kmlFiles)
+        foreach (PickedFile file in filesToSave)
         {
-            await KmlSaveLoader.SaveKmlFileAsync(file, "PoisonAreas");
+            try
+            {
+                await KmlSaveLoader.SaveKmlFileAsync(file, "PoisonAreas");            
+            }
+            catch (Exception e)
+            {
+                await Notifications.ShowErrorAsync($"Error when saving KML file:\n{e.Message}");
+            }
         }
+    }
+
+
+    /// <summary>
+    /// Ensures there is not other loaded area data with the same name.
+    /// </summary>
+    /// <returns>True if the name is unique.</returns>
+    private bool EnsureFileNameIsUnique(string name)
+    {
+        string nameContent = name.Split('.').First().ToLower();
+        foreach (AreaDataViewModel areaData in AreaData)
+        {
+            string areaDataNameContent = areaData.Name.Split('.').First().ToLower();
+            if (areaDataNameContent == nameContent)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void CreateLayers(FlightDataViewModel flightDataViewModel, List<IFeature> features, out MemoryLayer pointLayer, out MemoryLayer textLayer)

@@ -19,6 +19,8 @@ public interface IKmlPersistenceService
     /// Retrieves all files under the category within the persistent data path.
     /// </summary>
     public Task<PickedFile[]> GetAllKmlFiles(string category);
+
+    public Task RemoveKmlFileFromDisk(PickedFile fileToRemove);
 }
 
 public class KmlPersistenceService : IKmlPersistenceService
@@ -60,6 +62,18 @@ public class KmlPersistenceService : IKmlPersistenceService
         return [.. readFiles];
     }
 
+    public async Task RemoveKmlFileFromDisk(PickedFile fileToRemove)
+    {
+        string localPath = fileToRemove.pathUri.AbsolutePath;
+        
+        if (File.Exists(localPath) == false)
+        {
+            throw new Exception($"Could not find saved kml file to remove at {localPath}");
+        }
+
+        File.Delete(localPath);
+    }
+
     public async Task SaveKmlFileAsync(PickedFile file, string category)
     {
 
@@ -94,6 +108,10 @@ public class KmlPersistenceService : IKmlPersistenceService
             // Zip the files from the temp directory to the proper directory
             Directory.CreateDirectory(categoryFolderPath);
             await ZipFile.CreateFromDirectoryAsync(tempDir, zipPath);
+        }
+        catch (IOException)
+        {
+            throw;
         }
         finally
         {
