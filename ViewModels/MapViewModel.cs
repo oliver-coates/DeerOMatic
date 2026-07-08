@@ -22,6 +22,8 @@ public partial class MapViewModel : ViewModelBase
     private readonly IKmlPickerService KmlPicker;
     private readonly IKmlPersistenceService KmlSaveLoader;
 
+    private bool _hasRequestedFiles;
+
     [ObservableProperty]
     private Map _simpleMap;
 
@@ -56,16 +58,37 @@ public partial class MapViewModel : ViewModelBase
         // Command creation:
         PickFilesCommand = new AsyncRelayCommand(PickFileAsnyc);
 
+        _hasRequestedFiles = false;
     }
 
+
+    #region File Loading
+    internal async Task CheckToLoadMapData()
+    {
+        if (_hasRequestedFiles == false)
+        {
+            _hasRequestedFiles = true;
+            await LoadFilesAsync();
+        }
+    }
     public async Task LoadFilesAsync()
     {
-        Console.WriteLine($"Attempting to load files...");        
-
         PickedFile[] loadedAreas = await KmlSaveLoader.GetAllKmlFiles("PoisonAreas");
-
-        Console.WriteLine($"Sucess! Loaded {loadedAreas.Length} files");        
+        
+        foreach (PickedFile areaFile in loadedAreas)
+        {
+            await LoadAreaFile(areaFile);
+        }
     }
+
+    private async Task LoadAreaFile(PickedFile file)
+    {
+        AreaData data = await AreaProcessor.ParseKmlAsync(file);
+        AreaData.Add(new AreaDataViewModel(data));        
+    }
+
+
+    #endregion
 
     #region Flight & Area Data Changes Response Methods
     private void FlightDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -98,7 +121,7 @@ public partial class MapViewModel : ViewModelBase
     public void DisplayFlightData(IEnumerable<FlightDataViewModel> flightDataViewModels)
     {
         foreach (FlightDataViewModel flightDataViewModel in flightDataViewModels)
-        {
+        {     
             // Collect all the features from this layer:
             List<IFeature> features = new();
 
@@ -218,6 +241,7 @@ public partial class MapViewModel : ViewModelBase
 
     #endregion
 
+
     [RelayCommand]
     public void DeleteAreaData(AreaDataViewModel toRemove)
     {
@@ -236,9 +260,7 @@ public partial class MapViewModel : ViewModelBase
 
         foreach (PickedFile file in kmlFiles)
         {
-            AreaData data = await AreaProcessor.ParseKmlAsync(file);
-
-            AreaData.Add(new AreaDataViewModel(data));        
+            await LoadAreaFile(file);
         }
         
         foreach (PickedFile file in kmlFiles)
@@ -267,30 +289,4 @@ public partial class MapViewModel : ViewModelBase
         return point;
     }
 
-
-    #region Testing methods
-    /// <summary>
-    /// Async method testing adding all the WARO areas into the map.
-    /// </summary>
-    // public async Task TestAddWaroAreasAsync()
-    // {        
-    //     await Task.Delay(100);  // Small delay to ensure map is ready
-
-    //     Geometry[] areaGeometry = await AreaProcessor.GetAllWaroGeometry();
-
-    //     IFeature[] features = new IFeature[areaGeometry.Length];
-    //     for (int index = 0; index < areaGeometry.Length; index++)
-    //     {
-    //         features[index] = Mapsui.Nts.Extensions.GeometryExtensions.ToFeature(areaGeometry[index]);
-            
-    //     }
-
-    //     // Create Layer:
-    //     BaseLayer testAreaLayer = MapLayerTypes.CreateZoneLayer("WARO", features);
-    //     SimpleMap.Layers.AddOnTop(testAreaLayer, 0);
-
-    //     // Zoom to the newly created layer:
-    //     SimpleMap.Navigator.ZoomToBox(testAreaLayer.Extent, MBoxFit.Fit, 100);
-    // }
-    #endregion
 }

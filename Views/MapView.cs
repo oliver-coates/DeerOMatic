@@ -16,6 +16,11 @@ public partial class MapView : UserControl
     
     private async void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        if (DataContext is MapViewModel vm)
+        {
+            await vm.CheckToLoadMapData();
+        }
+
         // The following is for just testing the following method.
         // if (DataContext is MapViewModel vm)
         // {

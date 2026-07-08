@@ -48,7 +48,7 @@ public class KmlPersistenceService : IKmlPersistenceService
         {
             if (filePath.EndsWith(".kmz"))
             {
-                string name = filePath.Split('/').Last();
+                string name = filePath.Split(Path.DirectorySeparatorChar).Last();
                 string extension = "." + name.Split('.').Last();
                 string content = await UnzipAndRead(filePath);
                 Uri path = new(filePath);

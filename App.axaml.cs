@@ -53,9 +53,6 @@ public partial class App : Application
 
         var provider = services.BuildServiceProvider();
 
-        MapViewModel mapVm = provider.GetRequiredService<MapViewModel>();
-        _ = mapVm.LoadFilesAsync();
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop2)
         {
             desktop2.MainWindow!.DataContext = provider.GetRequiredService<MainWindowViewModel>();
