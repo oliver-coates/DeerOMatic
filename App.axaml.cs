@@ -50,6 +50,7 @@ public partial class App : Application
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IPointProximityService, PointProximityService>();
+        services.AddSingleton<IDocumentValidationService, DocumentValidatorService>();
 
 
         var provider = services.BuildServiceProvider();

@@ -24,6 +24,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IDocumentCreationService _DocumentCreation;
     private readonly IPdfExportService _PdfExport;
     private readonly INotificationService _Notifications;
+    private readonly IDocumentValidationService _DocumentValidator;
 
     // Commands:
     public AsyncRelayCommand ExportCommand { get; }
@@ -68,11 +69,14 @@ public partial class MainWindowViewModel : ViewModelBase
         IDocumentCreationService documentCreation,
         IPdfExportService pdfExport,
         IKmlPickerService filePicker,
-        INotificationService notifications)
+        INotificationService notifications,
+        IDocumentValidationService validator
+        )
     {
         FileUpload = fileUpload;
         HunterDeclaration = hunterDeclaration;
         HuntMap = huntMap;
+        _DocumentValidator = validator;
 
         _DocumentCreation = documentCreation;
         _PdfExport = pdfExport;
@@ -97,6 +101,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
+            _DocumentValidator.ValidateDocument(FileUpload.FlightData, HuntMap.AreaData);
+
             HunterDeclarationDocumentData data = _DocumentCreation.BuildDocument(FileUpload, HunterDeclaration);
     
             await _PdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);        

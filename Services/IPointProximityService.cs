@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Deer_o_matic.Models;
+using Deer_o_matic.ViewModels;
 using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.Services;
 
 public interface IPointProximityService
 {
-    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(List<AnimalMark> animalMarks, List<AreaData> areaData);
+    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(IList<AnimalMark> animalMarks, IList<AreaDataViewModel> areaData);
 }
 
 public class PointProximityService : IPointProximityService
@@ -15,10 +16,10 @@ public class PointProximityService : IPointProximityService
 
     private readonly GeometryFactory _geoFactory = new();
 
-    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(List<AnimalMark> animalMarks, List<AreaData> areaData)
+    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(IList<AnimalMark> animalMarks, IList<AreaDataViewModel> areaData)
     {
         // This dictionary related each animal mark to each area data it is intersecting.
-        Dictionary<AnimalMark, List<AreaData>> intersectionDict = new();
+        Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict = new();
         
         // Loop across each animal mark and find their intersections
         foreach (AnimalMark mark in animalMarks)
@@ -28,7 +29,7 @@ public class PointProximityService : IPointProximityService
             );
 
             // Add each intersection to the dictionary
-            foreach (AreaData area in areaData)
+            foreach (AreaDataViewModel area in areaData)
             {
                 AddPointAreaIntersectionsToDict(intersectionDict, mark, point, area);
             }
@@ -38,9 +39,9 @@ public class PointProximityService : IPointProximityService
     }
 
 
-    private static void AddPointAreaIntersectionsToDict(Dictionary<AnimalMark, List<AreaData>> intersectionDict, AnimalMark mark, Point point, AreaData area)
+    private static void AddPointAreaIntersectionsToDict(Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict, AnimalMark mark, Point point, AreaDataViewModel area)
     {
-        foreach (Geometry geometry in area.geometries)
+        foreach (Geometry geometry in area.geometry)
         {
             if (point.IsWithinDistance(geometry, MINIMUM_DISTANCE_ALLOWED_METERS))
             {
@@ -49,7 +50,7 @@ public class PointProximityService : IPointProximityService
         }
     }
 
-    private static void RegisterIntersection(Dictionary<AnimalMark, List<AreaData>> intersectionDict, AnimalMark mark, AreaData area)
+    private static void RegisterIntersection(Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict, AnimalMark mark, AreaDataViewModel area)
     {
         // Check to see if the dictionary already contains an entry for this mark
         if (intersectionDict.ContainsKey(mark))
@@ -68,13 +69,20 @@ public class PointProximityService : IPointProximityService
         }
     }
 
-    private static List<PointIntersection> CollectPointIntersections(Dictionary<AnimalMark, List<AreaData>> intersectionDict)
+    private static List<PointIntersection> CollectPointIntersections(Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict)
     {
         List<PointIntersection> results = new();
 
         foreach (AnimalMark animalMark in intersectionDict.Keys)
         {
-            AreaData[] intersectingAreas = [.. intersectionDict[animalMark]];
+            AreaDataViewModel[] intersectingAreaViewModels = [.. intersectionDict[animalMark]];
+            AreaData[] intersectingAreas = new AreaData[intersectingAreaViewModels.Length];
+            
+            for (int areaIndex = 0; areaIndex < intersectingAreaViewModels.Length; areaIndex++)
+            {
+                intersectingAreas[areaIndex] = intersectingAreaViewModels[areaIndex].Get();
+            }
+
             results.Add(new PointIntersection(animalMark, intersectingAreas));
         }
 
