@@ -49,6 +49,7 @@ public partial class App : Application
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<IPointProximityService, PointProximityService>();
 
 
         var provider = services.BuildServiceProvider();
