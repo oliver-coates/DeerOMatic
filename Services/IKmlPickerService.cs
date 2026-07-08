@@ -84,7 +84,14 @@ public class KmlPickerService : IKmlPickerService
 
     public PickedFile GenerateDummyFile(string name, string content, string extension, string path)
     {
-        return new PickedFile(name, extension, content, path);
+        if(Uri.TryCreate(path, UriKind.Absolute, out Uri? pathUri) && pathUri != null)
+        {
+            return new PickedFile(name, extension, content, pathUri);        
+        }
+        else
+        {
+            throw new NullReferenceException($"Could not create a URI at path: {path}");
+        }
     }
 
 }
@@ -95,11 +102,11 @@ public class PickedFile
     /// <summary>
     /// The name and file extension.
     /// </summary>
-    public string name = String.Empty;
+    public readonly string name = String.Empty;
     /// <summary>
     /// The file extension, including the '.'
     /// </summary>
-    public string extension = String.Empty;
+    public readonly string extension = String.Empty;
 
     /// <summary>
     /// The content of the file
@@ -109,27 +116,26 @@ public class PickedFile
     /// <summary>
     /// The path to the file
     /// </summary>
-    public string path = String.Empty;
+    public readonly Uri pathUri;
 
-    private PickedFile() { }
-    internal PickedFile(string name, string extension, string content, string path)
+    internal PickedFile(string name, string extension, string content, Uri path)
     {
         this.name = name;
         this.extension = extension;
         this.content = content;
-        this.path = path;
+        this.pathUri = path;
     }
 
 
     async public static Task<PickedFile> CreateAsnyc(IStorageFile file)
     {
-        PickedFile output = new PickedFile()
-        {
-            name = file.Name,
-            path = file.Path.ToString(),
-            extension = GetFileExtension(file.Name),
-            
-        };
+        PickedFile output = new PickedFile
+        (
+            file.Name,
+            GetFileExtension(file.Name),
+            String.Empty,
+            file.Path
+        );
         
         switch (output.extension)
         {

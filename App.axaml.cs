@@ -9,6 +9,7 @@ using Deer_o_matic.Views;
 using Avalonia.Controls;
 using Deer_o_matic.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Deer_o_matic;
 
@@ -42,13 +43,19 @@ public partial class App : Application
         services.AddTransient<MapViewModel>();
 
         services.AddSingleton<IKmlProcessor, KmlProcessor>();
+        services.AddSingleton<IKmlPersistenceService, KmlPersistenceService>();
         services.AddSingleton<IAreaProcessorService, AreaProcessorService>();
         services.AddSingleton<IPdfExportService, PdfExportService>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<INotificationService, NotificationService>();
 
+
         var provider = services.BuildServiceProvider();
+
+        MapViewModel mapVm = provider.GetRequiredService<MapViewModel>();
+        _ = mapVm.LoadFilesAsync();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop2)
         {
             desktop2.MainWindow!.DataContext = provider.GetRequiredService<MainWindowViewModel>();

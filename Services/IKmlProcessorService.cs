@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BruTile.Wmts.Generated;
 using Deer_o_matic.Models;
-using NetTopologySuite.Algorithm;
 using SharpKml.Base;
 using SharpKml.Dom;
 
@@ -34,7 +32,7 @@ public class KmlProcessor : IKmlProcessor
 
         AnimalMark[] animalMarks = ConvertPlacemarksToAnimalMarks(placemarks);
 
-        FlightData flightData = new (file.name, file.path, null, animalMarks);
+        FlightData flightData = new (file.name, file.pathUri.ToString(), null, animalMarks);
 
         return flightData;
     }

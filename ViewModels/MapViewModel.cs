@@ -13,7 +13,6 @@ using Mapsui.Layers;
 using Mapsui.Projections;
 using Mapsui.Styles;
 using Mapsui.Tiling;
-using SharpKml.Dom;
 
 namespace Deer_o_matic.ViewModels;
 
@@ -21,6 +20,7 @@ public partial class MapViewModel : ViewModelBase
 {
     private readonly IAreaProcessorService AreaProcessor; 
     private readonly IKmlPickerService KmlPicker;
+    private readonly IKmlPersistenceService KmlSaveLoader;
 
     [ObservableProperty]
     private Map _simpleMap;
@@ -34,10 +34,11 @@ public partial class MapViewModel : ViewModelBase
 
     public AsyncRelayCommand PickFilesCommand {get;}
 
-    public MapViewModel(IAreaProcessorService areaProcessor, IKmlPickerService kmlPicker)
+    public MapViewModel(IAreaProcessorService areaProcessor, IKmlPickerService kmlPicker, IKmlPersistenceService kmlSaveLoader)
     {
         AreaProcessor = areaProcessor;
         KmlPicker = kmlPicker;
+        KmlSaveLoader = kmlSaveLoader;
 
         layerDictionary = [];
 
@@ -54,8 +55,17 @@ public partial class MapViewModel : ViewModelBase
 
         // Command creation:
         PickFilesCommand = new AsyncRelayCommand(PickFileAsnyc);
+
     }
 
+    public async Task LoadFilesAsync()
+    {
+        Console.WriteLine($"Attempting to load files...");        
+
+        PickedFile[] loadedAreas = await KmlSaveLoader.GetAllKmlFiles("PoisonAreas");
+
+        Console.WriteLine($"Sucess! Loaded {loadedAreas.Length} files");        
+    }
 
     #region Flight & Area Data Changes Response Methods
     private void FlightDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -229,6 +239,11 @@ public partial class MapViewModel : ViewModelBase
             AreaData data = await AreaProcessor.ParseKmlAsync(file);
 
             AreaData.Add(new AreaDataViewModel(data));        
+        }
+        
+        foreach (PickedFile file in kmlFiles)
+        {
+            await KmlSaveLoader.SaveKmlFileAsync(file, "PoisonAreas");
         }
     }
 
