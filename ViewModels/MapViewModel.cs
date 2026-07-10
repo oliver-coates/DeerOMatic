@@ -18,9 +18,8 @@ namespace Deer_o_matic.ViewModels;
 
 public partial class MapViewModel : ViewModelBase
 {
-    private readonly IAreaProcessorService AreaProcessor; 
+    private readonly IPoisonAreaManagerService PoisonAreaManager;
     private readonly IKmlPickerService KmlPicker;
-    private readonly IKmlPersistenceService KmlSaveLoader;
     private readonly INotificationService Notifications;
 
     private bool _hasRequestedFiles;
@@ -28,7 +27,7 @@ public partial class MapViewModel : ViewModelBase
     [ObservableProperty]
     private Map _simpleMap;
 
-    public ObservableCollection<AreaDataViewModel> AreaData {get; } = [];
+    public ObservableCollection<AreaDataViewModel> AreaData { get; set; } = [];
 
     /// <summary>
     /// Dictionary relating names to the each ay.
@@ -37,12 +36,13 @@ public partial class MapViewModel : ViewModelBase
 
     public AsyncRelayCommand PickFilesCommand {get;}
 
-    public MapViewModel(IAreaProcessorService areaProcessor, IKmlPickerService kmlPicker, IKmlPersistenceService kmlSaveLoader, INotificationService notifications)
+    public MapViewModel(IPoisonAreaManagerService poisonAreaManager, IKmlPickerService kmlPicker, INotificationService notifications)
     {
-        AreaProcessor = areaProcessor;
+        PoisonAreaManager = poisonAreaManager;
         KmlPicker = kmlPicker;
-        KmlSaveLoader = kmlSaveLoader;
         Notifications = notifications;
+
+        PoisonAreaManager.OnPoisonAreasChanged += OnPoisonAreasChanged;
 
         layerDictionary = [];
 
@@ -63,36 +63,55 @@ public partial class MapViewModel : ViewModelBase
         _hasRequestedFiles = false;
     }
 
-
     #region File Loading
     internal async Task CheckToLoadMapData()
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         if (_hasRequestedFiles == false)
         {
             _hasRequestedFiles = true;
-            await LoadFilesAsync();
+            
+            AreaDataViewModel[] data = await PoisonAreaManager.GetAllPoisonAreas();
+            AreaData = new ObservableCollection<AreaDataViewModel>(data); 
+
+            OnPropertyChanged(nameof(AreaData));
+
+            DisplayAreaData(data);
         }
     }
-    public async Task LoadFilesAsync()
-    {
-        PickedFile[] loadedAreas = await KmlSaveLoader.GetAllKmlFiles("PoisonAreas");
-        
-        foreach (PickedFile areaFile in loadedAreas)
-        {
-            await LoadAreaFile(areaFile);
-        }
-    }
-
-    private async Task LoadAreaFile(PickedFile file)
-    {
-        AreaData data = await AreaProcessor.ParseKmlAsync(file);
-        AreaData.Add(new AreaDataViewModel(data, file));        
-    }
-
 
     #endregion
 
     #region Flight & Area Data Changes Response Methods
+    private void OnPoisonAreasChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                if (e.NewItems == null)
+                {
+                    return;
+                }
+                foreach (object o in e.NewItems)
+                {
+                    AreaData.Add((AreaDataViewModel) o);
+                }
+                break;
+            
+            case NotifyCollectionChangedAction.Remove:
+                if (e.OldItems == null)
+                {
+                    return;
+                }
+                foreach (object o in e.OldItems)
+                {
+                    AreaData.Remove((AreaDataViewModel) o);
+                }
+                break;
+        }
+    }
+
     private void FlightDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
@@ -247,8 +266,7 @@ public partial class MapViewModel : ViewModelBase
     [RelayCommand]
     public void DeleteAreaData(AreaDataViewModel toRemove)
     {
-        AreaData.Remove(toRemove);
-        KmlSaveLoader.RemoveKmlFileFromDisk(toRemove.File);
+        PoisonAreaManager.RemovePoisonArea(toRemove);
     }
 
     private async Task PickFileAsnyc()
@@ -261,51 +279,12 @@ public partial class MapViewModel : ViewModelBase
             return;
         }
 
-        List<PickedFile> filesToSave = new List<PickedFile>();
         foreach (PickedFile file in kmlFiles)
         {
-            if (EnsureFileNameIsUnique(file.name) == false)
-            {
-                await Notifications.ShowErrorAsync($"Cannot upload multiple area files with the same name ('{file.name}')");
-                continue;
-            }
-
-            await LoadAreaFile(file);
-            filesToSave.Add(file);
-        }
-        
-        foreach (PickedFile file in filesToSave)
-        {
-            try
-            {
-                await KmlSaveLoader.SaveKmlFileAsync(file, "PoisonAreas");            
-            }
-            catch (Exception e)
-            {
-                await Notifications.ShowErrorAsync($"Error when saving KML file:\n{e.Message}");
-            }
+            await PoisonAreaManager.AddPoisonArea(file);
         }
     }
 
-
-    /// <summary>
-    /// Ensures there is not other loaded area data with the same name.
-    /// </summary>
-    /// <returns>True if the name is unique.</returns>
-    private bool EnsureFileNameIsUnique(string name)
-    {
-        string nameContent = name.Split('.').First().ToLower();
-        foreach (AreaDataViewModel areaData in AreaData)
-        {
-            string areaDataNameContent = areaData.Name.Split('.').First().ToLower();
-            if (areaDataNameContent == nameContent)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     private void CreateLayers(FlightDataViewModel flightDataViewModel, List<IFeature> features, out MemoryLayer pointLayer, out MemoryLayer textLayer)
     {
