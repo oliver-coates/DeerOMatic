@@ -101,10 +101,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            _DocumentValidator.ValidateDocument(FileUpload.FlightData, HuntMap.AreaData);
-
+            // Creates a hunter declaration documenet:
             HunterDeclarationDocumentData data = _DocumentCreation.BuildDocument(FileUpload, HunterDeclaration);
     
+            // Validates all the data within the document
+            _DocumentValidator.ValidateDocument(data, HuntMap.AreaData);
+
             await _PdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);        
         
             await _Notifications.ShowSuccessAsync("✓ Exported Successfully");

@@ -15,6 +15,7 @@ public class HunterDeclarationDocumentData
     public required string otherHunters;
     public required string rmpIdentifier;
     public required string dateOfArrivalAtProcessor;
+    public required int numAnimals;
     public required string numAndTypeOfAnimals;
     public required string helicopterRegistration;
     public DateTime dateSigned;

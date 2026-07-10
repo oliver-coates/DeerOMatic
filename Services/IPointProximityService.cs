@@ -7,16 +7,15 @@ namespace Deer_o_matic.Services;
 
 public interface IPointProximityService
 {
-    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(IList<AnimalMark> animalMarks, IList<AreaDataViewModel> areaData);
+    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(IList<AnimalMark> animalMarks, IList<AreaDataViewModel> areaData, double distanceM);
 }
 
 public class PointProximityService : IPointProximityService
 {
-    public const double MINIMUM_DISTANCE_ALLOWED_METERS = 2000;
 
     private readonly GeometryFactory _geoFactory = new();
 
-    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(IList<AnimalMark> animalMarks, IList<AreaDataViewModel> areaData)
+    public List<PointIntersection> FindMarksWithinDistanceOfGeometry(IList<AnimalMark> animalMarks, IList<AreaDataViewModel> areaData, double distanceM)
     {
         // This dictionary related each animal mark to each area data it is intersecting.
         Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict = new();
@@ -31,7 +30,7 @@ public class PointProximityService : IPointProximityService
             // Add each intersection to the dictionary
             foreach (AreaDataViewModel area in areaData)
             {
-                AddPointAreaIntersectionsToDict(intersectionDict, mark, point, area);
+                AddPointAreaIntersectionsToDict(intersectionDict, mark, point, area, distanceM);
             }
         }
 
@@ -39,11 +38,11 @@ public class PointProximityService : IPointProximityService
     }
 
 
-    private static void AddPointAreaIntersectionsToDict(Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict, AnimalMark mark, Point point, AreaDataViewModel area)
+    private static void AddPointAreaIntersectionsToDict(Dictionary<AnimalMark, List<AreaDataViewModel>> intersectionDict, AnimalMark mark, Point point, AreaDataViewModel area, double distanceM)
     {
         foreach (Geometry geometry in area.geometry)
         {
-            if (point.IsWithinDistance(geometry, MINIMUM_DISTANCE_ALLOWED_METERS))
+            if (point.IsWithinDistance(geometry, distanceM))
             {
                 RegisterIntersection(intersectionDict, mark, area);
             }
@@ -99,5 +98,16 @@ public class PointIntersection
     {
         this.mark = mark;
         this.areas = areas;
+    }
+
+    public override string ToString()
+    {
+        string areaNames = "";
+        foreach (AreaData area in areas)
+        {
+            areaNames += area.name + ",";
+        }
+
+        return $"Point Intersection : {mark.displayName} intersects with {areaNames}";
     }
 }

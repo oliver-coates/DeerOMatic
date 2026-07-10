@@ -23,8 +23,7 @@ public class DocumentCreationService : IDocumentCreationService
 
     public HunterDeclarationDocumentData BuildDocument(FileUploadViewModel fileUpload, HunterDeclarationViewModel hunterDeclaration)
     {
-        bool[] questionTicks = new bool[]
-        {
+        bool[] questionTicks = [
             hunterDeclaration.QuestionA,
             hunterDeclaration.QuestionB,
             hunterDeclaration.QuestionC,
@@ -32,7 +31,9 @@ public class DocumentCreationService : IDocumentCreationService
             hunterDeclaration.QuestionE,
             hunterDeclaration.QuestionF,
             hunterDeclaration.QuestionG,
-        };
+        ];
+
+        int animalMarkCount = GetTotalNumAnimalMarks(fileUpload.FlightData);
 
         HunterDeclarationDocumentData doc = new()
         {
@@ -40,7 +41,8 @@ public class DocumentCreationService : IDocumentCreationService
             hunterId = hunterDeclaration.HunterIdentificationNumber,
             otherHunters = hunterDeclaration.OtherHunterNames,
             rmpIdentifier = hunterDeclaration.RmpIdentifier,
-            numAndTypeOfAnimals = $"{GetTotalNumPlacemarks(fileUpload.FlightData)} Deer",
+            numAnimals = animalMarkCount,
+            numAndTypeOfAnimals = $"{animalMarkCount} Deer",
             dateOfArrivalAtProcessor = hunterDeclaration.DateOfArrivalAtProcessor,
             helicopterRegistration = hunterDeclaration.HelicopterRegistrationNumber,
             questionTicks = questionTicks
@@ -50,15 +52,13 @@ public class DocumentCreationService : IDocumentCreationService
         {
             FlightData flightData = file.Get();
             
-            flightData.ValidateTime();                
-
             doc.flightDatas.Add(flightData);
         }
 
         return doc;
     }
 
-    private int GetTotalNumPlacemarks(ObservableCollection<FlightDataViewModel> flightDatas)
+    private int GetTotalNumAnimalMarks(ObservableCollection<FlightDataViewModel> flightDatas)
     {
         int total = 0;
 
