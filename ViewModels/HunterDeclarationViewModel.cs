@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -140,8 +141,8 @@ public partial class HunterDeclarationViewModel : ViewModelBase
             OtherHunterNames = OtherHunterNames,
             RmpIdentifier = RmpIdentifier,
             HelicopterRegistrationNumber = HelicopterRegistrationNumber,
-            QuestionResponses = new bool[]
-            {
+            QuestionResponses =
+            [
                 QuestionA,
                 QuestionB,
                 QuestionC,
@@ -149,7 +150,7 @@ public partial class HunterDeclarationViewModel : ViewModelBase
                 QuestionE,
                 QuestionF,
                 QuestionG
-            }
+            ]
         };
     
         await _Settings.SaveHunterDeclarationSettingsAsync(settings);
