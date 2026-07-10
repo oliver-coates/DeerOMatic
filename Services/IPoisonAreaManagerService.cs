@@ -19,7 +19,7 @@ public interface IPoisonAreaManagerService : IInitialisable
 
     public Task<AreaDataViewModel[]> GetAllPoisonAreas();
 
-    public Action<object?, NotifyCollectionChangedEventArgs>? OnPoisonAreasChanged {get; set;}
+    public void SubscribeToPoisonDataNotificationEvents(Action<object?, NotifyCollectionChangedEventArgs> action);
 }
 
 public class PoisonAreaManager : IPoisonAreaManagerService
@@ -29,15 +29,6 @@ public class PoisonAreaManager : IPoisonAreaManagerService
     private readonly INotificationService Notifications;
 
     private ObservableCollection<AreaDataViewModel> _areaData;
-
-    private static Action<object?, NotifyCollectionChangedEventArgs>? _OnPoisonAreasChanged; 
-    public Action<object?, NotifyCollectionChangedEventArgs>? OnPoisonAreasChanged {
-        get => _OnPoisonAreasChanged;
-        set
-        {
-            _OnPoisonAreasChanged = value;
-        }
-    }
             
 
     public PoisonAreaManager(IKmlPersistenceService kmlSaveLoad, IAreaProcessorService kmlAreaProcessor, INotificationService notifications)
@@ -61,9 +52,9 @@ public class PoisonAreaManager : IPoisonAreaManagerService
         }
 
         _areaData = new ObservableCollection<AreaDataViewModel>(data);
-        _areaData.CollectionChanged += (s, e) => _OnPoisonAreasChanged?.Invoke(s, e);;
     }
 
+    #endregion
     private async Task<AreaDataViewModel> LoadAreaFile(PickedFile file)
     {
         AreaData data = await KmlAreaProcessor.ParseKmlAsync(file);
@@ -71,7 +62,6 @@ public class PoisonAreaManager : IPoisonAreaManagerService
         return new AreaDataViewModel(data, file);   
     }
 
-    #endregion
 
     public async Task AddPoisonArea(PickedFile toAdd)
     {
@@ -89,6 +79,8 @@ public class PoisonAreaManager : IPoisonAreaManagerService
         {
             await Notifications.ShowErrorAsync($"Error when saving KML file:\n{e.Message}");
         }
+
+        _areaData.Add(await LoadAreaFile(toAdd));
     }
 
     public async Task<AreaDataViewModel[]> GetAllPoisonAreas()
@@ -123,5 +115,8 @@ public class PoisonAreaManager : IPoisonAreaManagerService
         return true;
     }
 
-    
+    public void SubscribeToPoisonDataNotificationEvents(Action<object?, NotifyCollectionChangedEventArgs> action)
+    {
+        _areaData.CollectionChanged += action.Invoke;
+    }
 }

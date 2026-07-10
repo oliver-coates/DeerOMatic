@@ -42,8 +42,6 @@ public partial class MapViewModel : ViewModelBase
         KmlPicker = kmlPicker;
         Notifications = notifications;
 
-        PoisonAreaManager.OnPoisonAreasChanged += OnPoisonAreasChanged;
-
         layerDictionary = [];
 
         // Create the map with the OpenStreetMap layer as a base.
@@ -64,20 +62,28 @@ public partial class MapViewModel : ViewModelBase
     }
 
     #region File Loading
+    // Called everytime the user opens the map.
+    // Essentially a lazy initialisation
     internal async Task CheckToLoadMapData()
     {
-        await Task.Delay(TimeSpan.FromSeconds(1));
+        await Task.Delay(TimeSpan.FromSeconds(0.25));
 
         if (_hasRequestedFiles == false)
         {
             _hasRequestedFiles = true;
             
+            // Get all poison data files from memory:
             AreaDataViewModel[] data = await PoisonAreaManager.GetAllPoisonAreas();
             AreaData = new ObservableCollection<AreaDataViewModel>(data); 
 
+            // Call a manual reload as the collection has been reset 
             OnPropertyChanged(nameof(AreaData));
-
+            // Display the loaded data on the map
             DisplayAreaData(data);
+            
+            // Finally, ensure we are subscribed to the posion data's changed events,
+            // these will be called as the user adds/removes poison data at runtime.
+            PoisonAreaManager.SubscribeToPoisonDataNotificationEvents(OnPoisonAreasChanged);
         }
     }
 
