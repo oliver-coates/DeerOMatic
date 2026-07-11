@@ -29,15 +29,18 @@ public class PoisonAreaManager : IPoisonAreaManagerService
     private readonly INotificationService Notifications;
 
     private ObservableCollection<AreaDataViewModel> _areaData;
-            
+    private Dictionary<AreaDataViewModel, PickedFile> AreaDataFileDict;            
 
     public PoisonAreaManager(IKmlPersistenceService kmlSaveLoad, IAreaProcessorService kmlAreaProcessor, INotificationService notifications)
     {
         Notifications = notifications;
         KmlSaveLoad = kmlSaveLoad;
         KmlAreaProcessor = kmlAreaProcessor;
+        
         _areaData = [];
+        AreaDataFileDict = [];
     }
+
 
     #region Initialisation
 
@@ -55,11 +58,16 @@ public class PoisonAreaManager : IPoisonAreaManagerService
     }
 
     #endregion
+
+
     private async Task<AreaDataViewModel> LoadAreaFile(PickedFile file)
     {
         AreaData data = await KmlAreaProcessor.ParseKmlAsync(file);
         
-        return new AreaDataViewModel(data, file);   
+        AreaDataViewModel viewModel = new AreaDataViewModel(data);
+        
+        AreaDataFileDict.Add(viewModel, file);
+        return viewModel;   
     }
 
 
@@ -73,14 +81,14 @@ public class PoisonAreaManager : IPoisonAreaManagerService
 
         try
         {
-            await KmlSaveLoad.SaveKmlFileAsync(toAdd, "PoisonAreas");            
+            PickedFile savedFile = await KmlSaveLoad.SaveKmlFileAsync(toAdd, "PoisonAreas");     
+
+            _areaData.Add(await LoadAreaFile(savedFile));
         }
         catch (Exception e)
         {
             await Notifications.ShowErrorAsync($"Error when saving KML file:\n{e.Message}");
         }
-
-        _areaData.Add(await LoadAreaFile(toAdd));
     }
 
     public async Task<AreaDataViewModel[]> GetAllPoisonAreas()
@@ -92,7 +100,14 @@ public class PoisonAreaManager : IPoisonAreaManagerService
     {
         _areaData.Remove(toRemove);
 
-        await KmlSaveLoad.RemoveKmlFileFromDisk(toRemove.File);
+        try
+        {
+            await KmlSaveLoad.RemoveKmlFileFromDisk(AreaDataFileDict[toRemove]);        
+        }
+        catch (Exception e)
+        {
+            await Notifications.ShowErrorAsync($"Error when deleting KML file:\n{e.Message}");
+        }
 
     }
 

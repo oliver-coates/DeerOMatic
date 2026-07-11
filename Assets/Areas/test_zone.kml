@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+<Document id="Test_Zone_1">
+  <name>Test Poison Area</name>
+  <Folder id="FeatureLayer0">
+    <name>Test Zone</name>
+    <Placemark id="ID_00000">
+      <name>Zone 1</name>
+        <Polygon>
+          <extrude>0</extrude><altitudeMode>clampToGround</altitudeMode>
+          <outerBoundaryIs>
+            <LinearRing>
+                <coordinates>171.12981254410263,-42.58501090531171,0  171.18503445751114,-42.629401412604246,0 171.12508637378542,-42.67585912521461,0 171.0683682905271,-42.63628585445539,0 171.12981254410263,-42.58501090531171,0</coordinates>
+            </LinearRing>
+           </outerBoundaryIs>
+        </Polygon>
+    </Placemark>
+    </Folder>
+</Document>
+</kml>

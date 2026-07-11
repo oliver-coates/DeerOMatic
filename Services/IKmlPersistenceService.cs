@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using Deer_o_matic.ViewModels;
 
 namespace Deer_o_matic.Services;
 
@@ -12,8 +13,9 @@ public interface IKmlPersistenceService
 {
     /// <summary>
     /// Zips and saves a provided file into the persistent data path so it can be reloaded on application startup.
+    /// Returns the new picked file object that this content has been saved under.
     /// </summary>
-    public Task SaveKmlFileAsync(PickedFile file, string category);
+    public Task<PickedFile> SaveKmlFileAsync(PickedFile file, string category);
 
     /// <summary>
     /// Retrieves all files under the category within the persistent data path.
@@ -30,6 +32,7 @@ public class KmlPersistenceService : IKmlPersistenceService
     public KmlPersistenceService()
     {
         _rootDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Deer-o-matic");
+        
         // Create the directory if it doesn't exist
         Directory.CreateDirectory(_rootDataPath);
     }
@@ -55,7 +58,8 @@ public class KmlPersistenceService : IKmlPersistenceService
                 string content = await UnzipAndRead(filePath);
                 Uri path = new(filePath);
 
-                readFiles.Add(new PickedFile(name, extension, content, path));
+                PickedFile file = new PickedFile(name, extension, content, path); 
+                readFiles.Add(file);
             }
         }
 
@@ -74,9 +78,8 @@ public class KmlPersistenceService : IKmlPersistenceService
         File.Delete(localPath);
     }
 
-    public async Task SaveKmlFileAsync(PickedFile file, string category)
+    public async Task<PickedFile> SaveKmlFileAsync(PickedFile file, string category)
     {
-
         // Unzip the archive if needed:
         if (file.extension == ".kmz")
         {
@@ -108,6 +111,9 @@ public class KmlPersistenceService : IKmlPersistenceService
             // Zip the files from the temp directory to the proper directory
             Directory.CreateDirectory(categoryFolderPath);
             await ZipFile.CreateFromDirectoryAsync(tempDir, zipPath);
+
+            Uri uriPath = new Uri(zipPath);
+            return new PickedFile(fileName, ".kmz", file.content, uriPath); 
         }
         catch (IOException)
         {
@@ -117,7 +123,6 @@ public class KmlPersistenceService : IKmlPersistenceService
         {
             Directory.Delete(tempDir, true);
         }
-
     }
 
     private async Task<string> UnzipAndRead(string path)

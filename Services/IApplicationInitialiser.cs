@@ -18,7 +18,9 @@ public class ApplicationInitialiser : IApplicationInitialiser
 
     public ApplicationInitialiser(IPoisonAreaManagerService poisonAreaManager)
     {
-        toInitialise = [poisonAreaManager];
+        toInitialise = [
+            poisonAreaManager
+        ];
     }
 
     public async Task InitialiseAll()

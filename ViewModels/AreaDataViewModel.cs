@@ -20,14 +20,10 @@ public partial class AreaDataViewModel : ViewModelBase, IDisplayableOnMap
     private Mapsui.Styles.Color _mapColor;
     public Mapsui.Styles.Color MapColour {get => _mapColor; }
 
-    public PickedFile File {get; private set;}
-
-    public AreaDataViewModel(AreaData areaData, PickedFile file)
+    public AreaDataViewModel(AreaData areaData)
     {
         _name = areaData.name;
         geometry = areaData.geometries;
-
-        File = file;
 
         _mapColor = areaData.color; // <-- The colour used on the map
         _uiColor = ConvertColor(_mapColor); // The colour used on the UI
