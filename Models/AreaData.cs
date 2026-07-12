@@ -30,11 +30,5 @@ public class AreaData : IColourable
         }
     }
 
-    ~AreaData()
-    {    
-        MapLayerTypes.ReleaseAreaColor(this);
-    }
-
-
     
 }

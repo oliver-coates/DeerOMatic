@@ -53,7 +53,6 @@ public partial class MapViewModel : ViewModelBase
         
         // Subscribe to methods for adding and removing flight & area data :
         FileUploadViewModel.OnFlightDataChanged += FlightDataChanged;
-        AreaData.CollectionChanged += AreaDataChanged;
 
         // Command creation:
         PickFilesCommand = new AsyncRelayCommand(PickFileAsnyc);
@@ -90,33 +89,6 @@ public partial class MapViewModel : ViewModelBase
     #endregion
 
     #region Flight & Area Data Changes Response Methods
-    private void OnPoisonAreasChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                if (e.NewItems == null)
-                {
-                    return;
-                }
-                foreach (object o in e.NewItems)
-                {
-                    AreaData.Add((AreaDataViewModel) o);
-                }
-                break;
-            
-            case NotifyCollectionChangedAction.Remove:
-                if (e.OldItems == null)
-                {
-                    return;
-                }
-                foreach (object o in e.OldItems)
-                {
-                    AreaData.Remove((AreaDataViewModel) o);
-                }
-                break;
-        }
-    }
 
     private void FlightDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
@@ -205,8 +177,8 @@ public partial class MapViewModel : ViewModelBase
             }            
         }
     }
-    
-    private void AreaDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
+
+    private void OnPoisonAreasChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
         {
@@ -215,7 +187,17 @@ public partial class MapViewModel : ViewModelBase
                 {
                     return;
                 }
-                DisplayAreaData(e.NewItems.OfType<AreaDataViewModel>());
+
+                List<AreaDataViewModel> newAreaData = new();
+                foreach (object o in e.NewItems)
+                {
+                    AreaDataViewModel m = (AreaDataViewModel) o; 
+                    
+                    newAreaData.Add(m);
+                    AreaData.Add(m);
+                }
+
+                DisplayAreaData(newAreaData);
                 break;
             
             case NotifyCollectionChangedAction.Remove:
@@ -223,10 +205,19 @@ public partial class MapViewModel : ViewModelBase
                 {
                     return;
                 }
-                RemoveAreaData(e.OldItems.OfType<AreaDataViewModel>());
+
+                List<AreaDataViewModel> areaDataToRemove = new();
+                foreach (object o in e.OldItems)
+                {
+                    AreaDataViewModel m = (AreaDataViewModel) o; 
+
+                    areaDataToRemove.Add(m);
+                    AreaData.Remove(m);
+                }
+
+                RemoveAreaData(areaDataToRemove);
                 break;
         }
-
     }
 
     private void DisplayAreaData(IEnumerable<AreaDataViewModel> toDisplay)
@@ -258,11 +249,14 @@ public partial class MapViewModel : ViewModelBase
     {
         foreach (AreaDataViewModel areaDataViewModel in toRemove)
         {
+            MapLayerTypes.ReleaseAreaColor(areaDataViewModel.Get());
+
             ILayer layerToRemove = layerDictionary[areaDataViewModel][0];
             
             SimpleMap.Layers.Remove(layerToRemove);
             
             layerDictionary.Remove(areaDataViewModel);
+
         }
     }
 
