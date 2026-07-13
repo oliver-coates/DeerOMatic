@@ -78,5 +78,6 @@ public partial class App : Application
         services.AddSingleton<IPointProximityService, PointProximityService>();
         services.AddSingleton<IDocumentValidationService, DocumentValidatorService>();
         services.AddSingleton<IPoisonAreaManagerService, PoisonAreaManager>();
+        services.AddSingleton<IDocPoisonAreaRetrievalService, DocPoisonAreaRetrievalService>();
     }
 }

@@ -16,10 +16,11 @@ public class ApplicationInitialiser : IApplicationInitialiser
 {
     private readonly IInitialisable[] toInitialise;
 
-    public ApplicationInitialiser(IPoisonAreaManagerService poisonAreaManager)
+    public ApplicationInitialiser(IPoisonAreaManagerService poisonAreaManager, IDocPoisonAreaRetrievalService poisonAreaRetrieval)
     {
         toInitialise = [
-            poisonAreaManager
+            poisonAreaManager,
+            poisonAreaRetrieval
         ];
     }
 
