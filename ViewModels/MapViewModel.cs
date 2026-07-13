@@ -21,6 +21,7 @@ public partial class MapViewModel : ViewModelBase
     private readonly IPoisonAreaManagerService PoisonAreaManager;
     private readonly IKmlPickerService KmlPicker;
     private readonly INotificationService Notifications;
+    private readonly IDocPoisonAreaRetrievalService PoisonAreaRequester;
 
     private bool _hasRequestedFiles;
 
@@ -36,11 +37,12 @@ public partial class MapViewModel : ViewModelBase
 
     public AsyncRelayCommand PickFilesCommand {get;}
 
-    public MapViewModel(IPoisonAreaManagerService poisonAreaManager, IKmlPickerService kmlPicker, INotificationService notifications)
+    public MapViewModel(IPoisonAreaManagerService poisonAreaManager, IKmlPickerService kmlPicker, INotificationService notifications, IDocPoisonAreaRetrievalService poisonAreaRequester)
     {
         PoisonAreaManager = poisonAreaManager;
         KmlPicker = kmlPicker;
         Notifications = notifications;
+        PoisonAreaRequester = poisonAreaRequester;
 
         layerDictionary = [];
 
@@ -83,12 +85,18 @@ public partial class MapViewModel : ViewModelBase
             // Finally, ensure we are subscribed to the posion data's changed events,
             // these will be called as the user adds/removes poison data at runtime.
             PoisonAreaManager.SubscribeToPoisonDataNotificationEvents(OnPoisonAreasChanged);
+
+            // TEST:
+            AreaData gisPoison = await PoisonAreaRequester.GetPesticidesDataAsync();
+            AreaDataViewModel gisPoisonVM = new(gisPoison);
+            DisplayAreaData([gisPoisonVM]);
         }
+
     }
 
     #endregion
 
-    #region Flight & Area Data Changes Response Methods
+    #region Flight Changes Response Methods
 
     private void FlightDataChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
@@ -178,6 +186,9 @@ public partial class MapViewModel : ViewModelBase
         }
     }
 
+    #endregion
+
+    #region Area Data change response methods
     private void OnPoisonAreasChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
@@ -224,6 +235,8 @@ public partial class MapViewModel : ViewModelBase
     {
         foreach (AreaDataViewModel areaData in toDisplay)
         {
+            Console.WriteLine($"Displaying area data {areaData.Name}");
+     
             // Add all geometry from the area data into an array of features:
             int numGeometry = areaData.geometry.Length;
             IFeature[] features = new IFeature[numGeometry];

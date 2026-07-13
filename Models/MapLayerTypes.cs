@@ -114,7 +114,7 @@ public static class MapLayerTypes
             DataSource = dataSource,
             Style = style,
             Opacity = 0.5,
-            MaxVisible = 35,
+            MaxVisible = 50,
             Enabled = true
         };
 

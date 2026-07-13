@@ -37,7 +37,7 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
                 // { "where",              "(Pesticide IS NOT NULL) AND (CHAR_LENGTH(Pesticide)>0)"},
                 { "outFields",          "Pesticide"},
                 { "returnGeometry",     "true"},
-                { "resultRecordCount",  "10"}
+                { "resultRecordCount",  "50"}
             };
 
 
