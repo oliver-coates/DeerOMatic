@@ -6,22 +6,24 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
-using HarfBuzzSharp;
 using NetTopologySuite.Geometries;
 
 namespace Deer_o_matic.Services;
 
 public interface IDocPoisonAreaRetrievalService : IInitialisable
 {
-    public Task GetPesticidesDataAsync();
+    public Task<AreaData> GetPesticidesDataAsync();
 }
 
 public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
 {
 
+
     public readonly HttpClient _httpClient = new();
     private const string BaseUrl = 
         "https://services1.arcgis.com/3JjYDyG3oajxU6HO/arcgis/rest/services/Pesticides_HaveBeenLaid_HFV/FeatureServer/0/query"  ;
+
+    private AreaData? _areaData;
 
 
     public async Task Initialise()
@@ -76,7 +78,7 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
             }
         }
 
-        AreaData areaData = new AreaData("Doc Poison Areas", geometries.ToArray());
+        _areaData = new AreaData("Doc Poison Areas", [.. geometries]);
     }
 
     private Geometry? ConvertJsonElementToGeometry(JsonElement geometry)
@@ -89,20 +91,49 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
             case "MultiPolygon":
                 return ConvertMutiPolygon(coordinates);
             
+            case "Polygon":
+                return ConvertPolygon(coordinates[0]);
+
             default:
-                Console.WriteLine ($"Warning: Encountered unknown type {type} when converting json element to geometry.");
+                Console.WriteLine ($"Warning: Encountered unknown type '{type}' when converting json element to geometry.");
                 return null;
         }
     }
 
-    private Geometry? ConvertMutiPolygon(JsonElement coordinates)
+    private static MultiPolygon ConvertMutiPolygon(JsonElement jsonGeometryData)
     {
-        throw new NotImplementedException();
-        return null;
+        List<Polygon> Polygons = new();
+        
+        foreach (var polygonCoordinates in jsonGeometryData.EnumerateArray())
+        {
+            Polygons.Add(ConvertPolygon(polygonCoordinates[0]));
+        }
+    
+        return new MultiPolygon([.. Polygons]);
     }
 
-    public async Task GetPesticidesDataAsync()
+    public static Polygon ConvertPolygon(JsonElement jsonGeometryData)
     {
+        List<Coordinate> ringCoordinates = new ();
+
+        foreach (var polygonCoordinate in jsonGeometryData.EnumerateArray())
+        {
+            var lon = polygonCoordinate[0].GetDouble();
+            var lat = polygonCoordinate[1].GetDouble();
+
+            ringCoordinates.Add(new Coordinate(lon, lat));    
+        }
+        
+        return new (new LinearRing([.. ringCoordinates]));
     }
 
+    public async Task<AreaData> GetPesticidesDataAsync()
+    {
+        if (_areaData == null)
+        {
+            throw new NullReferenceException("Area data is null.");
+        }
+
+        return _areaData;
+    }
 }
