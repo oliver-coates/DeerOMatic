@@ -81,7 +81,7 @@ public static class MapLayerTypes
 
     }
    
-    public static BaseLayer CreateZoneLayer(string name, IEnumerable<IFeature> features, Color color)
+    public static Layer CreateZoneLayer(string name, IEnumerable<IFeature> features, Color color)
     {
         // --- Styling:
         Brush brush = new Brush
@@ -121,6 +121,7 @@ public static class MapLayerTypes
         return layer;
     }
     
+
     #region Colour Methods
     public static Color RequestAnimalMarkColor(IColourable requester)
     {

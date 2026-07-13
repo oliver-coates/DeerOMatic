@@ -237,9 +237,6 @@ public partial class MapViewModel : ViewModelBase
             BaseLayer layer = MapLayerTypes.CreateZoneLayer(areaData.Name, features, areaData.MapColour);
             SimpleMap.Layers.AddOnTop(layer, MapLayerTypes.AREAS_LAYER_INT);
 
-            // Zoom to the newly created layer:
-            SimpleMap.Navigator.ZoomToBox(layer.Extent, MBoxFit.Fit, 100);
-
             // Register the newly created layer within the dictionary:
             layerDictionary.Add(areaData, [layer]);
         }
