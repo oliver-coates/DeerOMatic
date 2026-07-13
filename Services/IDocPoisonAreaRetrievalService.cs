@@ -26,32 +26,59 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
     private AreaData? _areaData;
 
 
+    readonly Dictionary<string, string> requestAllParameters = new Dictionary<string, string>
+    {
+        { "f",                  "geoJson"  },
+        { "where",              "1=1"},
+        { "outFields",          "Pesticide"},
+        { "returnGeometry",     "false"},
+        { "resultRecordCount",  "10000"}
+    };
+
+
     public async Task Initialise()
     {
         try
         {
+            // Figure out how many geometries we need to request
+            int totalNumGeometriesToRequest = await GetNumGeometriesToRequest(); 
+
             var parameters= new Dictionary<string, string>
             {
                 { "f",                  "geoJson"  },
                 { "where",              "1=1"},
-                // { "where",              "(Pesticide IS NOT NULL) AND (CHAR_LENGTH(Pesticide)>0)"},
                 { "outFields",          "Pesticide"},
                 { "returnGeometry",     "true"},
+                { "resultOffset",       "0"},
                 { "resultRecordCount",  "50"}
             };
 
+            List<Geometry> geometry = new();
 
-            var queryString = string.Join("&", parameters.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
+            int geometriesRequested = 0;
+            while (geometriesRequested < totalNumGeometriesToRequest)
+            {
+                int numGeoemetryToRequestThisPacket = 50;
+                if (geometriesRequested + numGeoemetryToRequestThisPacket > totalNumGeometriesToRequest)
+                {
+                    numGeoemetryToRequestThisPacket = totalNumGeometriesToRequest - geometriesRequested;
+                }
+                
+                Console.WriteLine($"Requesting {numGeoemetryToRequestThisPacket}");
 
-            var url = $"{BaseUrl}?{queryString}";
-            Console.WriteLine($"Attempting fetch from: {url}");
+                // Request & parse here...
+                parameters["resultOffset"] = geometriesRequested.ToString();
+                string data = await Query(parameters);
+                Console.WriteLine("Recieved!");
 
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            Console.WriteLine($"Recieved response: {response.StatusCode}");
-            
-            string recievedData = await response.Content.ReadAsStringAsync();
-            await AttemptParse(recievedData);
+                geometry.AddRange(await AttemptParse(data));
+
+                geometriesRequested += numGeoemetryToRequestThisPacket;
+            }
+
+            // await AttemptParse(recievedData);
+
+            _areaData = new AreaData("Doc Poison Areas", [.. geometry]);
         }
         catch (Exception ex)
         {
@@ -59,7 +86,21 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
         }
     }
 
-    private async Task AttemptParse(string jsonData)
+    private async Task<string> Query(Dictionary<string, string> parameters)
+    {
+        var queryString = string.Join("&", parameters.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
+
+        var url = $"{BaseUrl}?{queryString}";
+        Console.WriteLine($"Attempting fetch from: {url}");
+
+        var response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        Console.WriteLine($"Recieved response: {response.StatusCode}");
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task<List<Geometry>> AttemptParse(string jsonData)
     {
         var json = JsonDocument.Parse(jsonData);
     
@@ -78,7 +119,7 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
             }
         }
 
-        _areaData = new AreaData("Doc Poison Areas", [.. geometries]);
+        return geometries;
     }
 
     private Geometry? ConvertJsonElementToGeometry(JsonElement geometry)
@@ -135,5 +176,21 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
         }
 
         return _areaData;
+    }
+
+    private async Task<int> GetNumGeometriesToRequest()
+    {
+        string recievedData = await Query(requestAllParameters); 
+
+        return GetElementCount(recievedData);
+    }
+
+    private int GetElementCount(string jsonData)
+    {
+        var json = JsonDocument.Parse(jsonData);
+    
+        JsonElement features = json.RootElement.GetProperty("features");
+
+        return features.GetArrayLength();
     }
 }
