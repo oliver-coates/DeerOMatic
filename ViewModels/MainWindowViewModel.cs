@@ -33,6 +33,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool _exportPdfFillable = false;
 
+    [ObservableProperty]
+    private bool _doCheckDocPoisonAreas = true;
+
     // Panel Selection State:
     private int _selectedTabIndex = 0;
     public int SelectedTabIndex
@@ -105,7 +108,7 @@ public partial class MainWindowViewModel : ViewModelBase
             HunterDeclarationDocumentData data = _DocumentCreation.BuildDocument(FileUpload, HunterDeclaration);
     
             // Validates all the data within the document
-            _DocumentValidator.ValidateDocument(data, HuntMap.AreaData);
+            _DocumentValidator.ValidateDocument(data, HuntMap.AreaData, DoCheckDocPoisonAreas);
 
             await _PdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);        
         

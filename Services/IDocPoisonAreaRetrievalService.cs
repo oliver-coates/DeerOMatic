@@ -16,6 +16,8 @@ public interface IDocPoisonAreaRetrievalService : IInitialisable
     
     public Action<State>? OnStateChanged { get; set; }
 
+    public State CurrentState { get; }
+
     public enum State
     {
         Waiting = 0, // No request has yet been made

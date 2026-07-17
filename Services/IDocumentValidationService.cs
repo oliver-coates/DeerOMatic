@@ -8,7 +8,7 @@ namespace Deer_o_matic.Services;
 
 public interface IDocumentValidationService
 {
-    public void ValidateDocument(HunterDeclarationDocumentData doc, Collection<AreaDataViewModel> areaData);
+    public void ValidateDocument(HunterDeclarationDocumentData doc, Collection<AreaDataViewModel> areaData, bool ensureDocPoisonAreasAreaPresent);
 }
 
 public class DocumentValidatorService : IDocumentValidationService
@@ -18,22 +18,24 @@ public class DocumentValidatorService : IDocumentValidationService
 
 
     private readonly IPointProximityService ProximityChecker;
+    private readonly IDocPoisonAreaRetrievalService PoisonAreaRetrieval;
 
-    public DocumentValidatorService(IPointProximityService proximityService)
+    public DocumentValidatorService(IPointProximityService proximityService, IDocPoisonAreaRetrievalService poisonAreaRetrieval)
     {
         ProximityChecker = proximityService;
+        PoisonAreaRetrieval = poisonAreaRetrieval;
     }
 
     /// <summary>
     /// Performs a series of checks against the provided hunter declaration data to try to ensure it is valid.
     /// </summary>
-    public void ValidateDocument(HunterDeclarationDocumentData doc, Collection<AreaDataViewModel> poisonAreas)
+    public void ValidateDocument(HunterDeclarationDocumentData doc, Collection<AreaDataViewModel> poisonAreas, bool ensureDocPoisonAreasAreaPresent)
     {
         ValidateAnimalsExist(doc);
 
         ValidateRefridgerationTime(doc.flightDatas);
 
-        ValidatePoisonAreas(doc.flightDatas, poisonAreas);
+        ValidatePoisonAreas(doc.flightDatas, poisonAreas, ensureDocPoisonAreasAreaPresent);
     }
 
     /// <summary>
@@ -54,8 +56,26 @@ public class DocumentValidatorService : IDocumentValidationService
     /// <summary>
     /// Checks that all animal mark inside provided flight datas are no closer than <see cref="MINIMUM_DISTANCE_ALLOWED_FROM_POISON_ZONE_METERS"/> from provided geometry. 
     /// </summary>
-    private void ValidatePoisonAreas(List<FlightData> flightData, Collection<AreaDataViewModel> poisonAreas)
+    private void ValidatePoisonAreas(List<FlightData> flightData, Collection<AreaDataViewModel> poisonAreas, bool ensureDocPoisonAreasAreaPresent)
     {
+        if (ensureDocPoisonAreasAreaPresent)
+        {
+            if (PoisonAreaRetrieval.CurrentState != IDocPoisonAreaRetrievalService.State.Success)
+            {
+                // Data has not been retrieved
+                switch (PoisonAreaRetrieval.CurrentState)
+                {
+                    case IDocPoisonAreaRetrievalService.State.Waiting:
+                        throw new Exception("Doc Poison Areas have not yet been requested the server.");
+                    case IDocPoisonAreaRetrievalService.State.RequestInProgress:
+                        throw new Exception("Doc Poison Areas are still being downloaded from the server. Wait until the poison areas appear on the map.");
+                    case IDocPoisonAreaRetrievalService.State.Error:
+                        throw new Exception("Doc Posion Areas encountered an error while attempting to download from the server.");
+                }
+
+            }
+        }
+        
         List<PointIntersection> intersections = new();
         foreach (FlightData flight in flightData)
         {
