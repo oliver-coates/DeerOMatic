@@ -53,14 +53,17 @@ public partial class MapViewModel : ViewModelBase
         };
         SimpleMap.Layers.Add(OpenStreetMap.CreateTileLayer(), MapLayerTypes.BACKGROUND_LAYER_INT);   
         
-        // Subscribe to methods for adding and removing flight & area data :
+        // Subscribe to event for when flight data is added or removed :
         FileUploadViewModel.OnFlightDataChanged += FlightDataChanged;
+        // Subscribe to event when poison data is retrieved
+        PoisonAreaRequester.OnStateChanged += OnPoisonAreaRequesterStateChanged;
 
         // Command creation:
         PickFilesCommand = new AsyncRelayCommand(PickFileAsnyc);
 
         _hasRequestedFiles = false;
     }
+
 
     #region File Loading
     // Called everytime the user opens the map.
@@ -86,10 +89,6 @@ public partial class MapViewModel : ViewModelBase
             // these will be called as the user adds/removes poison data at runtime.
             PoisonAreaManager.SubscribeToPoisonDataNotificationEvents(OnPoisonAreasChanged);
 
-            // TEST:
-            AreaData gisPoison = await PoisonAreaRequester.GetPesticidesDataAsync();
-            AreaDataViewModel gisPoisonVM = new(gisPoison);
-            DisplayAreaData([gisPoisonVM]);
         }
 
     }
@@ -272,6 +271,23 @@ public partial class MapViewModel : ViewModelBase
 
     #endregion
 
+    #region Poison Data Requester methods
+
+    private void OnPoisonAreaRequesterStateChanged(IDocPoisonAreaRetrievalService.State state)
+    {
+        Console.WriteLine($"> Listened to: {state.ToString()}");
+
+        // On success, display data
+        if (state == IDocPoisonAreaRetrievalService.State.Success)
+        {
+            AreaData? gisPoison = PoisonAreaRequester.GetPesticidesData();
+            if (gisPoison == null) { return; }
+            AreaDataViewModel gisPoisonVM = new(gisPoison);
+            DisplayAreaData([gisPoisonVM]);
+        }
+    }
+
+    #endregion
 
     [RelayCommand]
     public void DeleteAreaData(AreaDataViewModel toRemove)
