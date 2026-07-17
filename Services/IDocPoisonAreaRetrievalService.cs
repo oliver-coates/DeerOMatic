@@ -17,13 +17,38 @@ public interface IDocPoisonAreaRetrievalService : IInitialisable
 
 public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
 {
+    public enum State
+    {
+        Waiting = 0, // No request has yet been made
+        RequestInProgress = 1, // The request is in progress
+        Success = 2, // All the data was loaded and parsed without error
+        Error = 3 // A problem occured
+    }
 
+    private State state;
+    public State CurrentState 
+    { 
+        get 
+        {
+            return state;
+        }
+        private set
+        {
+            state = value;
+            OnStateChanged?.Invoke(value);
+        } 
+    }
+    public event Action<State>? OnStateChanged;
 
-    public readonly HttpClient _httpClient = new();
+    public const int NUM_RECORDS_REQUESTED_PER_PACKET = 25;
+
     private const string BaseUrl = 
         "https://services1.arcgis.com/3JjYDyG3oajxU6HO/arcgis/rest/services/Pesticides_HaveBeenLaid_HFV/FeatureServer/0/query"  ;
 
     private AreaData? _areaData;
+
+    private readonly HttpClient _httpClient = new();
+    private readonly INotificationService Notifications;
 
 
     readonly Dictionary<string, string> requestAllParameters = new Dictionary<string, string>
@@ -35,55 +60,86 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
         { "resultRecordCount",  "10000"}
     };
 
+    readonly Dictionary<string, string> requestPacketParameters = new Dictionary<string, string>
+    {
+        { "f",                  "geoJson"  },
+        { "where",              "1=1"},
+        { "outFields",          "Pesticide"},
+        { "returnGeometry",     "true"},
+        { "resultOffset",       "-"}, // This will be set at each request
+        { "resultRecordCount",  "-"} // This will be set at each request
+    };
+
+
+    public DocPoisonAreaRetrievalService(INotificationService notifications)
+    {
+        Notifications = notifications;
+
+        CurrentState = State.Waiting;
+    }
+
+
 
     public async Task Initialise()
     {
+        await GetDocPoisonData();   
+    }
+
+    private async Task GetDocPoisonData()
+    {
+        CurrentState = State.RequestInProgress;
+
         try
         {
             // Figure out how many geometries we need to request
             int totalNumGeometriesToRequest = await GetNumGeometriesToRequest(); 
 
-            var parameters= new Dictionary<string, string>
-            {
-                { "f",                  "geoJson"  },
-                { "where",              "1=1"},
-                { "outFields",          "Pesticide"},
-                { "returnGeometry",     "true"},
-                { "resultOffset",       "0"},
-                { "resultRecordCount",  "50"}
-            };
-
-            List<Geometry> geometry = new();
-
-            int geometriesRequested = 0;
-            while (geometriesRequested < totalNumGeometriesToRequest)
-            {
-                int numGeoemetryToRequestThisPacket = 50;
-                if (geometriesRequested + numGeoemetryToRequestThisPacket > totalNumGeometriesToRequest)
-                {
-                    numGeoemetryToRequestThisPacket = totalNumGeometriesToRequest - geometriesRequested;
-                }
-                
-                Console.WriteLine($"Requesting {numGeoemetryToRequestThisPacket}");
-
-                // Request & parse here...
-                parameters["resultOffset"] = geometriesRequested.ToString();
-                string data = await Query(parameters);
-                Console.WriteLine("Recieved!");
-
-                geometry.AddRange(await AttemptParse(data));
-
-                geometriesRequested += numGeoemetryToRequestThisPacket;
-            }
-
-            // await AttemptParse(recievedData);
+            List<Geometry> geometry = await RequestAllGeometry(requestPacketParameters, totalNumGeometriesToRequest);
 
             _areaData = new AreaData("Doc Poison Areas", [.. geometry]);
+            CurrentState = State.Success;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error fetching poison area from DOC ArcGIS: {ex.Message}");
+            await Notifications.ShowErrorAsync($"Error fetching poison area from DOC ArcGIS: {ex.Message}");
+            CurrentState = State.Error;
         }
+    }
+
+    private async Task<List<Geometry>> RequestAllGeometry(Dictionary<string, string> parameters, int totalNumGeometriesToRequest)
+    {
+        List<Geometry> geometry = new();
+        
+        int totalNumgeometriesRequested = 0;
+        while (totalNumgeometriesRequested < totalNumGeometriesToRequest)
+        {
+            // Figure out how many packets we need to request,
+            int numGeoemetryToRequestThisPacket;
+            if (totalNumgeometriesRequested + NUM_RECORDS_REQUESTED_PER_PACKET > totalNumGeometriesToRequest)
+            {
+                // If the num of geometries requested is going to be more than the total num,
+                // shave it down so it sits within it
+                numGeoemetryToRequestThisPacket = totalNumGeometriesToRequest - totalNumgeometriesRequested;
+            }
+            else
+            {
+                numGeoemetryToRequestThisPacket = NUM_RECORDS_REQUESTED_PER_PACKET;
+            }
+            
+            // Request the data packet
+            parameters["resultOffset"] = totalNumgeometriesRequested.ToString();
+            parameters["resultRecordCount"] = numGeoemetryToRequestThisPacket.ToString();
+
+            string data = await Query(parameters);
+
+            // Parse the incoming geometry:
+            geometry.AddRange(await AttemptParse(data));
+
+            // Increment how many geometries we have requested
+            totalNumgeometriesRequested += numGeoemetryToRequestThisPacket;
+        }
+
+        return geometry;
     }
 
     private async Task<string> Query(Dictionary<string, string> parameters)
