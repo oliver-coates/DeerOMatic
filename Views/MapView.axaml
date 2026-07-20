@@ -8,19 +8,23 @@
 
 
     <Grid ColumnDefinitions="Auto, *">
-        <Grid Grid.Column="0" RowDefinitions="Auto, Auto, *, Auto, Auto" Margin="8, 8, 8, 8" MinWidth="240" MaxWidth="600">
+        <Grid Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto, Auto" Margin="8, 8, 8, 8" MinWidth="240" MaxWidth="600">
             
-            <TextBlock Grid.Row="0" Margin="0, 0, 0, 8">Poison Area Files:</TextBlock>
-            <Rectangle Grid.Row="1" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="0" Margin="0, 0, 0, 0">Doc Poison Areas:</TextBlock>            
+            <TextBlock Grid.Row="1" Margin="0,8,0,8" Text="{Binding DocPoisonDownloadStatus}"/>
+            <Rectangle Grid.Row="2" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
             
-            <ScrollViewer Grid.Row="2" Margin="0, 8, 0, 8">
+            <TextBlock Grid.Row="3" Margin="0, 8, 0, 8">User Added Poison Areas:</TextBlock>
+            <Rectangle Grid.Row="4" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
+
+
+            <ScrollViewer Grid.Row="5" Margin="0, 8, 0, 8">
                 <ItemsControl ItemsSource="{Binding AreaData}" ItemTemplate="{StaticResource AreaDataTemplate}"/>    
             </ScrollViewer>
 
-            <Rectangle Grid.Row="3" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
-            <Button Grid.Row="4" Command="{Binding PickFilesCommand}" Margin="0, 8, 0, 0">Upload</Button>
-        
-                
+            <Rectangle Grid.Row="6" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
+            <Button Grid.Row="7" Command="{Binding PickFilesCommand}" Margin="0, 8, 0, 0">Upload</Button>
+                        
         </Grid>
         <mapsui:MapControl Grid.Column="1" Map="{Binding SimpleMap}" />
     

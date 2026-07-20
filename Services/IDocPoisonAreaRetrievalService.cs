@@ -14,25 +14,32 @@ public interface IDocPoisonAreaRetrievalService : IInitialisable
 {
     public AreaData? GetPesticidesData();
     
-    public Action<State>? OnStateChanged { get; set; }
+    public Action<Status>? OnStateChanged { get; set; }
 
-    public State CurrentState { get; }
+    public Status CurrentState { get; }
 
-    public enum State
+    public enum StateCode
     {
         Waiting = 0, // No request has yet been made
         RequestInProgress = 1, // The request is in progress
         Success = 2, // All the data was loaded and parsed without error
         Error = 3 // A problem occured
     }
+
+    public class Status
+    {
+        public StateCode code;
+        public int numToDownload;
+        public int numDownloaded;
+    }
 }
+
+
 
 public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
 {
-
-
-    private State state;
-    public State CurrentState 
+    private Status state;
+    public Status CurrentState 
     { 
         get 
         {
@@ -45,8 +52,8 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
         } 
     }
 
-    Action<State>? IDocPoisonAreaRetrievalService.OnStateChanged { get => OnStateChanged;  set {OnStateChanged = value;}}
-    public event Action<State>? OnStateChanged;
+    Action<Status>? IDocPoisonAreaRetrievalService.OnStateChanged { get => OnStateChanged;  set {OnStateChanged = value;}}
+    public event Action<Status>? OnStateChanged;
 
     public const int NUM_RECORDS_REQUESTED_PER_PACKET = 25;
 
@@ -83,7 +90,11 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
     {
         Notifications = notifications;
 
-        CurrentState = State.Waiting;
+        state = new Status()
+        {
+            code = StateCode.Waiting
+        };
+        OnStateChanged?.Invoke(state);
     }
 
 
@@ -95,8 +106,6 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
 
     private async Task GetDocPoisonData()
     {
-        CurrentState = State.RequestInProgress;
-
         try
         {
             // Figure out how many geometries we need to request
@@ -104,13 +113,27 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
 
             List<Geometry> geometry = await RequestAllGeometry(requestPacketParameters, totalNumGeometriesToRequest);
 
+            // Ensure we have recieved the correct number
+            if (geometry.Count != totalNumGeometriesToRequest)
+            {
+                throw new Exception($"Expected to recieve {totalNumGeometriesToRequest}, but recieved {geometry.Count} geometres from server query.");
+            }
+
             _areaData = new AreaData("Doc Poison Areas", [.. geometry]);
-            CurrentState = State.Success;
+            CurrentState = new Status()
+            {
+                code = StateCode.Success,
+                numDownloaded = totalNumGeometriesToRequest,
+                numToDownload = totalNumGeometriesToRequest
+            };
         }
         catch (Exception ex)
         {
             await Notifications.ShowErrorAsync($"Error fetching poison area from DOC ArcGIS: {ex.Message}");
-            CurrentState = State.Error;
+            CurrentState = new Status()
+            {
+                code = StateCode.Error   
+            };
         }
     }
 
@@ -134,12 +157,21 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
                 numGeoemetryToRequestThisPacket = NUM_RECORDS_REQUESTED_PER_PACKET;
             }
             
-            // Request the data packet
+            // Setup parameters for the request:
             parameters["resultOffset"] = totalNumGeometriesRequested.ToString();
             parameters["resultRecordCount"] = numGeoemetryToRequestThisPacket.ToString();
 
+            // Update our status before sending the query
+            CurrentState = new Status()
+            {
+                code = StateCode.RequestInProgress,
+                numToDownload = totalNumGeometriesToRequest,
+                numDownloaded = totalNumGeometriesRequested
+            };
+
+            // Query the server:
             string data = await Query(parameters);
-            Console.WriteLine($"Recieved {totalNumGeometriesRequested} to {totalNumGeometriesRequested+numGeoemetryToRequestThisPacket}");
+            // Console.WriteLine($"Recieved {totalNumGeometriesRequested} to {totalNumGeometriesRequested+numGeoemetryToRequestThisPacket}");
 
             // Parse the incoming geometry:
             geometry.AddRange(await AttemptParse(data));
@@ -251,7 +283,7 @@ public class DocPoisonAreaRetrievalService : IDocPoisonAreaRetrievalService
 
     public AreaData? GetPesticidesData()
     {
-        if (CurrentState != State.Success)
+        if (CurrentState.code != StateCode.Success)
         {
             return null;
         }

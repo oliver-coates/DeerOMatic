@@ -30,6 +30,9 @@ public partial class MapViewModel : ViewModelBase
 
     public ObservableCollection<AreaDataViewModel> AreaData { get; set; } = [];
 
+    [ObservableProperty]
+    private string _docPoisonDownloadStatus;
+
     /// <summary>
     /// Dictionary relating names to the each ay.
     /// </summary>
@@ -62,6 +65,8 @@ public partial class MapViewModel : ViewModelBase
         PickFilesCommand = new AsyncRelayCommand(PickFileAsnyc);
 
         _hasRequestedFiles = false;
+
+        DocPoisonDownloadStatus = "-";
     }
 
 
@@ -273,17 +278,36 @@ public partial class MapViewModel : ViewModelBase
 
     #region Poison Data Requester methods
 
-    private void OnPoisonAreaRequesterStateChanged(IDocPoisonAreaRetrievalService.State state)
+    private void OnPoisonAreaRequesterStateChanged(IDocPoisonAreaRetrievalService.Status status)
     {
-        Console.WriteLine($"> Listened to: {state.ToString()}");
-
-        // On success, display data
-        if (state == IDocPoisonAreaRetrievalService.State.Success)
+        switch (status.code)
         {
-            AreaData? gisPoison = PoisonAreaRequester.GetPesticidesData();
-            if (gisPoison == null) { return; }
-            AreaDataViewModel gisPoisonVM = new(gisPoison);
-            DisplayAreaData([gisPoisonVM]);
+            case IDocPoisonAreaRetrievalService.StateCode.Waiting:
+                DocPoisonDownloadStatus = "Waiting for server...";
+                break;
+            
+            case IDocPoisonAreaRetrievalService.StateCode.RequestInProgress:
+                DocPoisonDownloadStatus = $"Downloading data ({status.numDownloaded}/{status.numToDownload})";
+                break;
+            
+            case IDocPoisonAreaRetrievalService.StateCode.Success:
+                // Display the data:
+                AreaData? gisPoison = PoisonAreaRequester.GetPesticidesData();
+                if (gisPoison == null) 
+                { 
+                    Notifications.ShowErrorAsync("Recieved null poison data when getting DOC pesticides data after a success code.");
+                    OnPoisonAreaRequesterStateChanged(new IDocPoisonAreaRetrievalService.Status() {code = IDocPoisonAreaRetrievalService.StateCode.Error});
+                    return;
+                }
+                AreaDataViewModel gisPoisonVM = new(gisPoison);
+                DisplayAreaData([gisPoisonVM]);    
+                
+                DocPoisonDownloadStatus = $"Success! ({status.numDownloaded} areas)";
+                break;
+
+            case IDocPoisonAreaRetrievalService.StateCode.Error:
+                DocPoisonDownloadStatus = "Error!";
+                break;
         }
     }
 

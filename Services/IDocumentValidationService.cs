@@ -60,20 +60,17 @@ public class DocumentValidatorService : IDocumentValidationService
     {
         if (ensureDocPoisonAreasAreaPresent)
         {
-            if (PoisonAreaRetrieval.CurrentState != IDocPoisonAreaRetrievalService.State.Success)
+         
+            switch (PoisonAreaRetrieval.CurrentState.code)
             {
-                // Data has not been retrieved
-                switch (PoisonAreaRetrieval.CurrentState)
-                {
-                    case IDocPoisonAreaRetrievalService.State.Waiting:
-                        throw new Exception("Doc Poison Areas have not yet been requested the server.");
-                    case IDocPoisonAreaRetrievalService.State.RequestInProgress:
-                        throw new Exception("Doc Poison Areas are still being downloaded from the server. Wait until the poison areas appear on the map.");
-                    case IDocPoisonAreaRetrievalService.State.Error:
-                        throw new Exception("Doc Posion Areas encountered an error while attempting to download from the server.");
-                }
-
+                case IDocPoisonAreaRetrievalService.StateCode.Waiting:
+                    throw new Exception("Doc Poison Areas have not yet been requested the server.");
+                case IDocPoisonAreaRetrievalService.StateCode.RequestInProgress:
+                    throw new Exception("Doc Poison Areas are still being downloaded from the server. Wait until the poison areas appear on the map.");
+                case IDocPoisonAreaRetrievalService.StateCode.Error:
+                    throw new Exception("Doc Posion Areas encountered an error while attempting to download from the server.");
             }
+
         }
         
         List<PointIntersection> intersections = new();
