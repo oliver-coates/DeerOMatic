@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using AM = Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Deer_o_matic.Models;
@@ -32,6 +33,8 @@ public partial class MapViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _docPoisonDownloadStatus;
+    [ObservableProperty]
+    private AM.Brush _docPoisonDownloadStatusColor;
 
     /// <summary>
     /// Dictionary relating names to the each ay.
@@ -67,6 +70,7 @@ public partial class MapViewModel : ViewModelBase
         _hasRequestedFiles = false;
 
         DocPoisonDownloadStatus = "-";
+        _docPoisonDownloadStatusColor = new AM.SolidColorBrush();
     }
 
 
@@ -284,10 +288,12 @@ public partial class MapViewModel : ViewModelBase
         {
             case IDocPoisonAreaRetrievalService.StateCode.Waiting:
                 DocPoisonDownloadStatus = "Waiting for server...";
+                DocPoisonDownloadStatusColor = new AM.SolidColorBrush(AM.Colors.Gray);
                 break;
             
             case IDocPoisonAreaRetrievalService.StateCode.RequestInProgress:
                 DocPoisonDownloadStatus = $"Downloading data ({status.numDownloaded}/{status.numToDownload})";
+                DocPoisonDownloadStatusColor = new AM.SolidColorBrush(AM.Colors.Yellow);
                 break;
             
             case IDocPoisonAreaRetrievalService.StateCode.Success:
@@ -303,10 +309,12 @@ public partial class MapViewModel : ViewModelBase
                 DisplayAreaData([gisPoisonVM]);    
                 
                 DocPoisonDownloadStatus = $"Success! ({status.numDownloaded} areas)";
+                DocPoisonDownloadStatusColor = new AM.SolidColorBrush(AM.Colors.Green);
                 break;
 
             case IDocPoisonAreaRetrievalService.StateCode.Error:
                 DocPoisonDownloadStatus = "Error!";
+                DocPoisonDownloadStatusColor = new AM.SolidColorBrush(AM.Colors.Red);
                 break;
         }
     }

@@ -11,7 +11,7 @@
         <Grid Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto, Auto" Margin="8, 8, 8, 8" MinWidth="240" MaxWidth="600">
             
             <TextBlock Grid.Row="0" Margin="0, 0, 0, 0">Doc Poison Areas:</TextBlock>            
-            <TextBlock Grid.Row="1" Margin="0,8,0,8" Text="{Binding DocPoisonDownloadStatus}"/>
+            <TextBlock Grid.Row="1" Margin="0,8,0,8" Text="{Binding DocPoisonDownloadStatus}" Foreground="{Binding DocPoisonDownloadStatusColor}"/>
             <Rectangle Grid.Row="2" Height="1" Fill="Gray" HorizontalAlignment="Stretch"/>
             
             <TextBlock Grid.Row="3" Margin="0, 8, 0, 8">User Added Poison Areas:</TextBlock>
