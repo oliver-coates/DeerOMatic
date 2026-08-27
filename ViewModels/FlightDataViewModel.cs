@@ -47,6 +47,7 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
         }
 
         DateTime fridgeDateTime = (DateTime) FridgeDate;
+        DateTime? fridgeDateTimeUtc = null;
 
         try
         {
@@ -56,6 +57,8 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
         
             fridgeDateTime = fridgeDateTime.AddHours(hours);
             fridgeDateTime = fridgeDateTime.AddMinutes(minutes);
+
+            fridgeDateTimeUtc = DateTimeConversionUtility.ConvertNzstToUtc(fridgeDateTime);
         }
         catch (Exception e)
         {
@@ -79,6 +82,6 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
             }
         }
         
-        return new FlightData(this.Name, this.Path, fridgeDateTime , marks);
+        return new FlightData(this.Name, this.Path, fridgeDateTime, fridgeDateTimeUtc, marks);
     }
 }

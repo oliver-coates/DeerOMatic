@@ -13,7 +13,14 @@ public static class DateTimeConversionUtility
     /// Takes in a timePrimitive object and converts it to a datetime in NZST.
     /// TODO: Test this method rigerously to ensure that it is concerting time & date properly, and check daylight savings time aswell
     /// </summary>
-    public static DateTime GetDateTimeForPlacemark(TimePrimitive timePrimitive)
+    public static DateTime GetPlacemarkNzstTime(TimePrimitive timePrimitive)
+    {
+        DateTime utcTime = TimePrimitiveToDateTime(timePrimitive);
+
+        return ConvertUtcToNzst(utcTime);
+    }
+
+    public static DateTime TimePrimitiveToDateTime(TimePrimitive timePrimitive)
     {
         Timestamp timeStamp = (SharpKml.Dom.Timestamp) timePrimitive;   
         
@@ -22,12 +29,21 @@ public static class DateTimeConversionUtility
             throw new NullReferenceException();
         }
         
-        DateTime utcTime = (DateTime) timeStamp.When;
+        return (DateTime) timeStamp.When;
+    }
 
-        // Convert UTC time to nzst
+    public static DateTime ConvertUtcToNzst(DateTime utc)
+    {
         TimeZoneInfo nzst = TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time"); 
 
-        return TimeZoneInfo.ConvertTime(utcTime, nzst);
+        return TimeZoneInfo.ConvertTime(utc, nzst);
+    }
+
+    public static DateTime ConvertNzstToUtc(DateTime nzst)
+    {
+        TimeZoneInfo utc = TimeZoneInfo.Utc; 
+
+        return TimeZoneInfo.ConvertTime(nzst, utc);
     }
 
 

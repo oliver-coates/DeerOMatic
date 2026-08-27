@@ -14,21 +14,25 @@ public class FlightData
     public readonly string name;
     public readonly string path;
     public readonly DateTime? startTime; // Time of the first animal shot
+    public readonly DateTime? startTimeUtc;
     public readonly DateTime? refrigerationTime;
+    public readonly DateTime? refrigerationTimeUtc;
     public readonly AnimalMark[] animalMarks;
 
 
 
-    public FlightData(string name, string path, DateTime? refridgerationTime, AnimalMark[] placemarks)
+    public FlightData(string name, string path, DateTime? refridgerationTime, DateTime? refridgerationTimeUtc, AnimalMark[] placemarks)
     {
         this.name = name;
         this.path = path;
         this.refrigerationTime = refridgerationTime;
+        this.refrigerationTimeUtc = refridgerationTimeUtc;
         this.animalMarks = placemarks;
 
         if (placemarks != null && placemarks.Length > 0)
         {
-            this.startTime = placemarks[0].time;        
+            this.startTime = placemarks[0].time;
+            this.startTimeUtc = placemarks[0].timeUtc;
         }
         else
         {

@@ -32,7 +32,7 @@ public class KmlProcessor : IKmlProcessor
 
         AnimalMark[] animalMarks = ConvertPlacemarksToAnimalMarks(placemarks);
 
-        FlightData flightData = new (file.name, file.pathUri.ToString(), null, animalMarks);
+        FlightData flightData = new (file.name, file.pathUri.ToString(), null, null, animalMarks);
 
         return flightData;
     }

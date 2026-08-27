@@ -11,13 +11,15 @@ public class AnimalMark
     public readonly string name;
     public string displayName = "";
     public readonly DateTime time;
+    public readonly DateTime timeUtc;
     public readonly Vector2 coordinates;
 
     public AnimalMark(SharpKml.Dom.Placemark placemark)
     {
         name = placemark.Name;
 
-        time = DateTimeConversionUtility.GetDateTimeForPlacemark(placemark.Time);
+        timeUtc = DateTimeConversionUtility.TimePrimitiveToDateTime(placemark.Time);
+        time = DateTimeConversionUtility.GetPlacemarkNzstTime(placemark.Time);
 
         SharpKml.Dom.Point point = (SharpKml.Dom.Point) placemark.Geometry;
         coordinates = new Vector2(
