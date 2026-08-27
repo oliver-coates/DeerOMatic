@@ -35,6 +35,8 @@ public class DocumentValidatorService : IDocumentValidationService
 
         ValidateRefridgerationTime(doc.flightDatas);
 
+        ValidateAnimalTypes(doc.flightDatas);
+
         ValidatePoisonAreas(doc.flightDatas, poisonAreas, ensureDocPoisonAreasAreaPresent);
     }
 
@@ -124,6 +126,20 @@ public class DocumentValidatorService : IDocumentValidationService
         }
     }
 
+    /// <summary>
+    /// Ensures none of the flight datas have an animal type of not set
+    /// </summary>
+    /// <param name="flightData"></param>
+    public void ValidateAnimalTypes(List<FlightData> flightData)
+    {
+        foreach (FlightData data in flightData)
+        {
+            if (data.animalType == FlightData.AnimalType.NotSet)
+            {
+                throw new Exception($"Please specify the animal type for Flight Data '{data.name}'.");
+            }
+        }
+    }
 
     [System.Serializable]
     public class RefridgerationTimeException : System.Exception

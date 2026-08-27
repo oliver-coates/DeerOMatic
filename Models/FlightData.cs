@@ -16,9 +16,8 @@ public class FlightData
         NotSet = 0,
         FallowDeer = 1,
         RedDeer = 2,
-        WhiteTailDeer = 3,
-        Tahr = 4,
-        Chamois = 5
+        Tahr = 3,
+        Chamois = 4
     }
 
     public readonly string name;
@@ -69,9 +68,6 @@ public class FlightData
             
             case (AnimalType.RedDeer):
                 return "Red Deer";
-            
-            case (AnimalType.WhiteTailDeer):
-                return "White Tail Deer";
             
             case (AnimalType.Tahr):
                 return "Tahr";

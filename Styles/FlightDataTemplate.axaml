@@ -14,7 +14,6 @@
                 <ComboBoxItem>Not Set</ComboBoxItem>
                 <ComboBoxItem>Fallow Deer</ComboBoxItem>
                 <ComboBoxItem>Red Deer</ComboBoxItem>
-                <ComboBoxItem>White Tail Deer</ComboBoxItem>
                 <ComboBoxItem>Tahr</ComboBoxItem>
                 <ComboBoxItem>Chamois</ComboBoxItem>
             </ComboBox>
