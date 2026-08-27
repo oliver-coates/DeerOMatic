@@ -31,7 +31,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Settings
     [ObservableProperty]
-    private bool _exportPdfFillable = false;
+    private bool _exportPdfFillable = true;
 
     [ObservableProperty]
     private bool _doCheckDocPoisonAreas = true;
