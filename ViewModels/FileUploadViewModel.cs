@@ -1,8 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Deer_o_matic.Models;
 using Deer_o_matic.Services;
@@ -18,7 +18,7 @@ public partial class FileUploadViewModel : ViewModelBase
     private readonly IKmlProcessor _KmlProcessor;
     private readonly INotificationService _Notifications;
 
-    public ObservableCollection<FlightDataViewModel> FlightData { get; } = [];
+    public ObservableCollection<FlightDataViewModel> FlightData { get; set; } = [];
     
     public AsyncRelayCommand OpenFileCommand {get; } 
 
@@ -79,7 +79,8 @@ public partial class FileUploadViewModel : ViewModelBase
                 EnsureFlightDataIsInValidTimeWindow(flightData);
 
                 FlightDataViewModel viewModel = new FlightDataViewModel(flightData); 
-                FlightData.Add(viewModel);   
+                FlightData.Add(viewModel);
+                ReorderFlightData(); 
             }
             catch (Exception e)
             {
@@ -106,8 +107,8 @@ public partial class FileUploadViewModel : ViewModelBase
     {
         foreach (FlightDataViewModel baseFlightData in FlightData)
         {
-            Console.WriteLine($"Base: {baseFlightData.startTime} <--> {baseFlightData.endTime}");
-            Console.WriteLine($"Compare: {flightDataToCompare.startTime} <--> {flightDataToCompare.endTime}");
+            // Console.WriteLine($"Base: {baseFlightData.startTime} <--> {baseFlightData.endTime}");
+            // Console.WriteLine($"Compare: {flightDataToCompare.startTime} <--> {flightDataToCompare.endTime}");
 
             bool overlap = (baseFlightData.startTime < flightDataToCompare.endTime) && (flightDataToCompare.startTime < baseFlightData.endTime);
 
@@ -118,4 +119,15 @@ public partial class FileUploadViewModel : ViewModelBase
         }
     }
 
+    private void ReorderFlightData()
+    {
+        var ordered = FlightData.OrderBy(fd => fd.startTime).ToList();
+        
+        FlightData.Clear();
+
+        foreach (var sortedItem in ordered)
+        {
+            FlightData.Add(sortedItem);
+        }
+    }
 }
