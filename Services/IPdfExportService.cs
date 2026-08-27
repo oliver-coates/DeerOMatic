@@ -55,9 +55,30 @@ public class PdfExportService : IPdfExportService
             Flatten(doc);        
         }
 
-        string fullPath = $"{folder.Path.LocalPath} LHDF ({DateTime.Now.ToString("d-M-y HH-mm")}).pdf";
+        // string fullPath = $"{folder.Path.LocalPath} LHDF ({DateTime.Now.ToString("d-M-y HH-mm")}).pdf";
+        string proposedPath = $"{folder.Path.LocalPath}Animal Declaration.pdf";
+        
+        int documentNameAttempts = 0;
+        while (true)
+        {
+            if (documentNameAttempts > 99)
+            {
+                // Somehow couldn't find an acceptable name, so just give it a guid so we can export something.
+                proposedPath = $"{folder.Path.LocalPath}{Guid.NewGuid().ToString()}.pdf";
+                break;
+            }
 
-        doc.SaveToFile(fullPath);
+            if (!File.Exists(proposedPath))
+            {
+                // File doesn't exist, we are good.
+                break;
+            }
+        
+            documentNameAttempts++;
+            proposedPath = $"{folder.Path.LocalPath}Animal Declaration ({documentNameAttempts}).pdf";
+        }
+
+        doc.SaveToFile(proposedPath);
     }
 
     private Stream GetFormTemplate()
