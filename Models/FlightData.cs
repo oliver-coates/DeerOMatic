@@ -11,6 +11,16 @@ namespace Deer_o_matic.Models;
 public class FlightData
 {
 
+    public enum AnimalType
+    {
+        NotSet = 0,
+        FallowDeer = 1,
+        RedDeer = 2,
+        WhiteTailDeer = 3,
+        Tahr = 4,
+        Chamois = 5
+    }
+
     public readonly string name;
     public readonly string path;
     public readonly DateTime? startTime; // Time of the first animal shot
@@ -19,16 +29,18 @@ public class FlightData
     public readonly DateTime? refrigerationTime;
     public readonly DateTime? refrigerationTimeUtc;
     public readonly AnimalMark[] animalMarks;
+    public readonly AnimalType animalType;
 
 
 
-    public FlightData(string name, string path, DateTime? refridgerationTime, DateTime? refridgerationTimeUtc, AnimalMark[] placemarks)
+    public FlightData(string name, string path, DateTime? refridgerationTime, DateTime? refridgerationTimeUtc, AnimalMark[] placemarks, AnimalType animalType=AnimalType.NotSet)
     {
         this.name = name;
         this.path = path;
         this.refrigerationTime = refridgerationTime;
         this.refrigerationTimeUtc = refridgerationTimeUtc;
         this.animalMarks = placemarks;
+        this.animalType = animalType;
 
         if (placemarks != null && placemarks.Length > 0)
         {
@@ -42,6 +54,33 @@ public class FlightData
             this.startTime = null;
             this.startTimeUtc = null;
             this.endTime = null;
+        }
+    }
+
+    public static string AnimalTypeAsReadableString(AnimalType type)
+    {
+        switch (type)
+        {
+            case (AnimalType.NotSet):
+                return "Not Set";
+            
+            case (AnimalType.FallowDeer):
+                return "Fallow Deer";
+            
+            case (AnimalType.RedDeer):
+                return "Red Deer";
+            
+            case (AnimalType.WhiteTailDeer):
+                return "White Tail Deer";
+            
+            case (AnimalType.Tahr):
+                return "Tahr";
+            
+            case (AnimalType.Chamois):
+                return "Chamois";
+            
+            default:
+                throw new NullReferenceException($"Unhandled animal type '{type}'");
         }
     }
 }

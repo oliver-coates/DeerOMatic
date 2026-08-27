@@ -18,6 +18,9 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
     [ObservableProperty]
     private DateTime? _fridgeDate;
 
+    [ObservableProperty]
+    private int _animalTypeIndex;
+
     public readonly DateTime? startTime; 
     public readonly DateTime? endTime; 
 
@@ -29,6 +32,7 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
         _path = data.path;
 
         marks = data.animalMarks;
+        _animalTypeIndex = (int) data.animalType;
 
         startTime = data.startTime;
         endTime = data.endTime;
@@ -53,7 +57,9 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
         }
 
         DateTime fridgeDateTime = (DateTime) FridgeDate;
-        DateTime? fridgeDateTimeUtc = null;
+        DateTime? fridgeDateTimeUtc;
+
+        FlightData.AnimalType animalType = (FlightData.AnimalType) AnimalTypeIndex; 
 
         try
         {
@@ -88,6 +94,6 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
             }
         }
         
-        return new FlightData(this.Name, this.Path, fridgeDateTime, fridgeDateTimeUtc, marks);
+        return new FlightData(this.Name, this.Path, fridgeDateTime, fridgeDateTimeUtc, marks, animalType);
     }
 }
