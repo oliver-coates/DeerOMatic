@@ -18,6 +18,9 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
     [ObservableProperty]
     private DateTime? _fridgeDate;
 
+    public readonly DateTime? startTime; 
+    public readonly DateTime? endTime; 
+
     public AnimalMark[] marks = new AnimalMark[0];
 
     public FlightDataViewModel(FlightData data)
@@ -26,6 +29,9 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
         _path = data.path;
 
         marks = data.animalMarks;
+
+        startTime = data.startTime;
+        endTime = data.endTime;
 
         _fridgeTime = "";
         if (marks != null && marks.Length > 0)

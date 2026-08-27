@@ -76,6 +76,7 @@ public partial class FileUploadViewModel : ViewModelBase
                 FlightData flightData = await _KmlProcessor.ParseFlightDataFromKmlAsync(file);
 
                 EnsureFlightDataNameIsUnique(flightData.name);
+                EnsureFlightDataIsInValidTimeWindow(flightData);
 
                 FlightDataViewModel viewModel = new FlightDataViewModel(flightData); 
                 FlightData.Add(viewModel);   
@@ -98,6 +99,22 @@ public partial class FileUploadViewModel : ViewModelBase
                 throw new Exception($"KML files cannot have duplicate names ('{name}' already exists)");
             }
              
+        }
+    }
+
+    private void EnsureFlightDataIsInValidTimeWindow(FlightData flightDataToCompare)
+    {
+        foreach (FlightDataViewModel baseFlightData in FlightData)
+        {
+            Console.WriteLine($"Base: {baseFlightData.startTime} <--> {baseFlightData.endTime}");
+            Console.WriteLine($"Compare: {flightDataToCompare.startTime} <--> {flightDataToCompare.endTime}");
+
+            bool overlap = (baseFlightData.startTime < flightDataToCompare.endTime) && (flightDataToCompare.startTime < baseFlightData.endTime);
+
+            if (overlap)
+            {
+                throw new Exception($"Flight data '{baseFlightData.Name}' overlaps with flight data '{flightDataToCompare.name}'.");
+            }
         }
     }
 
