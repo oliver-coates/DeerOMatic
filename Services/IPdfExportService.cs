@@ -50,6 +50,7 @@ public class PdfExportService : IPdfExportService
 
     public async Task ExportDocumentsAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable)
     {
+        DocumentExportMetaData.Flush();
         HunterDeclarationDocumentData[] datas = _dataSplitter.SplitDataByAnimalTypes(data);
 
         bool doSpecifyAnimalTypeInFileName = datas.Length > 1;
@@ -78,6 +79,11 @@ public class PdfExportService : IPdfExportService
         doc.LoadFromStream(GetFormTemplate());
 
         FormArgument[] arguments = GetFormArguments(data);
+
+        foreach (FlightData flightData in data.flightDatas)
+        {
+            DocumentExportMetaData.animalCounter += flightData.animalMarks.Length;
+        }
         
         FillForm(doc, arguments);
         if (fillable == false)
@@ -91,17 +97,18 @@ public class PdfExportService : IPdfExportService
 
     private string GetDocumentPath(IStorageFolder folder, FlightData.AnimalType? animalType = null)
     {
-        string proposedPath;
+        string proposedName;
         if (animalType == null)
         {
-             proposedPath = $"{folder.Path.LocalPath}Animal Declaration.pdf";
+            proposedName = $"Animal Declaration.pdf";
         }
         else
         {
             string animalName = FlightData.AnimalTypeAsReadableString((FlightData.AnimalType) animalType);
-            proposedPath = $"{folder.Path.LocalPath}Animal Declaration ({animalName}).pdf";  
+            proposedName = $"Animal Declaration ({animalName}).pdf";  
         } 
         
+        string proposedPath = $"{folder.Path.LocalPath}{proposedName}";;
 
         int documentNameAttempts = 0;
         while (true)
@@ -120,7 +127,7 @@ public class PdfExportService : IPdfExportService
             }
         
             documentNameAttempts++;
-            proposedPath = $"{folder.Path.LocalPath}Animal Declaration ({documentNameAttempts}).pdf";
+            proposedPath = $"{folder.Path.LocalPath}{proposedName} ({documentNameAttempts}).pdf";
         }
 
         return proposedPath;
@@ -176,6 +183,7 @@ public class PdfExportService : IPdfExportService
         List<FormArgument> arguments = new();
         int absoluteIndex = 1;
         int row = 0;
+        int animalCountTotal = DocumentExportMetaData.animalCounter;
 
         foreach (FlightData flightData in data.flightDatas)
         {
@@ -183,8 +191,8 @@ public class PdfExportService : IPdfExportService
             int numAnimalsThisFlight = (flightData.animalMarks.Length+1);
 
             // The start and end index for our marks (i.e "Mark 7 to 24")
-            int startIndex = absoluteIndex;
-            int endIndex = startIndex + numAnimalsThisFlight - 1;
+            int startIndex = animalCountTotal + absoluteIndex;
+            int endIndex = animalCountTotal + absoluteIndex + numAnimalsThisFlight - 1;
 
             if (flightData.refrigerationTime == null)
             {
@@ -196,7 +204,7 @@ public class PdfExportService : IPdfExportService
             }
 
             string carcassIdentifier = $"{startIndex} to {endIndex}";
-            string killLocation = $"Mark 1 to {numAnimalsThisFlight}";
+            string killLocation = $"Placemarks {startIndex} to {endIndex}";
             string dateAndTime = $"{flightData.startTime?.ToString("dd/MM/yy HH:mm:ss")} NZST\n{flightData.startTimeUtc?.ToString("dd/MM/yy HH:mm:ss")} UTC";
             string timeRefrigerated = $"{flightData.refrigerationTime?.ToString("dd/MM/yy HH:mm:ss")} NZST\n{flightData.refrigerationTimeUtc?.ToString("dd/MM/yy HH:mm:ss")} UTC";
 
