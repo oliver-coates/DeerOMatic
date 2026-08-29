@@ -243,8 +243,6 @@ public partial class MapViewModel : ViewModelBase
     {
         foreach (AreaDataViewModel areaData in toDisplay)
         {
-            Console.WriteLine($"Displaying area data {areaData.Name}");
-     
             // Add all geometry from the area data into an array of features:
             int numGeometry = areaData.geometry.Length;
             IFeature[] features = new IFeature[numGeometry];
