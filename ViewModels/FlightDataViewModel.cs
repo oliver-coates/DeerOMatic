@@ -19,7 +19,7 @@ public partial class FlightDataViewModel : ViewModelBase, IDisplayableOnMap, ICo
     private DateTime? _fridgeDate;
 
     [ObservableProperty]
-    private int _animalTypeIndex;
+    private int _animalTypeIndex = 1;
 
     public readonly DateTime? startTime; 
     public readonly DateTime? endTime; 

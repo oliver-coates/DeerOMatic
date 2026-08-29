@@ -42,7 +42,7 @@ public class DocumentCreationService : IDocumentCreationService
             otherHunters = hunterDeclaration.OtherHunterNames,
             rmpIdentifier = hunterDeclaration.RmpIdentifier,
             numAnimals = animalMarkCount,
-            numAndTypeOfAnimals = $"{animalMarkCount} Deer",
+            numAndTypeOfAnimals = $"{animalMarkCount} Animals", // "Animals" at the moment, the data splitter will split this document data object into ones based on animal type, and then specify the types here
             dateOfArrivalAtProcessor = hunterDeclaration.DateOfArrivalAtProcessor,
             helicopterRegistration = hunterDeclaration.HelicopterRegistrationNumber,
             questionTicks = questionTicks

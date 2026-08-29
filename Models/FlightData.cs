@@ -14,8 +14,8 @@ public class FlightData
     public enum AnimalType
     {
         NotSet = 0,
-        FallowDeer = 1,
-        RedDeer = 2,
+        RedDeer = 1,
+        FallowDeer = 2,
         Tahr = 3,
         Chamois = 4
     }
@@ -32,7 +32,7 @@ public class FlightData
 
 
 
-    public FlightData(string name, string path, DateTime? refridgerationTime, DateTime? refridgerationTimeUtc, AnimalMark[] placemarks, AnimalType animalType=AnimalType.NotSet)
+    public FlightData(string name, string path, DateTime? refridgerationTime, DateTime? refridgerationTimeUtc, AnimalMark[] placemarks, AnimalType animalType=AnimalType.RedDeer)
     {
         this.name = name;
         this.path = path;

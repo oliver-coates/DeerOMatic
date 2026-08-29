@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.320.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deer-o-matic", "c:\Projects\GCH Deer-o-matic\deer-o-matic\Deer-o-matic.csproj", "{2CBE729D-5D12-4F3D-D66E-089F09D774A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deer-o-matic", "c:\Projects\DeerOMatic\Deer-o-matic.csproj", "{2CBE729D-5D12-4F3D-D66E-089F09D774A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

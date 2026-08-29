@@ -6,19 +6,21 @@ using Spire.Pdf.Widget;
 using System.Threading.Tasks;
 using Deer_o_matic.Models;
 using Avalonia.Platform.Storage;
-using System.Linq;
 using System.IO;
 
 namespace Deer_o_matic.Services;
 
 public interface IPdfExportService
 {
-    public Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable);
+    public Task ExportDocumentsAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable);
+    public Task ExportDocumentAsync(HunterDeclarationDocumentData data, string filePath, bool fillable);
 }
 
 
 public class PdfExportService : IPdfExportService
 {
+    private IDocumentDataSplitter _dataSplitter;
+
     private static readonly string[] formQuestionsTrue =
     {
         "bool-procured-accordance-operations-manual-yes",
@@ -41,10 +43,38 @@ public class PdfExportService : IPdfExportService
         "bool-deer-tb-free-no"
     };
 
-    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable)
+    public PdfExportService(IDocumentDataSplitter dataSplitter)
+    {
+        _dataSplitter = dataSplitter;
+    }
+
+    public async Task ExportDocumentsAsync(HunterDeclarationDocumentData data, IStorageFolder folder, bool fillable)
+    {
+        HunterDeclarationDocumentData[] datas = _dataSplitter.SplitDataByAnimalTypes(data);
+
+        bool doSpecifyAnimalTypeInFileName = datas.Length > 1;
+
+        foreach (HunterDeclarationDocumentData splitData in datas)
+        {
+            string fullPath;
+            if (doSpecifyAnimalTypeInFileName)
+            {
+                fullPath = GetDocumentPath(folder, splitData.flightDatas[0].animalType);
+            }
+            else
+            {
+                fullPath = GetDocumentPath(folder);
+            }         
+
+
+            await ExportDocumentAsync(splitData, fullPath, fillable);     
+        }
+
+    }
+
+    public async Task ExportDocumentAsync(HunterDeclarationDocumentData data, string path, bool fillable)
     {
         PdfDocument doc = new PdfDocument();
-
         doc.LoadFromStream(GetFormTemplate());
 
         FormArgument[] arguments = GetFormArguments(data);
@@ -55,9 +85,24 @@ public class PdfExportService : IPdfExportService
             Flatten(doc);        
         }
 
-        // string fullPath = $"{folder.Path.LocalPath} LHDF ({DateTime.Now.ToString("d-M-y HH-mm")}).pdf";
-        string proposedPath = $"{folder.Path.LocalPath}Animal Declaration.pdf";
+
+        doc.SaveToFile(path);
+    }
+
+    private string GetDocumentPath(IStorageFolder folder, FlightData.AnimalType? animalType = null)
+    {
+        string proposedPath;
+        if (animalType == null)
+        {
+             proposedPath = $"{folder.Path.LocalPath}Animal Declaration.pdf";
+        }
+        else
+        {
+            string animalName = FlightData.AnimalTypeAsReadableString((FlightData.AnimalType) animalType);
+            proposedPath = $"{folder.Path.LocalPath}Animal Declaration ({animalName}).pdf";  
+        } 
         
+
         int documentNameAttempts = 0;
         while (true)
         {
@@ -78,7 +123,7 @@ public class PdfExportService : IPdfExportService
             proposedPath = $"{folder.Path.LocalPath}Animal Declaration ({documentNameAttempts}).pdf";
         }
 
-        doc.SaveToFile(proposedPath);
+        return proposedPath;
     }
 
     private Stream GetFormTemplate()

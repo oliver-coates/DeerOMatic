@@ -12,8 +12,8 @@
             
             <ComboBox Grid.Column="1" SelectedIndex="{Binding AnimalTypeIndex}" Width="200" MaxDropDownHeight="200" Margin="0,0,8,0">
                 <ComboBoxItem>Not Set</ComboBoxItem>
-                <ComboBoxItem>Fallow Deer</ComboBoxItem>
                 <ComboBoxItem>Red Deer</ComboBoxItem>
+                <ComboBoxItem>Fallow Deer</ComboBoxItem>
                 <ComboBoxItem>Tahr</ComboBoxItem>
                 <ComboBoxItem>Chamois</ComboBoxItem>
             </ComboBox>

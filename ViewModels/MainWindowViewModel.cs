@@ -110,13 +110,13 @@ public partial class MainWindowViewModel : ViewModelBase
             // Validates all the data within the document
             _DocumentValidator.ValidateDocument(data, HuntMap.AreaData, DoCheckDocPoisonAreas);
 
-            await _PdfExport.ExportDocumentAsync(data, saveFolder, ExportPdfFillable);        
+            await _PdfExport.ExportDocumentsAsync(data, saveFolder, ExportPdfFillable);        
         
             await _Notifications.ShowSuccessAsync("✓ Exported Successfully");
         }
         catch (Exception e)
         {
-            await _Notifications.ShowErrorAsync(e.Message);
+            await _Notifications.ShowErrorAsync(e.ToString());
         }
 
     }

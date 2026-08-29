@@ -72,6 +72,7 @@ public partial class App : Application
         services.AddSingleton<IKmlPersistenceService, KmlPersistenceService>();
         services.AddSingleton<IAreaProcessorService, AreaProcessorService>();
         services.AddSingleton<IPdfExportService, PdfExportService>();
+        services.AddSingleton<IDocumentDataSplitter, DocumentDataSplitter>();
         services.AddSingleton<IDocumentCreationService, DocumentCreationService>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<INotificationService, NotificationService>();
